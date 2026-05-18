@@ -1,0 +1,25 @@
+project:
+  type: website
+
+website:
+  title: "The USRA Logs: Data Depth"
+  description: "A 16-week research journal exploring computational and theoretical data depth."
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: about.qmd
+        text: About
+    right:
+      - icon: github
+        href: https://github.com/bytebard404
+        aria-label: GitHub
+
+format:
+  html:
+    theme: cosmo
+    fontsize: 1.1em
+    toc: true
+
+
+
