@@ -1,10 +1,11 @@
 ---
-title: "data-depth-journal"
+title: "Research Logs"
+subtitle: "USRA 2026: Exploring Computational Data Depth"
 listing:
   contents: posts
   feed: true
   sort: "date desc"
-  type: default
+  type: grid
   categories: true
   sort-ui: false
   filter-ui: false
