@@ -3,6 +3,7 @@ project:
 
 website:
   title: "The USRA Logs: Data Depth"
+  site-url: "https://bytebard404.github.io/The-USRA-Logs-Data-Depth"
   description: "A 16-week research journal exploring computational and theoretical data depth."
   navbar:
     left:
