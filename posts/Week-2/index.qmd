@@ -1,0 +1,124 @@
+---
+title: "Week 2: First Computations in R - Implementing Mahalanobis & Tukey Depth"
+author: "Ridhima Singla"
+date: "May 15, 2026"
+categories: [Implementation, R]
+image: "Week2-thumbnail.png"
+---
+
+### Abstract    
+This week marked the transition from understanding mathematical theory to applying it through computational implementation. The primary goal was to have a functioning algorithm, leaving runtime optimization for later iterations. After reviewing Dr. Leblanc’s notes to solidify the core geometry, I wrote my first R scripts to compute Mahalanobis depth (for an entire dataset) using matrix algebra and Tukey depth (for a single point), understanding why simple distance measurements fail in multivariate space, and learning two different but equivalent ways to compute Tukey depth. While built-in R functions made computing Mahalanobis depth straightforward, I spent the vast majority of my time struggling with the geometric complexities of Tukey depth.   
+
+---
+
+### Theoretical Foundations: Two Approaches to Computing Depth
+* **The Core Concept:** This week focused on two different methods for calculating depth.
+    - Mahalanobis depth is based on Mahalanobis distance. It relies on the covariance matrix to measure how central a point is relative to the distribution's shape and spread.  
+      
+    - Tukey (halfspace) depth takes a geometric approach. Using the projection interpretation, it determines depth of a point by evaluating the minimum number of data points whose orthogonal projections fall to one side of the origin across all possible directional vectors.
+
+* **Literature Context:** Relied primarily on Dr. Leblanc’s notes to solidify the theoretical foundation and understand computational geometry via animations. Briefly referenced [Mosler (2021)](https://projecteuclid.org/journals/statistical-science/volume-37/issue-3/Choosing-Among-Notions-of-Multivariate-Depth-Statistics/10.1214/21-STS827.full) for an introduction to Mahalanobis Depth and its properties. 
+
+* **Research Curiosities:** [Mosler (2021)](https://projecteuclid.org/journals/statistical-science/volume-37/issue-3/Choosing-Among-Notions-of-Multivariate-Depth-Statistics/10.1214/21-STS827.full) demonstrates that Mahalanobis depth can be calculated exactly in $O(n)$ time for any number of dimensions. However, because this depth method is not robust to outliers, it is unreliable for many modern applications. I am naturally curious to explore robustified versions of Mahalanobis depth. What computational trade-offs must we make when transitioning from the standard version to a robust one? 
+
+### Computational Implementation
+* **Infrastructure & Tools:** Exclusively coded in R due to its large variety of built-in matrix operations, and the ddalpha package, which provided functions to verify my algorithm's outputs.
+
+* **The Approach:**  
+    - **Mahalanobis:** Due to the simple structure of the formula and the built-in matrix operation functions in R, implementing the algorithm was straightforward and easily extendable to the entire dataset across higher dimensions.    
+      
+    - **Tukey:** Of the two definitions, I opted to implement the projection interpretation using a sweep style algorithm. To ensure mathematical accuracy and clarity in understanding, I isolated the algorithm to compute the depth of a single sample point only.
+    
+
+### Visualizing the Output
+```{r}
+#| echo: false
+#| warning: false
+
+#Function that calculates mahalanobis distance
+mhlnbs_Dist = function(obs, mean, covMatrix){
+  result = t(obs - mean) %*% 
+            solve(covMatrix) %*% 
+            (obs - mean)
+  return(result)
+}
+
+#function that calculates mahalanobis depth
+mhlnbs_Depth = function(mhlnbs_Dist){
+  answer = 1 / (1+mhlnbs_Dist)
+  return(answer)
+}
+
+# calculating the depth of an observation in 2-dimensions 
+# (only looking at the mpg and wt columns)
+df = mtcars[,c(1,6)]
+S = cov(df)
+mu = t(t(colMeans(df)))
+
+#compute depth for each observation
+mhlnbsDepth_2d = numeric()
+for(i in 1:nrow(df)){
+  obs = t(df[i,])
+  distance = mhlnbs_Dist(obs, mu, S)
+  mhlnbsDepth_2d[i] = mhlnbs_Depth(distance)
+}
+
+#verify using built-in
+verified_Depth2d = 1/(1+mahalanobis(df,colMeans(df), S))
+
+mhlnbsDepth_2d = round(mhlnbsDepth_2d, digits = 3)
+updatedDF = cbind(df, mhlnbsDepth_2d)
+
+#sort by depth in descending to get the bivariate median point
+sortedByDepth = updatedDF[order(updatedDF$mhlnbsDepth_2d, decreasing = TRUE),]  
+bivar_median = sortedByDepth[1,]
+```
+```{r}
+#| code-fold: true
+#| code-summary: "View the Code to Generate the Scatterplot"
+#| label: Mahalanobis Plot
+#| fig-cap: "Scatter plot showing the Mahalanobis Depth of each data point."
+#| warning: false
+
+#plot data to observe how the depth changes
+library(ggplot2)
+ggplot(updatedDF, aes(x = updatedDF$mpg, y = updatedDF$wt, 
+                      label = updatedDF$mhlnbsDepth_2d)) +
+  geom_point() + geom_text(color = "darkred",
+                           size = 1.5, vjust = -1)
+
+```  
+
+* **Observation:** The most fascinating takeaway from the above Mahalanobis visualization was observing a highly counter intuitive result. I found a specific point (22.8, 2.320) that was physically closer to the geometric center of the data as per Euclidean distance, yet it had a lower Mahalanobis depth than the point (26.0, 2.140) that was physically further away.   
+
+  
+* **Understanding Why?:** Upon further discussion with Dr. Leblanc, I learnt that this is because the data distribution is elliptical (due to the two variables being correlated) rather than perfectly circular, and depth is determined by the data's covariance structure. 
+
+    - The First Eigenvector (Maximum Variance): Point (26.0, 2.140) lies in this direction. Because the data spreads widely here due to high variance, a point can be physically distant but still maintain a high depth.
+
+    - The Second Eigenvector (Minimum Variance): Point (22.8, 2.320) lies in this direction. Because the data is tightly clustered here due to low variance, moving even slightly away from the center causes the depth to drop drastically. 
+
+---
+
+### Methodological Pivots & Insights  
+Implementing Tukey depth required a major conceptual pivot. My initial idea to interpret the projection definition was to rotate a line in one degree increments to find the minimum depth.
+
+After discussing this with Dr. Leblanc, I realized that this "grid approach" was fundamentally flawed. It only provides an approximation for the depth and not the exact answer. If the true minimum is achieved at a fraction of a degree, the increment approach misses it entirely. Furthermore, it scales poorly as sample sizes grow.
+
+I abandoned the grid approach in favor of the sweep algorithm. Instead of rotating a line, we use linear algebra to compute the exact angles where a point switches from projecting on the right versus the left. By keeping track of the action to be taken at each angle, we can sweep the sorted list of angles one by one, tracking the absolute minimum. This pivot moved my algorithm from an inefficient approximation to computing the exact Tukey depth in 2D. 
+
+### Current Roadblock
+* **The Unresolved Bug:** While the transition to the sweep algorithm was conceptually successful, my current R script for the single point Tukey depth is producing an answer that is different from the one computed by the ddalpha package function, even after accounting for the normalization. 
+
+* **My Hypothesis:** I suspect there is a flaw in how I am tracking the initial right count (i.e. number of points that project on the right of the origin) before we start sweeping the list going from 0 to 360. I have isolated the code chunk that counts the initial count and plan to debug it next week after consulting Dr. Leblanc.
+
+---
+
+### Future Work  
+* Debug the logic in the Tukey algorithm to resolve the current calculation error.  
+    
+* Scale the corrected single point Tukey algorithm to compute depth for an entire dataset.   
+   
+* Introduction to "Integrated Rank-Weighted (IRW) Depth".    
+   
+---

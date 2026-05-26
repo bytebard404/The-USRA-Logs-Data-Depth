@@ -1,0 +1,39 @@
+---
+title: "Week 1: Defining the Depth Function & Infrastructure Setup"
+author: "Ridhima Singla"
+date: "May 8, 2026"
+categories: [Theory]
+image: "Week1.png"
+---
+
+### Abstract 
+I kicked off my 16 week undergraduate research term this week under the supervision of Dr. Alexandre Leblanc by defining the core scope of our project: the statistical and computational challenges of Data Depth. While the week was heavily focused on literature review, foundational theory, and establishing the technical infrastructure to document the progress over the summer, it also allowed me to pinpoint the applications of this concept that I am most interested in exploring. Specifically, I want to investigate how data depth can be used for robust outlier detection under missing data. Is there a depth method that can isolate high quality data points from the noise? Can the approach be generalised to higher dimensions?   
+
+---
+
+### Theoretical Foundations: What is Data Depth? 
+* **The Core Concept:** In 1D data, finding a median or identifying an outlier is trivial. However, how does one identify the "center" of a massive, multidimensional dataset? Data depth provides a non parametric approach that builds a center outward ordering of points in multivariate space, allowing us to mathematically define how "deep" or central a specific data point is relative to an entire multidimensional cloud. The higher the depth, the more central is the point within a cloud of data points.  
+
+* **Literature Context:** Reviewed foundational slide decks and presentations provided by Dr. Leblanc to get a high level introduction to existing depth functions and their properties.  
+
+* **Research Curiosities:** Moving forward, I am highly interested in exploring the computational bottlenecks of depth algorithms. I am also curious to compare the various depth functions when applied to data with missing observations. 
+
+### Computational Implementation
+* **Infrastructure & Tools:** Set up a research log using Quarto and GitHub Pages to document the research progress. 
+
+* **The Approach:** Configured the local development environment on my computer to handle Python and R computations, ensuring all libraries are properly optimized.
+
+---
+
+### Methodological Pivots & Insights  
+The first major roadblock I encountered was informational, not technical. While there is a substantial volume of literature on the subject, much of it assumes a high level of prior knowledge, and heavily leans toward advanced applications rather than foundational theory. As a beginner, the challenge was figuring out where to start, identifying foundational readings, and reserving advanced ones for later. To navigate this, Dr. Leblanc helped narrow down a reading list for the initial weeks, allowing me to select a single paper as my starting point. 
+
+---
+
+### Future Work
+* Deconstruct the chosen foundational paper.
+* Write the first R scripts to compute Mahalanobis Depth and Tukey Depth for a single point.
+
+* [Link to the paper selected for review](https://projecteuclid.org/journals/statistical-science/volume-37/issue-3/Choosing-Among-Notions-of-Multivariate-Depth-Statistics/10.1214/21-STS827.full)
+
+---
