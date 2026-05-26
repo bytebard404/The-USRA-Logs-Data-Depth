@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Ridhima Singla">
+<meta name="dcterms.date" content="2026-05-08">
 
-<title>Research Logs – The USRA Logs: Data Depth</title>
+<title>Week 1: Defining the Depth Function &amp; Infrastructure Setup – The USRA Logs: Data Depth</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,25 +28,23 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-8dfce0f9f08a59e28375127dbd9997f5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-8dfce0f9f08a59e28375127dbd9997f5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -72,67 +72,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="alternate" type="application/rss+xml" title="The USRA Logs: Data Depth" href="index.xml" data-external="1"></head>
+</head>
 
 <body class="nav-fixed quarto-light">
 
@@ -141,7 +83,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">The USRA Logs: Data Depth</span>
     </a>
   </div>
@@ -152,11 +94,11 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -176,103 +118,97 @@ window.Quarto = {
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
-      <h1 class="title">Research Logs</h1>
-            <p class="subtitle lead">USRA 2026: Exploring Computational Data Depth</p>
-                      </div>
+    <div class="quarto-title column-body">
+      <h1 class="title">Week 1: Defining the Depth Function &amp; Infrastructure Setup</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Theory</div>
+              </div>
+                  </div>
   </div>
     
   
-  <div class="quarto-title-meta column-page-left">
+  <div class="quarto-title-meta">
 
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Ridhima Singla </p>
+            </div>
+    </div>
       
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">May 8, 2026</p>
+      </div>
+    </div>
     
       
     </div>
     
   
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div><div class="category" data-category="SW1wbGVtZW50YXRpb24=">Implementation <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Ug==">R <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VGhlb3J5">Theory <span class="quarto-category-count">(1)</span></div></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
+  <li><a href="#theoretical-foundations-what-is-data-depth" id="toc-theoretical-foundations-what-is-data-depth" class="nav-link" data-scroll-target="#theoretical-foundations-what-is-data-depth">Theoretical Foundations: What is Data Depth?</a></li>
+  <li><a href="#computational-implementation" id="toc-computational-implementation" class="nav-link" data-scroll-target="#computational-implementation">Computational Implementation</a></li>
+  <li><a href="#methodological-pivots-insights" id="toc-methodological-pivots-insights" class="nav-link" data-scroll-target="#methodological-pivots-insights">Methodological Pivots &amp; Insights</a></li>
+  <li><a href="#future-work" id="toc-future-work" class="nav-link" data-scroll-target="#future-work">Future Work</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
 
+<section id="abstract" class="level3">
+<h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
+<p>I kicked off my 16 week undergraduate research term this week under the supervision of Dr.&nbsp;Alexandre Leblanc by defining the core scope of our project: the statistical and computational challenges of Data Depth. While the week was heavily focused on literature review, foundational theory, and establishing the technical infrastructure to document the progress over the summer, it also allowed me to pinpoint the applications of this concept that I am most interested in exploring. Specifically, I want to investigate how data depth can be used for robust outlier detection under missing data. Is there a depth method that can isolate high quality data points from the noise? Can the approach be generalised to higher dimensions?</p>
+<hr>
+</section>
+<section id="theoretical-foundations-what-is-data-depth" class="level3">
+<h3 class="anchored" data-anchor-id="theoretical-foundations-what-is-data-depth">Theoretical Foundations: What is Data Depth?</h3>
+<ul>
+<li><p><strong>The Core Concept:</strong> In 1D data, finding a median or identifying an outlier is trivial. However, how does one identify the “center” of a massive, multidimensional dataset? Data depth provides a non parametric approach that builds a center outward ordering of points in multivariate space, allowing us to mathematically define how “deep” or central a specific data point is relative to an entire multidimensional cloud. The higher the depth, the more central is the point within a cloud of data points.</p></li>
+<li><p><strong>Literature Context:</strong> Reviewed foundational slide decks and presentations provided by Dr.&nbsp;Leblanc to get a high level introduction to existing depth functions and their properties.</p></li>
+<li><p><strong>Research Curiosities:</strong> Moving forward, I am highly interested in exploring the computational bottlenecks of depth algorithms. I am also curious to compare the various depth functions when applied to data with missing observations.</p></li>
+</ul>
+</section>
+<section id="computational-implementation" class="level3">
+<h3 class="anchored" data-anchor-id="computational-implementation">Computational Implementation</h3>
+<ul>
+<li><p><strong>Infrastructure &amp; Tools:</strong> Set up a research log using Quarto and GitHub Pages to document the research progress.</p></li>
+<li><p><strong>The Approach:</strong> Configured the local development environment on my computer to handle Python and R computations, ensuring all libraries are properly optimized.</p></li>
+</ul>
+<hr>
+</section>
+<section id="methodological-pivots-insights" class="level3">
+<h3 class="anchored" data-anchor-id="methodological-pivots-insights">Methodological Pivots &amp; Insights</h3>
+<p>The first major roadblock I encountered was informational, not technical. While there is a substantial volume of literature on the subject, much of it assumes a high level of prior knowledge, and heavily leans toward advanced applications rather than foundational theory. As a beginner, the challenge was figuring out where to start, identifying foundational readings, and reserving advanced ones for later. To navigate this, Dr.&nbsp;Leblanc helped narrow down a reading list for the initial weeks, allowing me to select a single paper as my starting point.</p>
+<hr>
+</section>
+<section id="future-work" class="level3">
+<h3 class="anchored" data-anchor-id="future-work">Future Work</h3>
+<ul>
+<li><p>Deconstruct the chosen foundational paper.</p></li>
+<li><p>Write the first R scripts to compute Mahalanobis Depth and Tukey Depth for a single point.</p></li>
+<li><p><a href="https://projecteuclid.org/journals/statistical-science/volume-37/issue-3/Choosing-Among-Notions-of-Multivariate-Depth-Statistics/10.1214/21-STS827.full">Link to the paper selected for review</a></p></li>
+</ul>
+<hr>
 
 
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="SW1wbGVtZW50YXRpb24lMkNS" data-listing-date-sort="1778821200000" data-listing-file-modified-sort="1779826849207" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1204">
-<a href="./posts/Week-2/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Week-2/Week2-thumbnail.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Week 2: First Computations in R - Implementing Mahalanobis &amp; Tukey Depth
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('SW1wbGVtZW50YXRpb24='); return false;">Implementation</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Ug=='); return false;">R</div>
-
-</div>
-<div class="card-text listing-description delink">
-This week marked the transition from understanding mathematical theory to applying it through computational implementation. The primary goal was to have a functioning…
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Ridhima Singla
-</div>
-<div class="listing-date">
-May 15, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="1" data-categories="VGhlb3J5" data-listing-date-sort="1778216400000" data-listing-file-modified-sort="1779826852405" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="436">
-<a href="./posts/Week-1/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Week-1/Week1.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Week 1: Defining the Depth Function &amp; Infrastructure Setup
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('VGhlb3J5'); return false;">Theory</div>
-
-</div>
-<div class="card-text listing-description delink">
-I kicked off my 16 week undergraduate research term this week under the supervision of Dr.&nbsp;Alexandre Leblanc by defining the core scope of our project: the statistical and…
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Ridhima Singla
-</div>
-<div class="listing-date">
-May 8, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

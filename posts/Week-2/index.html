@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Ridhima Singla">
+<meta name="dcterms.date" content="2026-05-15">
 
-<title>Research Logs – The USRA Logs: Data Depth</title>
+<title>Week 2: First Computations in R - Implementing Mahalanobis &amp; Tukey Depth – The USRA Logs: Data Depth</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,28 +25,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-8dfce0f9f08a59e28375127dbd9997f5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-8dfce0f9f08a59e28375127dbd9997f5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -72,35 +107,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -132,7 +138,7 @@ window.Quarto = {
 };
 </script>
 
-<link rel="alternate" type="application/rss+xml" title="The USRA Logs: Data Depth" href="index.xml" data-external="1"></head>
+</head>
 
 <body class="nav-fixed quarto-light">
 
@@ -141,7 +147,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">The USRA Logs: Data Depth</span>
     </a>
   </div>
@@ -152,11 +158,11 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -176,103 +182,147 @@ window.Quarto = {
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
-      <h1 class="title">Research Logs</h1>
-            <p class="subtitle lead">USRA 2026: Exploring Computational Data Depth</p>
-                      </div>
+    <div class="quarto-title column-body">
+      <h1 class="title">Week 2: First Computations in R - Implementing Mahalanobis &amp; Tukey Depth</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Implementation</div>
+                <div class="quarto-category">R</div>
+              </div>
+                  </div>
   </div>
     
   
-  <div class="quarto-title-meta column-page-left">
+  <div class="quarto-title-meta">
 
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Ridhima Singla </p>
+            </div>
+    </div>
       
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">May 15, 2026</p>
+      </div>
+    </div>
     
       
     </div>
     
   
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div><div class="category" data-category="SW1wbGVtZW50YXRpb24=">Implementation <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Ug==">R <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VGhlb3J5">Theory <span class="quarto-category-count">(1)</span></div></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
+  <li><a href="#theoretical-foundations-two-approaches-to-computing-depth" id="toc-theoretical-foundations-two-approaches-to-computing-depth" class="nav-link" data-scroll-target="#theoretical-foundations-two-approaches-to-computing-depth">Theoretical Foundations: Two Approaches to Computing Depth</a></li>
+  <li><a href="#computational-implementation" id="toc-computational-implementation" class="nav-link" data-scroll-target="#computational-implementation">Computational Implementation</a></li>
+  <li><a href="#visualizing-the-output" id="toc-visualizing-the-output" class="nav-link" data-scroll-target="#visualizing-the-output">Visualizing the Output</a></li>
+  <li><a href="#methodological-pivots-insights" id="toc-methodological-pivots-insights" class="nav-link" data-scroll-target="#methodological-pivots-insights">Methodological Pivots &amp; Insights</a></li>
+  <li><a href="#current-roadblock" id="toc-current-roadblock" class="nav-link" data-scroll-target="#current-roadblock">Current Roadblock</a></li>
+  <li><a href="#future-work" id="toc-future-work" class="nav-link" data-scroll-target="#future-work">Future Work</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
 
+<section id="abstract" class="level3">
+<h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
+<p>This week marked the transition from understanding mathematical theory to applying it through computational implementation. The primary goal was to have a functioning algorithm, leaving runtime optimization for later iterations. After reviewing Dr.&nbsp;Leblanc’s notes to solidify the core geometry, I wrote my first R scripts to compute Mahalanobis depth (for an entire dataset) using matrix algebra and Tukey depth (for a single point), understanding why simple distance measurements fail in multivariate space, and learning two different but equivalent ways to compute Tukey depth. While built-in R functions made computing Mahalanobis depth straightforward, I spent the vast majority of my time struggling with the geometric complexities of Tukey depth.</p>
+<hr>
+</section>
+<section id="theoretical-foundations-two-approaches-to-computing-depth" class="level3">
+<h3 class="anchored" data-anchor-id="theoretical-foundations-two-approaches-to-computing-depth">Theoretical Foundations: Two Approaches to Computing Depth</h3>
+<ul>
+<li><p><strong>The Core Concept:</strong> This week focused on two different methods for calculating depth.</p>
+<ul>
+<li><p>Mahalanobis depth is based on Mahalanobis distance. It relies on the covariance matrix to measure how central a point is relative to the distribution’s shape and spread.</p></li>
+<li><p>Tukey (halfspace) depth takes a geometric approach. Using the projection interpretation, it determines depth of a point by evaluating the minimum number of data points whose orthogonal projections fall to one side of the origin across all possible directional vectors.</p></li>
+</ul></li>
+<li><p><strong>Literature Context:</strong> Relied primarily on Dr.&nbsp;Leblanc’s notes to solidify the theoretical foundation and understand computational geometry via animations. Briefly referenced <a href="https://projecteuclid.org/journals/statistical-science/volume-37/issue-3/Choosing-Among-Notions-of-Multivariate-Depth-Statistics/10.1214/21-STS827.full">Mosler (2021)</a> for an introduction to Mahalanobis Depth and its properties.</p></li>
+<li><p><strong>Research Curiosities:</strong> <a href="https://projecteuclid.org/journals/statistical-science/volume-37/issue-3/Choosing-Among-Notions-of-Multivariate-Depth-Statistics/10.1214/21-STS827.full">Mosler (2021)</a> demonstrates that Mahalanobis depth can be calculated exactly in <span class="math inline">\(O(n)\)</span> time for any number of dimensions. However, because this depth method is not robust to outliers, it is unreliable for many modern applications. I am naturally curious to explore robustified versions of Mahalanobis depth. What computational trade-offs must we make when transitioning from the standard version to a robust one?</p></li>
+</ul>
+</section>
+<section id="computational-implementation" class="level3">
+<h3 class="anchored" data-anchor-id="computational-implementation">Computational Implementation</h3>
+<ul>
+<li><p><strong>Infrastructure &amp; Tools:</strong> Exclusively coded in R due to its large variety of built-in matrix operations, and the ddalpha package, which provided functions to verify my algorithm’s outputs.</p></li>
+<li><p><strong>The Approach:</strong></p>
+<ul>
+<li><p><strong>Mahalanobis:</strong> Due to the simple structure of the formula and the built-in matrix operation functions in R, implementing the algorithm was straightforward and easily extendable to the entire dataset across higher dimensions.</p></li>
+<li><p><strong>Tukey:</strong> Of the two definitions, I opted to implement the projection interpretation using a sweep style algorithm. To ensure mathematical accuracy and clarity in understanding, I isolated the algorithm to compute the depth of a single sample point only.</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="visualizing-the-output" class="level3">
+<h3 class="anchored" data-anchor-id="visualizing-the-output">Visualizing the Output</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>View the Code to Generate the Scatterplot</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#plot data to observe how the depth changes</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(updatedDF, <span class="fu">aes</span>(<span class="at">x =</span> updatedDF<span class="sc">$</span>mpg, <span class="at">y =</span> updatedDF<span class="sc">$</span>wt, </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">label =</span> updatedDF<span class="sc">$</span>mhlnbsDepth_2d)) <span class="sc">+</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">geom_text</span>(<span class="at">color =</span> <span class="st">"darkred"</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                           <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/Mahalanobis Plot-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Scatter plot showing the Mahalanobis Depth of each data point.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p><strong>Observation:</strong> The most fascinating takeaway from the above Mahalanobis visualization was observing a highly counter intuitive result. I found a specific point (22.8, 2.320) that was physically closer to the geometric center of the data as per Euclidean distance, yet it had a lower Mahalanobis depth than the point (26.0, 2.140) that was physically further away.</p></li>
+<li><p><strong>Understanding Why?:</strong> Upon further discussion with Dr.&nbsp;Leblanc, I learnt that this is because the data distribution is elliptical (due to the two variables being correlated) rather than perfectly circular, and depth is determined by the data’s covariance structure.</p>
+<ul>
+<li><p>The First Eigenvector (Maximum Variance): Point (26.0, 2.140) lies in this direction. Because the data spreads widely here due to high variance, a point can be physically distant but still maintain a high depth.</p></li>
+<li><p>The Second Eigenvector (Minimum Variance): Point (22.8, 2.320) lies in this direction. Because the data is tightly clustered here due to low variance, moving even slightly away from the center causes the depth to drop drastically.</p></li>
+</ul></li>
+</ul>
+<hr>
+</section>
+<section id="methodological-pivots-insights" class="level3">
+<h3 class="anchored" data-anchor-id="methodological-pivots-insights">Methodological Pivots &amp; Insights</h3>
+<p>Implementing Tukey depth required a major conceptual pivot. My initial idea to interpret the projection definition was to rotate a line in one degree increments to find the minimum depth.</p>
+<p>After discussing this with Dr.&nbsp;Leblanc, I realized that this “grid approach” was fundamentally flawed. It only provides an approximation for the depth and not the exact answer. If the true minimum is achieved at a fraction of a degree, the increment approach misses it entirely. Furthermore, it scales poorly as sample sizes grow.</p>
+<p>I abandoned the grid approach in favor of the sweep algorithm. Instead of rotating a line, we use linear algebra to compute the exact angles where a point switches from projecting on the right versus the left. By keeping track of the action to be taken at each angle, we can sweep the sorted list of angles one by one, tracking the absolute minimum. This pivot moved my algorithm from an inefficient approximation to computing the exact Tukey depth in 2D.</p>
+</section>
+<section id="current-roadblock" class="level3">
+<h3 class="anchored" data-anchor-id="current-roadblock">Current Roadblock</h3>
+<ul>
+<li><p><strong>The Unresolved Bug:</strong> While the transition to the sweep algorithm was conceptually successful, my current R script for the single point Tukey depth is producing an answer that is different from the one computed by the ddalpha package function, even after accounting for the normalization.</p></li>
+<li><p><strong>My Hypothesis:</strong> I suspect there is a flaw in how I am tracking the initial right count (i.e.&nbsp;number of points that project on the right of the origin) before we start sweeping the list going from 0 to 360. I have isolated the code chunk that counts the initial count and plan to debug it next week after consulting Dr.&nbsp;Leblanc.</p></li>
+</ul>
+<hr>
+</section>
+<section id="future-work" class="level3">
+<h3 class="anchored" data-anchor-id="future-work">Future Work</h3>
+<ul>
+<li><p>Debug the logic in the Tukey algorithm to resolve the current calculation error.</p></li>
+<li><p>Scale the corrected single point Tukey algorithm to compute depth for an entire dataset.</p></li>
+<li><p>Introduction to “Integrated Rank-Weighted (IRW) Depth”.</p></li>
+</ul>
+<hr>
 
 
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="SW1wbGVtZW50YXRpb24lMkNS" data-listing-date-sort="1778821200000" data-listing-file-modified-sort="1779826849207" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1204">
-<a href="./posts/Week-2/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Week-2/Week2-thumbnail.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Week 2: First Computations in R - Implementing Mahalanobis &amp; Tukey Depth
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('SW1wbGVtZW50YXRpb24='); return false;">Implementation</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Ug=='); return false;">R</div>
-
-</div>
-<div class="card-text listing-description delink">
-This week marked the transition from understanding mathematical theory to applying it through computational implementation. The primary goal was to have a functioning…
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Ridhima Singla
-</div>
-<div class="listing-date">
-May 15, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="1" data-categories="VGhlb3J5" data-listing-date-sort="1778216400000" data-listing-file-modified-sort="1779826852405" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="436">
-<a href="./posts/Week-1/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Week-1/Week1.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Week 1: Defining the Depth Function &amp; Infrastructure Setup
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('VGhlb3J5'); return false;">Theory</div>
-
-</div>
-<div class="card-text listing-description delink">
-I kicked off my 16 week undergraduate research term this week under the supervision of Dr.&nbsp;Alexandre Leblanc by defining the core scope of our project: the statistical and…
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Ridhima Singla
-</div>
-<div class="listing-date">
-May 8, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

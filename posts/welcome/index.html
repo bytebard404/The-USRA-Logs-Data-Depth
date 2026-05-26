@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Tristan O’Malley">
-<meta name="dcterms.date" content="2026-05-15">
+<meta name="author" content="Ridhima Singla">
+<meta name="dcterms.date" content="2026-05-08">
 
-<title>Welcome To My Blog – The USRA Logs: Data Depth</title>
+<title>Week 1: Defining the Depth Function &amp; Infrastructure Setup – The USRA Logs: Data Depth</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -119,9 +119,9 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Welcome To My Blog</h1>
+      <h1 class="title">Week 1: Defining the Depth Function &amp; Infrastructure Setup</h1>
                                 <div class="quarto-categories">
-                <div class="quarto-category">news</div>
+                <div class="quarto-category">Theory</div>
               </div>
                   </div>
   </div>
@@ -132,14 +132,14 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Tristan O’Malley </p>
+               <p>Ridhima Singla </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">May 15, 2026</p>
+        <p class="date">May 8, 2026</p>
       </div>
     </div>
     
@@ -150,8 +150,18 @@ ul.task-list li input[type="checkbox"] {
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
+  <li><a href="#theoretical-foundations-what-is-data-depth" id="toc-theoretical-foundations-what-is-data-depth" class="nav-link" data-scroll-target="#theoretical-foundations-what-is-data-depth">Theoretical Foundations: What is Data Depth?</a></li>
+  <li><a href="#computational-implementation" id="toc-computational-implementation" class="nav-link" data-scroll-target="#computational-implementation">Computational Implementation</a></li>
+  <li><a href="#methodological-pivots-insights" id="toc-methodological-pivots-insights" class="nav-link" data-scroll-target="#methodological-pivots-insights">Methodological Pivots &amp; Insights</a></li>
+  <li><a href="#future-work" id="toc-future-work" class="nav-link" data-scroll-target="#future-work">Future Work</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
@@ -160,11 +170,43 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p>This is the first post in a Quarto blog. Welcome!</p>
-<p><img src="thumbnail.jpg" class="img-fluid"></p>
-<p>Since this post doesn’t specify an explicit <code>image</code>, the first image in the post will be used in the listing page of posts.</p>
+<section id="abstract" class="level3">
+<h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
+<p>I kicked off my 16-week undergraduate research term this week under the supervision of Dr.&nbsp;Alexandre Lablanc by defining the core scope of our project: the statistical and computational challenges of Data Depth. While the week was heavily focused on literature review, foundational theory, and establishing the technical infrastructure to document the progress over the summer, it also allowed me to pinpoint the applications of this concept that I am most interested in exploring. Specifically, I want to investigate how data depth can be used for robust outlier detection under missing data. Is there a depth-based method that can isolate high quality data points from the noise? Can the approach be generalised to higher dimensions?</p>
+<hr>
+</section>
+<section id="theoretical-foundations-what-is-data-depth" class="level3">
+<h3 class="anchored" data-anchor-id="theoretical-foundations-what-is-data-depth">Theoretical Foundations: What is Data Depth?</h3>
+<ul>
+<li><p><strong>The Core Concept:</strong> In 1D data, finding a median or identifying an outlier is trivial. However, how does one identify the “center” of a massive, multi-dimensional dataset? Data depth provides a non-parametric approach that builds a center outward ordering of points in multivariate space, allowing us to mathematically define how “deep” or central a specific data point is relative to an entire multidimensional cloud. The higher the depth, the more central is the point within a cloud of data points.</p></li>
+<li><p><strong>Literature Context:</strong> Reviewed foundational slide decks and presentations provided by Dr.&nbsp;Leblanc to get a high level introduction to existing depth functions and their properties.</p></li>
+<li><p><strong>Research Curiosities:</strong> Moving forward, I am highly interested in exploring the computational bottlenecks of depth algorithms. I am also curious to compare the various depth functions when applied to data with missing observations.</p></li>
+</ul>
+</section>
+<section id="computational-implementation" class="level3">
+<h3 class="anchored" data-anchor-id="computational-implementation">Computational Implementation</h3>
+<ul>
+<li><p><strong>Infrastructure &amp; Tools:</strong> Set up a version-controlled research log using Quarto and GitHub Pages to document the research progress.</p></li>
+<li><p><strong>The Approach:</strong> Configured the local development environment on my computer to handle Python and R computations, ensuring all libraries are properly optimized.</p></li>
+</ul>
+<hr>
+</section>
+<section id="methodological-pivots-insights" class="level3">
+<h3 class="anchored" data-anchor-id="methodological-pivots-insights">Methodological Pivots &amp; Insights</h3>
+<p>The first major roadblock I encountered was informational, not technical. While there is a substantial volume of literature on the subject, much of it assumes a high level of prior knowledge, and heavily leans toward advanced applications rather than foundational theory. As a beginner, the challenge was figuring out where to start, identifying foundational readings, and reserving advanced ones for later. To navigate this, Dr.&nbsp;Leblanc helped narrow down a reading list for the initial weeks, allowing me to select a single paper as my starting point.</p>
+<hr>
+</section>
+<section id="future-work" class="level3">
+<h3 class="anchored" data-anchor-id="future-work">Future Work</h3>
+<ul>
+<li><p>Deconstruct the chosen foundational anchor paper.</p></li>
+<li><p>Write the first R scripts to compute Mahalanobis Depth and Tukey Depth for a single point.</p></li>
+<li><p><a href="https://projecteuclid.org/journals/statistical-science/volume-37/issue-3/Choosing-Among-Notions-of-Multivariate-Depth-Statistics/10.1214/21-STS827.full">Link to the paper being reviewed</a>*</p></li>
+</ul>
+<hr>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
