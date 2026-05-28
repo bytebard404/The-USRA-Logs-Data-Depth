@@ -166,7 +166,7 @@ font-style: inherit;">1</span>)</span></code></pre></div></div>
 
 
 <section id="abstract" class="level3">
-<h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
+<h3 class="anchored" data-anchor-id="abstract">Abstract <sup>1</sup></h3>
 <p>I kicked off my 16 week undergraduate research term this week under the supervision of Dr.&nbsp;Alexandre Leblanc by defining the core scope of our project: the statistical and computational challenges of Data Depth. While the week was heavily focused on literature review, foundational theory, and establishing the technical infrastructure to document the progress over the summer, it also allowed me to pinpoint the applications of this concept that I am most interested in exploring. Specifically, I want to investigate how data depth can be used for robust outlier detection under missing data. Is there a depth method that can isolate high quality data points from the noise? Can the approach be generalised to higher dimensions?</p>
 <hr>
 </section>
@@ -203,7 +203,13 @@ font-style: inherit;">1</span>)</span></code></pre></div></div>
 
 </section>
 
- ]]></description>
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Thumbnail image credit: Graph sourced from Dr.&nbsp;Leblanc’s seminar slide deck on Integrated Rank-Weighted Depth.↩︎</p></li>
+</ol>
+</section></div> ]]></description>
   <category>Theory</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-1/</guid>
   <pubDate>Fri, 08 May 2026 05:00:00 GMT</pubDate>
