@@ -6,7 +6,7 @@ categories: [Theory]
 image: "Week1.png"
 ---
 
-### Abstract 
+### Abstract ^[Thumbnail image credit: Graph sourced from Dr. Leblanc's seminar slide deck on Integrated Rank-Weighted Depth.]
 I kicked off my 16 week undergraduate research term this week under the supervision of Dr. Alexandre Leblanc by defining the core scope of our project: the statistical and computational challenges of Data Depth. While the week was heavily focused on literature review, foundational theory, and establishing the technical infrastructure to document the progress over the summer, it also allowed me to pinpoint the applications of this concept that I am most interested in exploring. Specifically, I want to investigate how data depth can be used for robust outlier detection under missing data. Is there a depth method that can isolate high quality data points from the noise? Can the approach be generalised to higher dimensions?   
 
 ---
