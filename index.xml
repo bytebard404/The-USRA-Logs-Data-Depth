@@ -200,7 +200,7 @@ background-color: null;
 font-style: inherit;">min</span>(left_count,right_count)</span></code></pre></div></div>
 </div>
 <ul>
-<li><strong>Note:</strong> The complete, executable R script for the bivariate Tukey sweep algorithm is available in the <a href="">project repository</a></li>
+<li><strong>Note:</strong> The complete, executable R script for the bivariate Tukey sweep algorithm is available in the <a href="https://github.com/bytebard404/The-USRA-Logs-Data-Depth/blob/main/R/TukeyDepth-Week3.R">project repository</a>.</li>
 </ul>
 <hr>
 </section>
