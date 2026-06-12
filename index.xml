@@ -258,17 +258,6 @@ Tukey, John W. 1975. <span>“Mathematics and the Picturing of Data.”</span> <
 <li><p><strong>Research Curiosities:</strong> <span class="citation" data-cites="mosler2022">(Mosler and Mozharovskyi 2022)</span> demonstrates that Mahalanobis depth can be calculated exactly in <img src="https://latex.codecogs.com/png.latex?O(n)"> time for any number of dimensions. However, because this depth method is not robust to outliers, it is unreliable for many modern applications. I am naturally curious to explore robustified versions of Mahalanobis depth. What computational trade-offs must we make when transitioning from the standard version to a robust one?</p></li>
 </ul>
 </section>
-<section id="computational-implementation" class="level3">
-<h3 class="anchored" data-anchor-id="computational-implementation">Computational Implementation</h3>
-<ul>
-<li><p><strong>Infrastructure &amp; Tools:</strong> Exclusively coded in R due to its large variety of built-in matrix operations, and the ddalpha package, which provided functions to verify my algorithm’s outputs.</p></li>
-<li><p><strong>The Approach:</strong></p>
-<ul>
-<li><p><strong>Mahalanobis:</strong> Due to the simple structure of the formula and the built-in matrix operation functions in R, implementing the algorithm was straightforward and easily extendable to the entire dataset across higher dimensions.</p></li>
-<li><p><strong>Tukey:</strong> Of the two definitions, I opted to implement the projection interpretation using a sweep style algorithm. To ensure mathematical accuracy and clarity in understanding, I isolated the algorithm to compute the depth of a single sample point only.</p></li>
-</ul></li>
-</ul>
-</section>
 <section id="visualizing-the-output" class="level3">
 <h3 class="anchored" data-anchor-id="visualizing-the-output">Visualizing the Output</h3>
 <div class="cell">
@@ -276,11 +265,41 @@ Tukey, John W. 1975. <span>“Mathematics and the Picturing of Data.”</span> <
 <summary>View the Code to Generate the Scatterplot</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
+font-style: inherit;">#two points mentioned in the write-up</span></span>
+<span id="cb1-2">obser1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">22.8</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.320</span>)</span>
+<span id="cb1-3">obser2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">26.0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.140</span>)</span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
 font-style: inherit;">#plot data to observe how the depth changes</span></span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
+<span id="cb1-6"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(ggplot2)</span>
-<span id="cb1-3"><span class="fu" style="color: #4758AB;
+<span id="cb1-7"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ggplot</span>(updatedDF, <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -293,25 +312,168 @@ background-color: null;
 font-style: inherit;">y =</span> updatedDF<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">$</span>wt, </span>
-<span id="cb1-4">                      <span class="at" style="color: #657422;
+<span id="cb1-8">                      <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">label =</span> updatedDF<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">$</span>mhlnbsDepth_2d)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb1-5">  <span class="fu" style="color: #4758AB;
+<span id="cb1-9">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_point</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+font-style: inherit;">+</span> </span>
+<span id="cb1-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> obser1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> obser1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>y), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> obser2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>x, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> obser2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>y), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"blue"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">annotate</span>( <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#plotting the direction of maximum variance</span></span>
+<span id="cb1-13">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"segment"</span>, </span>
+<span id="cb1-14">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">24</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.75</span>,     </span>
+<span id="cb1-15">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">29</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.1</span>,</span>
+<span id="cb1-16">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.2</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb1-17">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"grey"</span>, </span>
+<span id="cb1-18">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span></span>
+<span id="cb1-19">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-20">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">annotate</span>( <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#plotting the direction of minimum variance</span></span>
+<span id="cb1-21">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"segment"</span>, </span>
+<span id="cb1-22">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">23</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.75</span>,     </span>
+<span id="cb1-23">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.2</span>,</span>
+<span id="cb1-24">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.2</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb1-25">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"darkgreen"</span>, </span>
+<span id="cb1-26">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span></span>
+<span id="cb1-27">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-28">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_text</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"darkred"</span>,</span>
-<span id="cb1-6">                           <span class="at" style="color: #657422;
+<span id="cb1-29">                           <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">size =</span> <span class="fl" style="color: #AD0000;
 background-color: null;
@@ -321,7 +483,20 @@ font-style: inherit;">vjust =</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">1</span>)</span></code></pre></div></div>
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-30">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mpg"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"wt"</span>)</span></code></pre></div></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -333,11 +508,23 @@ font-style: inherit;">1</span>)</span></code></pre></div></div>
 </div>
 </div>
 <ul>
-<li><p><strong>Observation:</strong> The most fascinating takeaway from the above Mahalanobis visualization was observing a highly counter intuitive result. I found a specific point (22.8, 2.320) that was physically closer to the geometric center of the data as per Euclidean distance, yet it had a lower Mahalanobis depth than the point (26.0, 2.140) that was physically further away.</p></li>
+<li><p><strong>Observation:</strong> The most fascinating takeaway from the above Mahalanobis visualization was observing a highly counter intuitive result. I found a specific point (the red point) that was physically closer to the geometric center of the data as per Euclidean distance, yet it had a lower Mahalanobis depth than the blue point that was physically further away.</p></li>
 <li><p><strong>Understanding Why?:</strong> Upon further discussion with Dr.&nbsp;Leblanc, I learnt that this is because the data distribution is elliptical (due to the two variables being correlated) rather than perfectly circular, and depth is determined by the data’s covariance structure.</p>
 <ul>
-<li><p>The First Eigenvector (Maximum Variance): Point (26.0, 2.140) lies in this direction. Because the data spreads widely here due to high variance, a point can be physically distant but still maintain a high depth.</p></li>
-<li><p>The Second Eigenvector (Minimum Variance): Point (22.8, 2.320) lies in this direction. Because the data is tightly clustered here due to low variance, moving even slightly away from the center causes the depth to drop drastically.</p></li>
+<li><p>The First Eigenvector (Maximum Variance): The blue point lies in this direction (as shown by the grey arrow). Because the data spreads widely here due to high variance, a point can be physically distant but still maintain a high depth.</p></li>
+<li><p>The Second Eigenvector (Minimum Variance): The red point lies in this direction (as shown by the green arrow). Because the data is tightly clustered here due to low variance, moving even slightly away from the center causes the depth to drop drastically.</p></li>
+</ul></li>
+</ul>
+<hr>
+</section>
+<section id="computational-implementation" class="level3">
+<h3 class="anchored" data-anchor-id="computational-implementation">Computational Implementation</h3>
+<ul>
+<li><p><strong>Infrastructure &amp; Tools:</strong> Exclusively coded in R due to its large variety of built-in matrix operations, and the ddalpha package, which provided functions to verify my algorithm’s outputs.</p></li>
+<li><p><strong>The Approach:</strong></p>
+<ul>
+<li><p><strong>Mahalanobis:</strong> Due to the simple structure of the formula and the built-in matrix operation functions in R, implementing the algorithm was straightforward and easily extendable to the entire dataset across higher dimensions.</p></li>
+<li><p><strong>Tukey:</strong> Of the two definitions, I opted to implement the projection interpretation using a sweep style algorithm. To ensure mathematical accuracy and clarity in understanding, I isolated the algorithm to compute the depth of a single sample point only.</p></li>
 </ul></li>
 </ul>
 <hr>

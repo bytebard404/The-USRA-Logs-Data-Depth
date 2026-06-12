@@ -241,8 +241,8 @@ window.Quarto = {
   <ul>
   <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
   <li><a href="#theoretical-foundations-two-approaches-to-computing-depth" id="toc-theoretical-foundations-two-approaches-to-computing-depth" class="nav-link" data-scroll-target="#theoretical-foundations-two-approaches-to-computing-depth">Theoretical Foundations: Two Approaches to Computing Depth</a></li>
-  <li><a href="#computational-implementation" id="toc-computational-implementation" class="nav-link" data-scroll-target="#computational-implementation">Computational Implementation</a></li>
   <li><a href="#visualizing-the-output" id="toc-visualizing-the-output" class="nav-link" data-scroll-target="#visualizing-the-output">Visualizing the Output</a></li>
+  <li><a href="#computational-implementation" id="toc-computational-implementation" class="nav-link" data-scroll-target="#computational-implementation">Computational Implementation</a></li>
   <li><a href="#methodological-pivots-insights" id="toc-methodological-pivots-insights" class="nav-link" data-scroll-target="#methodological-pivots-insights">Methodological Pivots &amp; Insights</a></li>
   <li><a href="#current-roadblock" id="toc-current-roadblock" class="nav-link" data-scroll-target="#current-roadblock">Current Roadblock</a></li>
   <li><a href="#future-work" id="toc-future-work" class="nav-link" data-scroll-target="#future-work">Future Work</a></li>
@@ -273,28 +273,41 @@ window.Quarto = {
 <li><p><strong>Research Curiosities:</strong> <span class="citation" data-cites="mosler2022">(<a href="#ref-mosler2022" role="doc-biblioref">Mosler and Mozharovskyi 2022</a>)</span> demonstrates that Mahalanobis depth can be calculated exactly in <span class="math inline">\(O(n)\)</span> time for any number of dimensions. However, because this depth method is not robust to outliers, it is unreliable for many modern applications. I am naturally curious to explore robustified versions of Mahalanobis depth. What computational trade-offs must we make when transitioning from the standard version to a robust one?</p></li>
 </ul>
 </section>
-<section id="computational-implementation" class="level3">
-<h3 class="anchored" data-anchor-id="computational-implementation">Computational Implementation</h3>
-<ul>
-<li><p><strong>Infrastructure &amp; Tools:</strong> Exclusively coded in R due to its large variety of built-in matrix operations, and the ddalpha package, which provided functions to verify my algorithm’s outputs.</p></li>
-<li><p><strong>The Approach:</strong></p>
-<ul>
-<li><p><strong>Mahalanobis:</strong> Due to the simple structure of the formula and the built-in matrix operation functions in R, implementing the algorithm was straightforward and easily extendable to the entire dataset across higher dimensions.</p></li>
-<li><p><strong>Tukey:</strong> Of the two definitions, I opted to implement the projection interpretation using a sweep style algorithm. To ensure mathematical accuracy and clarity in understanding, I isolated the algorithm to compute the depth of a single sample point only.</p></li>
-</ul></li>
-</ul>
-</section>
 <section id="visualizing-the-output" class="level3">
 <h3 class="anchored" data-anchor-id="visualizing-the-output">Visualizing the Output</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>View the Code to Generate the Scatterplot</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#plot data to observe how the depth changes</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(updatedDF, <span class="fu">aes</span>(<span class="at">x =</span> updatedDF<span class="sc">$</span>mpg, <span class="at">y =</span> updatedDF<span class="sc">$</span>wt, </span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">label =</span> updatedDF<span class="sc">$</span>mhlnbsDepth_2d)) <span class="sc">+</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">geom_text</span>(<span class="at">color =</span> <span class="st">"darkred"</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                           <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#two points mentioned in the write-up</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>obser1 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">x=</span><span class="fl">22.8</span>, <span class="at">y=</span><span class="fl">2.320</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>obser2 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">x=</span><span class="fl">26.0</span>, <span class="at">y=</span><span class="fl">2.140</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#plot data to observe how the depth changes</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(updatedDF, <span class="fu">aes</span>(<span class="at">x =</span> updatedDF<span class="sc">$</span>mpg, <span class="at">y =</span> updatedDF<span class="sc">$</span>wt, </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">label =</span> updatedDF<span class="sc">$</span>mhlnbsDepth_2d)) <span class="sc">+</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> obser1<span class="sc">$</span>x, <span class="at">y =</span> obser1<span class="sc">$</span>y), <span class="at">colour =</span> <span class="st">"red"</span>)<span class="sc">+</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> obser2<span class="sc">$</span>x, <span class="at">y =</span> obser2<span class="sc">$</span>y), <span class="at">colour =</span> <span class="st">"blue"</span>)<span class="sc">+</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>( <span class="co">#plotting the direction of maximum variance</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"segment"</span>, </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="dv">24</span>, <span class="at">y =</span> <span class="fl">2.75</span>,     </span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">xend =</span> <span class="dv">29</span>, <span class="at">yend =</span> <span class="fl">2.1</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.2</span>, <span class="st">"cm"</span>)),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"grey"</span>, </span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="fl">0.5</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>( <span class="co">#plotting the direction of minimum variance</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"segment"</span>, </span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="dv">23</span>, <span class="at">y =</span> <span class="fl">2.75</span>,     </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">xend =</span> <span class="dv">21</span>, <span class="at">yend =</span> <span class="fl">2.2</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.2</span>, <span class="st">"cm"</span>)),</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"darkgreen"</span>, </span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="fl">0.5</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">color =</span> <span class="st">"darkred"</span>,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>                           <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"mpg"</span>, <span class="at">y =</span> <span class="st">"wt"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -306,11 +319,23 @@ window.Quarto = {
 </div>
 </div>
 <ul>
-<li><p><strong>Observation:</strong> The most fascinating takeaway from the above Mahalanobis visualization was observing a highly counter intuitive result. I found a specific point (22.8, 2.320) that was physically closer to the geometric center of the data as per Euclidean distance, yet it had a lower Mahalanobis depth than the point (26.0, 2.140) that was physically further away.</p></li>
+<li><p><strong>Observation:</strong> The most fascinating takeaway from the above Mahalanobis visualization was observing a highly counter intuitive result. I found a specific point (the red point) that was physically closer to the geometric center of the data as per Euclidean distance, yet it had a lower Mahalanobis depth than the blue point that was physically further away.</p></li>
 <li><p><strong>Understanding Why?:</strong> Upon further discussion with Dr.&nbsp;Leblanc, I learnt that this is because the data distribution is elliptical (due to the two variables being correlated) rather than perfectly circular, and depth is determined by the data’s covariance structure.</p>
 <ul>
-<li><p>The First Eigenvector (Maximum Variance): Point (26.0, 2.140) lies in this direction. Because the data spreads widely here due to high variance, a point can be physically distant but still maintain a high depth.</p></li>
-<li><p>The Second Eigenvector (Minimum Variance): Point (22.8, 2.320) lies in this direction. Because the data is tightly clustered here due to low variance, moving even slightly away from the center causes the depth to drop drastically.</p></li>
+<li><p>The First Eigenvector (Maximum Variance): The blue point lies in this direction (as shown by the grey arrow). Because the data spreads widely here due to high variance, a point can be physically distant but still maintain a high depth.</p></li>
+<li><p>The Second Eigenvector (Minimum Variance): The red point lies in this direction (as shown by the green arrow). Because the data is tightly clustered here due to low variance, moving even slightly away from the center causes the depth to drop drastically.</p></li>
+</ul></li>
+</ul>
+<hr>
+</section>
+<section id="computational-implementation" class="level3">
+<h3 class="anchored" data-anchor-id="computational-implementation">Computational Implementation</h3>
+<ul>
+<li><p><strong>Infrastructure &amp; Tools:</strong> Exclusively coded in R due to its large variety of built-in matrix operations, and the ddalpha package, which provided functions to verify my algorithm’s outputs.</p></li>
+<li><p><strong>The Approach:</strong></p>
+<ul>
+<li><p><strong>Mahalanobis:</strong> Due to the simple structure of the formula and the built-in matrix operation functions in R, implementing the algorithm was straightforward and easily extendable to the entire dataset across higher dimensions.</p></li>
+<li><p><strong>Tukey:</strong> Of the two definitions, I opted to implement the projection interpretation using a sweep style algorithm. To ensure mathematical accuracy and clarity in understanding, I isolated the algorithm to compute the depth of a single sample point only.</p></li>
 </ul></li>
 </ul>
 <hr>
