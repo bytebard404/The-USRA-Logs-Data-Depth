@@ -155,7 +155,7 @@ left_count = n - right_count
 minDepth = min(left_count,right_count)
 ```
 
-* **Note:** The complete, executable R script for the bivariate Tukey sweep algorithm is available in the [project repository](https://github.com/bytebard404/The-USRA-Logs-Data-Depth/blob/main/R/TukeyDepth-Week3.R)  
+* **Note:** The complete, executable R script for the bivariate Tukey sweep algorithm is available in the [project repository](https://github.com/bytebard404/The-USRA-Logs-Data-Depth/blob/main/R/TukeyDepth-Week3.R).  
 
 ---
 
