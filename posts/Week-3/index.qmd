@@ -1,0 +1,166 @@
+---
+title: "Week 3: Clarifying Tukey Depth & Debugging Sweep Algorithm"
+author: "Ridhima Singla"
+date: "May 22, 2026"
+categories: [Implementation, R]
+image: "projectionView.jpeg"
+---
+
+### Abstract    
+This week was dedicated to resolving the calculation errors in my Tukey depth algorithm from Week 2, which ultimately required a much deeper dive into the underlying geometry. I discovered that my bugs weren't just syntactical. They stemmed from a gap in understanding of the Tukey depth measure, which resulted in unconsciously mixing two equivalent, but geometrically distinct, definitions of Tukey depth. By decoupling the "Halfspace" view from the "Projection" view, I was able to fix the initial-count logic of my sweep algorithm and resolve a persistent off-by-one boundary error. With an algorithm setup for Tukey Depth finally in place, I am now naturally transitioning into a deeper dive in the Integrated Rank-Weighted (IRW) depth as the two share many similarities.   
+
+---
+
+### Visualizing Two Views of Tukey Depth
+```{r}
+#| echo: false
+#| warning: false
+#| code-fold: false
+#| label: Two Views of Tukey Depth
+#| fig-cap: "Side by side plots that depict two different ways to interpret and calculate Tukey Depth"
+
+# 1. Define the line by two points: A and B
+A <- c(x = 1, y = 2)
+B <- c(x = 5, y = 4)
+
+# 2. Create a data frame of random points to project
+set.seed(42)
+df <- data.frame(
+  x = runif(10, 0, 6),
+  y = runif(10, 1, 5)
+)
+
+#query point
+target_point1 = data.frame(x=3.1145757, y=4.760058)
+
+#finding projected points using formuala - A + ((u dot v)/(v dot v))*v
+v = B - A
+vDotv = sum(v*v)
+
+u = data.frame(V1 = df[,1] - A[1], V2 = df[,2]-A[2])
+
+projPoint = data.frame(matrix(NA, nrow = nrow(u), ncol = ncol(u)))
+
+for(i in 1:nrow(u)){
+  temp = A + ((sum(u[i,]*v)/vDotv) * v)
+  projPoint[i,] = temp
+}
+
+target_point2 = data.frame(x=projPoint$X1[6], y=projPoint$X2[6])
+library(ggplot2)
+library(patchwork)
+
+p1 = ggplot(df) + 
+      geom_point(aes(x=df$x, y=df$y), size = 1) + 
+      geom_abline(slope = 0.5, intercept = 1.5, colour = "lightblue", linewidth = 0.5) +
+      geom_point(aes(x = projPoint$X1, y = projPoint$X2), colour = "darkgreen", size = 1)+
+      geom_segment(aes(x=df$x, y=df$y, xend = projPoint$X1, yend = projPoint$X2), linetype = "dashed", colour = "darkgrey") +
+      geom_point(data = target_point1, aes(x = target_point1$x, y = target_point1$y), color = "black", size = 1) +
+      geom_text(data = target_point1, aes(x = target_point1$x, y = target_point1$y, label = "y (Query Point)"), vjust = -1.5, color = "red", size = 1.5) + 
+      geom_point(data = target_point2, aes(x = target_point2$x, y = target_point2$y), color = "red", size = 1) +
+      coord_fixed(xlim = c(0,6), ylim = c(0, 6)) +
+      theme_minimal() + 
+      labs(title = "Projection View", x = "X-Axis", y = "Y-Axis")
+
+p2 = ggplot(df, aes(x = df$x, y = df$y)) +
+      geom_point(color = "black", size = 1) +
+      geom_point(data = target_point1, aes(x = target_point1$x, y = target_point1$y), color = "red", size = 1) +
+      geom_text(data = target_point1, aes(x = target_point1$x, y = target_point1$y, label = "y (Query Point)"), vjust = -1.5, color = "red", size = 1.5)+
+      geom_abline(slope = -2.596676, intercept = 12.847601, colour = "blue", linewidth = 0.3, linetype = "dashed") +
+      annotate(
+        "segment", 
+        x = target_point1$x, y = target_point1$y,     
+        xend = 3.8504731, yend = 2.849171,
+        arrow = arrow(length = unit(0.2, "cm")),
+        color = "blue", 
+        linewidth = 0.5
+      ) +
+      coord_fixed(xlim = c(0,6), ylim = c(0, 6)) +
+      theme_minimal() + 
+      labs(title = "Halfspace View", x = "X-Axis", y = "Y-Axis")
+
+p1 + p2
+``` 
+
+While these two geometric interpretations look completely different, they are mathematically identical. Realizing how they align was the key aspect to fixing the error in my algorithm and strengthening my understanding. 
+
+---
+
+### Theoretical Foundations: Understanding the Definitions
+* **Core Concepts:** The graphs above will play a vital role in understanding the formal definitions of these views.   
+  - Projection View (Left Side): As suggested by [@tukey1974] and explained in Dr. Leblanc's instructional materials, a measure of the depth of a point $y$ given a sample $X = (X_1,...,X_n)'$ in 1D is $D_1(y,X) = \min(\#\{i : X_i \le y\}, \#\{i : X_i \ge y\})$ and this can be generalised to $d$ dimensions as:
+  $$D_d(y,X) = \min_{||u|| = 1} D_1(u'y, X(u))$$ where $X(u) = (u'X_1,...,u'X_n)'$ is the projected sample. Let's unfold this definition with the help of the graph above.
+
+    - The light blue line represents one possible directional vector. The dashed lines show how the 2D data cloud projects onto that 1D light blue line. The red dot represents our query point's projected position onto the 1D line. To find the depth on this specific line, we simply count the green dots on the left side and the right side of the red dot, and take the smaller of the two. The final depth of this query point is the minimum 1D depth observed over all directional vectors. This method reduces the multivariate problem into a series of univariate problems.
+
+  - Halfspace View (Right Side): [@Rousseeuw&Ruts1998] outlines that the halfspace Tukey depth of a point $y$ relative to a dataset $X$ is defined as:
+  $$D(y,X) = \min_{H} \#\{i ; x_i \in H\}$$ where H ranges over all closed halfspaces where the boundary line passes through $y$. Let's unfold this definition with the help of the graph above.
+  
+    - The blue arrow represents the line from the query point 'y' (red dot) to one of the data points in the sample. The dashed line shows the result of extending this line to infinity. We observe that this line divides the plane into two spaces, left and right. To find the depth for this specific line, we just count the number of dots (sample points in black) on the left side and the right side of the line, and take the smaller number. The final depth of this query point is the minimum depth observed over all possible lines through the query point.
+
+* **Literature Context:** Consulted [@tukey1974] and [@Rousseeuw&Ruts1998] specifically to extract and understand the definitions discussed above.
+
+---
+
+### Methodological Pivots & Insights  
+Last week, my single point Tukey algorithm was producing results that completely mismatched the verified ddalpha package output. I spent the week tracing the variables and discovered two distinct logic errors.  
+
+* **Error 1: Incorrect Initial Count (Mixing Definitions)**
+
+  - The Problem: The sweep algorithm I am writing is strictly based on the Projection definition. However, when I wrote the code to calculate the initial count (the number of points that project on the right side before the angular sweep begins from 0 to 360 degrees), I accidentally wrote logic based on the Halfspace definition. I was counting the total number of observations in the top-half (positive y-axis), instead of counting the total number of observations in the right-half (positive x-axis), which is all the points that project on the right before the sweep begins.
+
+  - The Fix: I was implementing one definition but using the boundary rules of the other. Once I realized that the initial count simply represents all points that initially project onto the right side of the directional vector at angle 0, I rewrote the initialization chunk, and the sweep angles finally aligned.
+
+* **Error 2: Off-By-One**
+
+  - The Problem: Even after fixing the sweep, my depth was constantly exactly one less than the ddalpha depth. However, this only happened for in sample points (points that existed in the dataset). When I tested an out of sample point, my code matched ddalpha perfectly.
+  
+  - The Fix: Dr. Leblanc helped me understand that it comes down to the definition of a closed halfspace vs an open halfspace. A closed halfspace includes the boundary line itself. In my original logic, I didn't explicitly count the target point in the left/right totals because I assumed that adding 1 to both sides wouldn't change which side was the minimum. While it is true that adding 1 to both sides doesn't change which side is smaller, it definitely changes the final numerical depth value. Because the target point sits on the boundary, it must be counted if considering closed halfspaces. Understanding this helped me realise that ddalpha uses closed halfspaces whereas I implemented the open halfspace definition. Thus, this was not so much of an error but rather a difference in implementations. 
+
+### Computational Implementation
+* **Infrastructure:** Continuing in R, utilizing the ddalpha package primarily for output verification.
+
+* **Algorithmic Complexity:** By sorting the projected angles before starting the circular sweep, the exact computation of the bivariate Tukey depth was achieved in $O(n \log n)$ time.
+
+* **The Corrected Logic (The Initial Count):** Following the correct logic of the projection approach, the algorithm isolates the exact number of points projecting onto the right side of the initial directional vector at angle 0 before the sweep begins.  
+
+```{r}
+#| eval: false
+
+# BUG FIX: Implementing correct projection logic
+# Correctly isolating the initial count of points on the right side of the 0-degree vector
+
+#function to check if we are in the right-half (to find initial count)
+checkQuad = function(x){
+  if(x > 0){
+    answer = 1
+  } else{
+    answer = 0
+  }
+  return(answer)
+}
+
+#calculating starting depth (i.e. initial count)
+minDepth = 0
+right_count = 0
+n = nrow(df)
+i = 1
+while(i <= nrow(df)){
+  if(checkQuad(shiftedMPG[i]) == 1){
+    right_count = right_count + 1
+  }
+  i = i + 1
+}
+left_count = n - right_count
+minDepth = min(left_count,right_count)
+```
+
+* **Note:** The complete, executable R script for the bivariate Tukey sweep algorithm is available in the [project repository]()  
+
+---
+
+### Future Work  
+* Optimize the R syntax in the algorithm by replacing standard loops with vectorized operations to better handle larger datasets and eliminate computational bottlenecks.
+* Scale the corrected single-point Tukey algorithm to compute depth for an entire dataset.
+* Check how the algorithm scales as $n \rightarrow \infty$
+* Begin literature review and implementation for Integrated Rank-Weighted (IRW) depth.

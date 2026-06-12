@@ -33,7 +33,4 @@ The first major roadblock I encountered was informational, not technical. While 
 ### Future Work
 * Deconstruct the chosen foundational paper.
 * Write the first R scripts to compute Mahalanobis Depth and Tukey Depth for a single point.
-
-* [Link to the paper selected for review](https://projecteuclid.org/journals/statistical-science/volume-37/issue-3/Choosing-Among-Notions-of-Multivariate-Depth-Statistics/10.1214/21-STS827.full)
-
----
+* Paper selected for Review - [@mosler2022]

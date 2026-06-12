@@ -17,9 +17,9 @@ This week marked the transition from understanding mathematical theory to applyi
       
     - Tukey (halfspace) depth takes a geometric approach. Using the projection interpretation, it determines depth of a point by evaluating the minimum number of data points whose orthogonal projections fall to one side of the origin across all possible directional vectors.
 
-* **Literature Context:** Relied primarily on Dr. Leblanc’s notes to solidify the theoretical foundation and understand computational geometry via animations. Briefly referenced [Mosler (2021)](https://projecteuclid.org/journals/statistical-science/volume-37/issue-3/Choosing-Among-Notions-of-Multivariate-Depth-Statistics/10.1214/21-STS827.full) for an introduction to Mahalanobis Depth and its properties. 
+* **Literature Context:** Relied primarily on Dr. Leblanc’s notes to solidify the theoretical foundation and understand computational geometry via animations. Briefly referenced [@mosler2022] for an introduction to Mahalanobis Depth and its properties. 
 
-* **Research Curiosities:** [Mosler (2021)](https://projecteuclid.org/journals/statistical-science/volume-37/issue-3/Choosing-Among-Notions-of-Multivariate-Depth-Statistics/10.1214/21-STS827.full) demonstrates that Mahalanobis depth can be calculated exactly in $O(n)$ time for any number of dimensions. However, because this depth method is not robust to outliers, it is unreliable for many modern applications. I am naturally curious to explore robustified versions of Mahalanobis depth. What computational trade-offs must we make when transitioning from the standard version to a robust one? 
+* **Research Curiosities:** [@mosler2022] demonstrates that Mahalanobis depth can be calculated exactly in $O(n)$ time for any number of dimensions. However, because this depth method is not robust to outliers, it is unreliable for many modern applications. I am naturally curious to explore robustified versions of Mahalanobis depth. What computational trade-offs must we make when transitioning from the standard version to a robust one? 
 
 ### Computational Implementation
 * **Infrastructure & Tools:** Exclusively coded in R due to its large variety of built-in matrix operations, and the ddalpha package, which provided functions to verify my algorithm's outputs.
@@ -120,5 +120,3 @@ I abandoned the grid approach in favor of the sweep algorithm. Instead of rotati
 * Scale the corrected single point Tukey algorithm to compute depth for an entire dataset.   
    
 * Introduction to "Integrated Rank-Weighted (IRW) Depth".    
-   
----

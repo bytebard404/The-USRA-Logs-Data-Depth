@@ -1,6 +1,8 @@
 project:
   type: website
 
+bibliography: references.bib
+
 website:
   title: "The USRA Logs: Data Depth"
   site-url: "https://bytebard404.github.io/The-USRA-Logs-Data-Depth"
