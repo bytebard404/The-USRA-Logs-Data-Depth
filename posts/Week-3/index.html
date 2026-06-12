@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ridhima Singla">
-<meta name="dcterms.date" content="2026-05-08">
+<meta name="dcterms.date" content="2026-05-22">
 
-<title>Week 1: Defining the Depth Function &amp; Infrastructure Setup – The USRA Logs: Data Depth</title>
+<title>Week 3: Clarifying Tukey Depth &amp; Debugging Sweep Algorithm – The USRA Logs: Data Depth</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -24,6 +24,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 /* CSS for citations */
 div.csl-bib-body { }
@@ -92,6 +127,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -138,9 +202,10 @@ div.csl-indent {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Week 1: Defining the Depth Function &amp; Infrastructure Setup</h1>
+      <h1 class="title">Week 3: Clarifying Tukey Depth &amp; Debugging Sweep Algorithm</h1>
                                 <div class="quarto-categories">
-                <div class="quarto-category">Theory</div>
+                <div class="quarto-category">Implementation</div>
+                <div class="quarto-category">R</div>
               </div>
                   </div>
   </div>
@@ -158,7 +223,7 @@ div.csl-indent {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">May 8, 2026</p>
+        <p class="date">May 22, 2026</p>
       </div>
     </div>
     
@@ -174,10 +239,11 @@ div.csl-indent {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract </a></li>
-  <li><a href="#theoretical-foundations-what-is-data-depth" id="toc-theoretical-foundations-what-is-data-depth" class="nav-link" data-scroll-target="#theoretical-foundations-what-is-data-depth">Theoretical Foundations: What is Data Depth?</a></li>
-  <li><a href="#computational-implementation" id="toc-computational-implementation" class="nav-link" data-scroll-target="#computational-implementation">Computational Implementation</a></li>
+  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
+  <li><a href="#visualizing-two-views-of-tukey-depth" id="toc-visualizing-two-views-of-tukey-depth" class="nav-link" data-scroll-target="#visualizing-two-views-of-tukey-depth">Visualizing Two Views of Tukey Depth</a></li>
+  <li><a href="#theoretical-foundations-understanding-the-definitions" id="toc-theoretical-foundations-understanding-the-definitions" class="nav-link" data-scroll-target="#theoretical-foundations-understanding-the-definitions">Theoretical Foundations: Understanding the Definitions</a></li>
   <li><a href="#methodological-pivots-insights" id="toc-methodological-pivots-insights" class="nav-link" data-scroll-target="#methodological-pivots-insights">Methodological Pivots &amp; Insights</a></li>
+  <li><a href="#computational-implementation" id="toc-computational-implementation" class="nav-link" data-scroll-target="#computational-implementation">Computational Implementation</a></li>
   <li><a href="#future-work" id="toc-future-work" class="nav-link" data-scroll-target="#future-work">Future Work</a></li>
   </ul>
 </nav>
@@ -190,54 +256,120 @@ div.csl-indent {
 
 
 <section id="abstract" class="level3">
-<h3 class="anchored" data-anchor-id="abstract">Abstract <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></h3>
-<p>I kicked off my 16 week undergraduate research term this week under the supervision of Dr.&nbsp;Alexandre Leblanc by defining the core scope of our project: the statistical and computational challenges of Data Depth. While the week was heavily focused on literature review, foundational theory, and establishing the technical infrastructure to document the progress over the summer, it also allowed me to pinpoint the applications of this concept that I am most interested in exploring. Specifically, I want to investigate how data depth can be used for robust outlier detection under missing data. Is there a depth method that can isolate high quality data points from the noise? Can the approach be generalised to higher dimensions?</p>
+<h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
+<p>This week was dedicated to resolving the calculation errors in my Tukey depth algorithm from Week 2, which ultimately required a much deeper dive into the underlying geometry. I discovered that my bugs weren’t just syntactical. They stemmed from a gap in understanding of the Tukey depth measure, which resulted in unconsciously mixing two equivalent, but geometrically distinct, definitions of Tukey depth. By decoupling the “Halfspace” view from the “Projection” view, I was able to fix the initial-count logic of my sweep algorithm and resolve a persistent off-by-one boundary error. With an algorithm setup for Tukey Depth finally in place, I am now naturally transitioning into a deeper dive in the Integrated Rank-Weighted (IRW) depth as the two share many similarities.</p>
 <hr>
 </section>
-<section id="theoretical-foundations-what-is-data-depth" class="level3">
-<h3 class="anchored" data-anchor-id="theoretical-foundations-what-is-data-depth">Theoretical Foundations: What is Data Depth?</h3>
-<ul>
-<li><p><strong>The Core Concept:</strong> In 1D data, finding a median or identifying an outlier is trivial. However, how does one identify the “center” of a massive, multidimensional dataset? Data depth provides a non parametric approach that builds a center outward ordering of points in multivariate space, allowing us to mathematically define how “deep” or central a specific data point is relative to an entire multidimensional cloud. The higher the depth, the more central is the point within a cloud of data points.</p></li>
-<li><p><strong>Literature Context:</strong> Reviewed foundational slide decks and presentations provided by Dr.&nbsp;Leblanc to get a high level introduction to existing depth functions and their properties.</p></li>
-<li><p><strong>Research Curiosities:</strong> Moving forward, I am highly interested in exploring the computational bottlenecks of depth algorithms. I am also curious to compare the various depth functions when applied to data with missing observations.</p></li>
-</ul>
+<section id="visualizing-two-views-of-tukey-depth" class="level3">
+<h3 class="anchored" data-anchor-id="visualizing-two-views-of-tukey-depth">Visualizing Two Views of Tukey Depth</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/Two Views of Tukey Depth-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Side by side plots that depict two different ways to interpret and calculate Tukey Depth</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>While these two geometric interpretations look completely different, they are mathematically identical. Realizing how they align was the key aspect to fixing the error in my algorithm and strengthening my understanding.</p>
+<hr>
 </section>
-<section id="computational-implementation" class="level3">
-<h3 class="anchored" data-anchor-id="computational-implementation">Computational Implementation</h3>
+<section id="theoretical-foundations-understanding-the-definitions" class="level3">
+<h3 class="anchored" data-anchor-id="theoretical-foundations-understanding-the-definitions">Theoretical Foundations: Understanding the Definitions</h3>
 <ul>
-<li><p><strong>Infrastructure &amp; Tools:</strong> Set up a research log using Quarto and GitHub Pages to document the research progress.</p></li>
-<li><p><strong>The Approach:</strong> Configured the local development environment on my computer to handle Python and R computations, ensuring all libraries are properly optimized.</p></li>
+<li><strong>Core Concepts:</strong> The graphs above will play a vital role in understanding the formal definitions of these views.
+<ul>
+<li><p>Projection View (Left Side): As suggested by <span class="citation" data-cites="tukey1974">(<a href="#ref-tukey1974" role="doc-biblioref">Tukey 1975</a>)</span> and explained in Dr.&nbsp;Leblanc’s instructional materials, a measure of the depth of a point <span class="math inline">\(y\)</span> given a sample <span class="math inline">\(X = (X_1,...,X_n)'\)</span> in 1D is <span class="math inline">\(D_1(y,X) = \min(\#\{i : X_i \le y\}, \#\{i : X_i \ge y\})\)</span> and this can be generalised to <span class="math inline">\(d\)</span> dimensions as: <span class="math display">\[D_d(y,X) = \min_{||u|| = 1} D_1(u'y, X(u))\]</span> where <span class="math inline">\(X(u) = (u'X_1,...,u'X_n)'\)</span> is the projected sample. Let’s unfold this definition with the help of the graph above.</p>
+<ul>
+<li>The light blue line represents one possible directional vector. The dashed lines show how the 2D data cloud projects onto that 1D light blue line. The red dot represents our query point’s projected position onto the 1D line. To find the depth on this specific line, we simply count the green dots on the left side and the right side of the red dot, and take the smaller of the two. The final depth of this query point is the minimum 1D depth observed over all directional vectors. This method reduces the multivariate problem into a series of univariate problems.</li>
+</ul></li>
+<li><p>Halfspace View (Right Side): <span class="citation" data-cites="Rousseeuw&amp;Ruts1998">(<a href="#ref-Rousseeuw&amp;Ruts1998" role="doc-biblioref">Rousseeuw and Ruts 1998</a>)</span> outlines that the halfspace Tukey depth of a point <span class="math inline">\(y\)</span> relative to a dataset <span class="math inline">\(X\)</span> is defined as: <span class="math display">\[D(y,X) = \min_{H} \#\{i ; x_i \in H\}\]</span> where H ranges over all closed halfspaces where the boundary line passes through <span class="math inline">\(y\)</span>. Let’s unfold this definition with the help of the graph above.</p>
+<ul>
+<li>The blue arrow represents the line from the query point ‘y’ (red dot) to one of the data points in the sample. The dashed line shows the result of extending this line to infinity. We observe that this line divides the plane into two spaces, left and right. To find the depth for this specific line, we just count the number of dots (sample points in black) on the left side and the right side of the line, and take the smaller number. The final depth of this query point is the minimum depth observed over all possible lines through the query point.</li>
+</ul></li>
+</ul></li>
+<li><strong>Literature Context:</strong> Consulted <span class="citation" data-cites="tukey1974">(<a href="#ref-tukey1974" role="doc-biblioref">Tukey 1975</a>)</span> and <span class="citation" data-cites="Rousseeuw&amp;Ruts1998">(<a href="#ref-Rousseeuw&amp;Ruts1998" role="doc-biblioref">Rousseeuw and Ruts 1998</a>)</span> specifically to extract and understand the definitions discussed above.</li>
 </ul>
 <hr>
 </section>
 <section id="methodological-pivots-insights" class="level3">
 <h3 class="anchored" data-anchor-id="methodological-pivots-insights">Methodological Pivots &amp; Insights</h3>
-<p>The first major roadblock I encountered was informational, not technical. While there is a substantial volume of literature on the subject, much of it assumes a high level of prior knowledge, and heavily leans toward advanced applications rather than foundational theory. As a beginner, the challenge was figuring out where to start, identifying foundational readings, and reserving advanced ones for later. To navigate this, Dr.&nbsp;Leblanc helped narrow down a reading list for the initial weeks, allowing me to select a single paper as my starting point.</p>
+<p>Last week, my single point Tukey algorithm was producing results that completely mismatched the verified ddalpha package output. I spent the week tracing the variables and discovered two distinct logic errors.</p>
+<ul>
+<li><p><strong>Error 1: Incorrect Initial Count (Mixing Definitions)</strong></p>
+<ul>
+<li><p>The Problem: The sweep algorithm I am writing is strictly based on the Projection definition. However, when I wrote the code to calculate the initial count (the number of points that project on the right side before the angular sweep begins from 0 to 360 degrees), I accidentally wrote logic based on the Halfspace definition. I was counting the total number of observations in the top-half (positive y-axis), instead of counting the total number of observations in the right-half (positive x-axis), which is all the points that project on the right before the sweep begins.</p></li>
+<li><p>The Fix: I was implementing one definition but using the boundary rules of the other. Once I realized that the initial count simply represents all points that initially project onto the right side of the directional vector at angle 0, I rewrote the initialization chunk, and the sweep angles finally aligned.</p></li>
+</ul></li>
+<li><p><strong>Error 2: Off-By-One</strong></p>
+<ul>
+<li><p>The Problem: Even after fixing the sweep, my depth was constantly exactly one less than the ddalpha depth. However, this only happened for in sample points (points that existed in the dataset). When I tested an out of sample point, my code matched ddalpha perfectly.</p></li>
+<li><p>The Fix: Dr.&nbsp;Leblanc helped me understand that it comes down to the definition of a closed halfspace vs an open halfspace. A closed halfspace includes the boundary line itself. In my original logic, I didn’t explicitly count the target point in the left/right totals because I assumed that adding 1 to both sides wouldn’t change which side was the minimum. While it is true that adding 1 to both sides doesn’t change which side is smaller, it definitely changes the final numerical depth value. Because the target point sits on the boundary, it must be counted if considering closed halfspaces. Understanding this helped me realise that ddalpha uses closed halfspaces whereas I implemented the open halfspace definition. Thus, this was not so much of an error but rather a difference in implementations.</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="computational-implementation" class="level3">
+<h3 class="anchored" data-anchor-id="computational-implementation">Computational Implementation</h3>
+<ul>
+<li><p><strong>Infrastructure:</strong> Continuing in R, utilizing the ddalpha package primarily for output verification.</p></li>
+<li><p><strong>Algorithmic Complexity:</strong> By sorting the projected angles before starting the circular sweep, the exact computation of the bivariate Tukey depth was achieved in <span class="math inline">\(O(n \log n)\)</span> time.</p></li>
+<li><p><strong>The Corrected Logic (The Initial Count):</strong> Following the correct logic of the projection approach, the algorithm isolates the exact number of points projecting onto the right side of the initial directional vector at angle 0 before the sweep begins.</p></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">BUG</span><span class="co"> FIX: Implementing correct projection logic</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Correctly isolating the initial count of points on the right side of the 0-degree vector</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#function to check if we are in the right-half (to find initial count)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>checkQuad <span class="ot">=</span> <span class="cf">function</span>(x){</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(x <span class="sc">&gt;</span> <span class="dv">0</span>){</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    answer <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span>{</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    answer <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(answer)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#calculating starting depth (i.e. initial count)</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>minDepth <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>right_count <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">nrow</span>(df)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>i <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span>(i <span class="sc">&lt;=</span> <span class="fu">nrow</span>(df)){</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">checkQuad</span>(shiftedMPG[i]) <span class="sc">==</span> <span class="dv">1</span>){</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    right_count <span class="ot">=</span> right_count <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  i <span class="ot">=</span> i <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>left_count <span class="ot">=</span> n <span class="sc">-</span> right_count</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>minDepth <span class="ot">=</span> <span class="fu">min</span>(left_count,right_count)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li><strong>Note:</strong> The complete, executable R script for the bivariate Tukey sweep algorithm is available in the <a href="">project repository</a></li>
+</ul>
 <hr>
 </section>
 <section id="future-work" class="level3">
 <h3 class="anchored" data-anchor-id="future-work">Future Work</h3>
 <ul>
-<li>Deconstruct the chosen foundational paper.</li>
-<li>Write the first R scripts to compute Mahalanobis Depth and Tukey Depth for a single point.</li>
-<li>Paper selected for Review - <span class="citation" data-cites="mosler2022">(<a href="#ref-mosler2022" role="doc-biblioref">Mosler and Mozharovskyi 2022</a>)</span></li>
+<li>Optimize the R syntax in the algorithm by replacing standard loops with vectorized operations to better handle larger datasets and eliminate computational bottlenecks.</li>
+<li>Scale the corrected single-point Tukey algorithm to compute depth for an entire dataset.</li>
+<li>Check how the algorithm scales as <span class="math inline">\(n \rightarrow \infty\)</span></li>
+<li>Begin literature review and implementation for Integrated Rank-Weighted (IRW) depth.</li>
 </ul>
 
 
 
 </section>
 
-
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
-<div id="ref-mosler2022" class="csl-entry" role="listitem">
-Mosler, Karl, and Pavlo Mozharovskyi. 2022. <span>“<span class="nocase">Choosing Among Notions of Multivariate Depth Statistics</span>.”</span> <em>Statistical Science</em> 37 (3): 348–68. <a href="https://doi.org/10.1214/21-STS827">https://doi.org/10.1214/21-STS827</a>.
+<div id="ref-Rousseeuw&amp;Ruts1998" class="csl-entry" role="listitem">
+Rousseeuw, Peter J., and Ida Ruts. 1998. <span>“CONSTRUCTING THE BIVARIATE TUKEY MEDIAN.”</span> <em>Statistica Sinica</em> 8 (3): 827–39. <a href="http://www.jstor.org/stable/24306466">http://www.jstor.org/stable/24306466</a>.
 </div>
-</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p>Thumbnail image credit: Graph sourced from Dr.&nbsp;Leblanc’s seminar slide deck on Integrated Rank-Weighted Depth.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section></div></main> <!-- /main -->
+<div id="ref-tukey1974" class="csl-entry" role="listitem">
+Tukey, John W. 1975. <span>“Mathematics and the Picturing of Data.”</span> <em>Proceedings of the International Congress of Mathematicians</em> 2: 523–31.
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
