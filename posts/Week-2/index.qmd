@@ -21,15 +21,6 @@ This week marked the transition from understanding mathematical theory to applyi
 
 * **Research Curiosities:** [@mosler2022] demonstrates that Mahalanobis depth can be calculated exactly in $O(n)$ time for any number of dimensions. However, because this depth method is not robust to outliers, it is unreliable for many modern applications. I am naturally curious to explore robustified versions of Mahalanobis depth. What computational trade-offs must we make when transitioning from the standard version to a robust one? 
 
-### Computational Implementation
-* **Infrastructure & Tools:** Exclusively coded in R due to its large variety of built-in matrix operations, and the ddalpha package, which provided functions to verify my algorithm's outputs.
-
-* **The Approach:**  
-    - **Mahalanobis:** Due to the simple structure of the formula and the built-in matrix operation functions in R, implementing the algorithm was straightforward and easily extendable to the entire dataset across higher dimensions.    
-      
-    - **Tukey:** Of the two definitions, I opted to implement the projection interpretation using a sweep style algorithm. To ensure mathematical accuracy and clarity in understanding, I isolated the algorithm to compute the depth of a single sample point only.
-    
-
 ### Visualizing the Output
 ```{r}
 #| echo: false
@@ -80,23 +71,57 @@ bivar_median = sortedByDepth[1,]
 #| fig-cap: "Scatter plot showing the Mahalanobis Depth of each data point."
 #| warning: false
 
+#two points mentioned in the write-up
+obser1 = data.frame(x=22.8, y=2.320)
+obser2 = data.frame(x=26.0, y=2.140)
+
 #plot data to observe how the depth changes
 library(ggplot2)
 ggplot(updatedDF, aes(x = updatedDF$mpg, y = updatedDF$wt, 
                       label = updatedDF$mhlnbsDepth_2d)) +
-  geom_point() + geom_text(color = "darkred",
-                           size = 1.5, vjust = -1)
+  geom_point() + 
+  geom_point(aes(x = obser1$x, y = obser1$y), colour = "red")+
+  geom_point(aes(x = obser2$x, y = obser2$y), colour = "blue")+
+  annotate( #plotting the direction of maximum variance
+    "segment", 
+    x = 24, y = 2.75,     
+    xend = 29, yend = 2.1,
+    arrow = arrow(length = unit(0.2, "cm")),
+    color = "grey", 
+    linewidth = 0.5
+  ) +
+  annotate( #plotting the direction of minimum variance
+    "segment", 
+    x = 23, y = 2.75,     
+    xend = 21, yend = 2.2,
+    arrow = arrow(length = unit(0.2, "cm")),
+    color = "darkgreen", 
+    linewidth = 0.5
+  ) +
+  geom_text(color = "darkred",
+                           size = 1.5, vjust = -1)+
+  labs(x = "mpg", y = "wt")
 
 ```  
 
-* **Observation:** The most fascinating takeaway from the above Mahalanobis visualization was observing a highly counter intuitive result. I found a specific point (22.8, 2.320) that was physically closer to the geometric center of the data as per Euclidean distance, yet it had a lower Mahalanobis depth than the point (26.0, 2.140) that was physically further away.   
+* **Observation:** The most fascinating takeaway from the above Mahalanobis visualization was observing a highly counter intuitive result. I found a specific point (the red point) that was physically closer to the geometric center of the data as per Euclidean distance, yet it had a lower Mahalanobis depth than the blue point that was physically further away.   
 
   
 * **Understanding Why?:** Upon further discussion with Dr. Leblanc, I learnt that this is because the data distribution is elliptical (due to the two variables being correlated) rather than perfectly circular, and depth is determined by the data's covariance structure. 
 
-    - The First Eigenvector (Maximum Variance): Point (26.0, 2.140) lies in this direction. Because the data spreads widely here due to high variance, a point can be physically distant but still maintain a high depth.
+    - The First Eigenvector (Maximum Variance): The blue point lies in this direction (as shown by the grey arrow). Because the data spreads widely here due to high variance, a point can be physically distant but still maintain a high depth.
 
-    - The Second Eigenvector (Minimum Variance): Point (22.8, 2.320) lies in this direction. Because the data is tightly clustered here due to low variance, moving even slightly away from the center causes the depth to drop drastically. 
+    - The Second Eigenvector (Minimum Variance): The red point lies in this direction (as shown by the green arrow). Because the data is tightly clustered here due to low variance, moving even slightly away from the center causes the depth to drop drastically. 
+
+---
+
+### Computational Implementation
+* **Infrastructure & Tools:** Exclusively coded in R due to its large variety of built-in matrix operations, and the ddalpha package, which provided functions to verify my algorithm's outputs.
+
+* **The Approach:**  
+    - **Mahalanobis:** Due to the simple structure of the formula and the built-in matrix operation functions in R, implementing the algorithm was straightforward and easily extendable to the entire dataset across higher dimensions.    
+      
+    - **Tukey:** Of the two definitions, I opted to implement the projection interpretation using a sweep style algorithm. To ensure mathematical accuracy and clarity in understanding, I isolated the algorithm to compute the depth of a single sample point only.
 
 ---
 
