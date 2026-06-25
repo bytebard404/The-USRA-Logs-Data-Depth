@@ -20,12 +20,12 @@ This week was dedicated to resolving the calculation errors in my Tukey depth al
 #| fig-cap: "Side by side plots that depict two different ways to interpret and calculate Tukey Depth"
 
 # 1. Define the line by two points: A and B
-A <- c(x = 1, y = 2)
-B <- c(x = 5, y = 4)
+A = c(x = 1, y = 2)
+B = c(x = 5, y = 4)
 
 # 2. Create a data frame of random points to project
 set.seed(42)
-df <- data.frame(
+df = data.frame(
   x = runif(10, 0, 6),
   y = runif(10, 1, 5)
 )

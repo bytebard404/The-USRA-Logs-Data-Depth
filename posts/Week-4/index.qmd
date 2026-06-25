@@ -1,0 +1,266 @@
+---
+title: "Week 4: Integrated Rank-Weighted (IRW) Depth and Monte Carlo Approximations"
+author: "Ridhima Singla"
+date: "May 29, 2026"
+categories: [Implementation, R]
+image: "convergenceplot.jpeg"
+---
+
+### Abstract    
+With the geometrical foundation of the bivariate Tukey sweep algorithm solidified last week, my focus shifted toward Integrated Rank-Weighted (IRW) depth. While Tukey depth is a powerful depth measure, finding the minimum univariate depth over all possible projections makes Tukey Depth difficult to compute. IRW depth resolves this by averaging the univariate depths across all projections rather than taking the absolute minimum. Since there are no built-in R packages like ddalpha that help verify IRW computations, I implemented the algorithm three distinct ways upon Dr. Leblanc's recommendation. My implementations range from an exact geometric calculation to a pure Monte Carlo approximation, which helped ensure the mathematical correctness of my results. 
+
+---
+
+### Visualizing IRW Depth
+```{r}
+#| echo: false
+#| warning: false
+#| code-fold: false
+#| fig-width: 10
+#| fig-height: 10
+#| fig-cap: "A simple toy example to help understand how IRW Depth is computed."
+
+# 1. Define the line by two points: A and B
+A = c(x = 1, y = 2)
+B = c(x = 5, y = 4)
+
+# 2. Create a data frame of random points to project
+set.seed(42)
+df = data.frame(
+  x = runif(10, 0, 6),
+  y = runif(10, 1, 5)
+)
+
+#query point
+target_point1 = data.frame(x=3.1145757, y=4.760058)
+
+#finding projected points using formuala - A + ((u dot v)/(v dot v))*v
+v = B - A
+vDotv = sum(v*v)
+
+u = data.frame(V1 = df[,1] - A[1], V2 = df[,2]-A[2])
+
+projPoint = data.frame(matrix(NA, nrow = nrow(u), ncol = ncol(u)))
+
+for(i in 1:nrow(u)){
+  temp = A + ((sum(u[i,]*v)/vDotv) * v)
+  projPoint[i,] = temp
+}
+
+target_point2 = data.frame(x=projPoint$X1[6], y=projPoint$X2[6])
+library(ggplot2)
+library(patchwork)
+
+p1 = ggplot(df) + 
+  geom_point(aes(x=df$x, y=df$y), size = 1.5) + 
+  geom_abline(slope = 0.5, intercept = 1.5, colour = "lightblue", linewidth = 1) +
+  geom_point(aes(x = projPoint$X1, y = projPoint$X2), colour = "darkgreen", size = 1.5)+
+  geom_segment(aes(x=df$x, y=df$y, xend = projPoint$X1, yend = projPoint$X2), linetype = "dashed", colour = "darkgrey", linewidth = 0.8) +
+  geom_point(data = target_point1, aes(x = target_point1$x, y = target_point1$y), color = "black", size = 1.5) +
+  geom_text(data = target_point1, aes(x = target_point1$x, y = target_point1$y, label = "y (Query Point)"), vjust = -1.5, color = "red", size = 3) + 
+  geom_point(data = target_point2, aes(x = target_point2$x, y = target_point2$y), color = "red", size = 2) +
+  coord_fixed(xlim = c(0,6), ylim = c(0, 6)) +
+  theme_minimal() + 
+  labs(x = "X-Axis", y = "Y-Axis", size = 2, subtitle = "Univariate Tukey depth = 5") +
+  theme(
+    plot.subtitle = element_text(size = 12),  
+    axis.title = element_text(size = 12)      
+  )
+
+#next projection
+
+C = c(x = 0, y = 2)
+D = c(x = 2, y = 6)
+
+#finding projected points
+v1 = D - C
+vDotv1 = sum(v1*v1)
+
+u1 = data.frame(V1 = df[,1] - C[1], V2 = df[,2]-C[2])
+
+projPoint1 = data.frame(matrix(NA, nrow = nrow(u1), ncol = ncol(u1)))
+
+for(i in 1:nrow(u1)){
+  temp = C + ((sum(u1[i,]*v1)/vDotv1) * v1)
+  projPoint1[i,] = temp
+}
+
+target_point21 = data.frame(x=projPoint1$X1[6], y=projPoint1$X2[6])
+
+p2 = ggplot(df) + 
+  geom_point(aes(x=df$x, y=df$y), size = 1.5) + 
+  geom_abline(slope = 2, intercept = 2, colour = "lightblue", linewidth = 1) +
+  geom_point(aes(x = projPoint1$X1, y = projPoint1$X2), colour = "darkgreen", size = 1.5)+
+  geom_segment(aes(x=df$x, y=df$y, xend = projPoint1$X1, yend = projPoint1$X2), linetype = "dashed", colour = "darkgrey", linewidth = 0.8) +
+  geom_point(data = target_point1, aes(x = target_point1$x, y = target_point1$y), color = "black", size = 1.5) +
+  geom_text(data = target_point1, aes(x = target_point1$x, y = target_point1$y, label = "y (Query Point)"), vjust = -1.5, color = "red", size = 3) + 
+  geom_point(data = target_point21, aes(x = target_point21$x, y = target_point21$y), color = "red", size = 2) +
+  coord_fixed(xlim = c(0,6), ylim = c(0, 6)) +
+  theme_minimal() + 
+  labs(x = "X-Axis", y = "Y-Axis", size = 2, subtitle = "Univariate Tukey depth = 3") +
+  theme(
+    plot.subtitle = element_text(size = 12),  
+    axis.title = element_text(size = 12)      
+  )
+
+#next projection
+
+E = c(x = 0, y = -1)
+G = c(x = 4, y = 1)
+
+#finding projected points
+v2 = G - E
+vDotv2 = sum(v2*v2)
+
+u2 = data.frame(V1 = df[,1] - E[1], V2 = df[,2]-E[2])
+
+projPoint2 = data.frame(matrix(NA, nrow = nrow(u2), ncol = ncol(u2)))
+
+for(i in 1:nrow(u2)){
+  temp = E + ((sum(u2[i,]*v2)/vDotv2) * v2)
+  projPoint2[i,] = temp
+}
+
+target_point22 = data.frame(x=projPoint2$X1[6], y=projPoint2$X2[6])
+
+p3 = ggplot(df) + 
+  geom_point(aes(x=df$x, y=df$y), size = 1.5) + 
+  geom_abline(slope = 0.5, intercept = -1, colour = "lightblue", linewidth = 1) +
+  geom_point(aes(x = projPoint2$X1, y = projPoint2$X2), colour = "darkgreen", size = 1.5)+
+  geom_segment(aes(x=df$x, y=df$y, xend = projPoint2$X1, yend = projPoint2$X2), linetype = "dashed", colour = "darkgrey", linewidth = 0.8) +
+  geom_point(data = target_point1, aes(x = target_point1$x, y = target_point1$y), color = "black", size = 1.5) +
+  geom_text(data = target_point1, aes(x = target_point1$x, y = target_point1$y, label = "y (Query Point)"), vjust = -1.5, color = "red", size = 3) + 
+  geom_point(data = target_point22, aes(x = target_point22$x, y = target_point22$y), color = "red", size = 2) +
+  coord_fixed(xlim = c(0,6), ylim = c(0, 6)) +
+  theme_minimal() + 
+  labs(x = "X-Axis", y = "Y-Axis", size = 2, subtitle = "Univariate Tukey depth = 5") +
+  theme(
+    plot.subtitle = element_text(size = 12),  
+    axis.title = element_text(size = 12)      
+  )
+
+#next projection
+
+H = c(x = 1, y = 5)
+I = c(x = 3, y = 1)
+
+#finding projected points 
+v3 = I - H
+vDotv3 = sum(v3*v3)
+
+u3 = data.frame(V1 = df[,1] - H[1], V2 = df[,2]-H[2])
+
+projPoint3 = data.frame(matrix(NA, nrow = nrow(u3), ncol = ncol(u3)))
+
+for(i in 1:nrow(u3)){
+  temp = H + ((sum(u3[i,]*v3)/vDotv3) * v3)
+  projPoint3[i,] = temp
+}
+
+target_point23 = data.frame(x=projPoint3$X1[6], y=projPoint3$X2[6])
+
+p4 = ggplot(df) + 
+  geom_point(aes(x=df$x, y=df$y), size = 1.5) + 
+  geom_abline(slope = -2, intercept = 7, colour = "lightblue", linewidth = 1) +
+  geom_point(aes(x = projPoint3$X1, y = projPoint3$X2), colour = "darkgreen", size = 1.5)+
+  geom_segment(aes(x=df$x, y=df$y, xend = projPoint3$X1, yend = projPoint3$X2), linetype = "dashed", colour = "darkgrey", linewidth = 0.8) +
+  geom_point(data = target_point1, aes(x = target_point1$x, y = target_point1$y), color = "black", size = 1.5) +
+  geom_text(data = target_point1, aes(x = target_point1$x, y = target_point1$y, label = "y (Query Point)"), vjust = -1.5, color = "red", size = 3) + 
+  geom_point(data = target_point23, aes(x = target_point23$x, y = target_point23$y), color = "red", size = 2) +
+  coord_fixed(xlim = c(0,6), ylim = c(0, 6)) +
+  theme_minimal() + 
+  labs(x = "X-Axis", y = "Y-Axis", size = 2, subtitle = "Univariate Tukey depth = 2") +
+  theme(
+    plot.subtitle = element_text(size = 12),  
+    axis.title = element_text(size = 12)      
+  )
+
+p1 + p2 + p3 + p4 + plot_layout(ncol = 2, nrow = 2)
+``` 
+
+In this highly simplified example, let's assume there are a total of 4 projections. Now, Tukey depth measure tells us to find the minimum univariate depth over all projections. So, the Tukey depth of our query point would be $2$. On the other hand, IRW depth is computed by averaging the univariate depth over all projections. Thus, the IRW depth of the query point is $\frac{5+5+2+3}{4} = 3.75$. Hence, evaluating IRW is simply a matter of casting directional vectors, finding the univariate Tukey depth for each, and averaging the results.
+
+---
+
+### Theoretical Foundations: Tukey vs IRW Depth
+* **Core Concepts:** While IRW depth shares much of its structure with Tukey depth, the core difference lies in how the final value is extracted from the projections. 
+
+  - The Tukey Shortcoming: Recall that Tukey depth takes the absolute minimum 1D depth across all possible projections. Since we strictly look for the minimum, it outputs a step function, which could result in many points sharing the same rank/depth value. Moreover, standard calculus techniques fail when optimizing a step function which further makes Tukey Depth difficult to compute. 
+
+  - The IRW Advantage: IRW depth solves this by taking the average (or integral) of the 1D depths across all uniformly distributed projection directions. By averaging the depths rather than isolating the minimum, IRW provides a strictly decreasing, smooth continuous depth function from the center outward. Moreover, using this integration approach makes it easy to approximate the depth of a point in higher dimensions through Monte Carlo techniques. [@Ramsay&Durocher&Leblanc_2019] 
+
+* **Literature Context:** As extracted from [@Ramsay&Durocher&Leblanc_2019] and simplified by Dr. Leblanc in his research talk slides, the IRW Depth of a point $y$ with respect to a sample $X = (X_1,...,X_n)'$ of $R^d$ is given by
+$$D_{IRW}(y, X) = \frac{1}{Area(S^{d-1})} \int_{S^{d-1}}D_1(u'y,X(u))du$$ where $S^{d-1} = \{u \in R^d:\lVert \mathbf{u} \rVert = 1\}$, $D_1(u'y,X(u))$ is the 1D Tukey depth, and $X(u)=(u'X_1,...,u'X_n)'$ is the projected sample.
+
+---
+
+### Computational Implementation & Verification Strategy  
+
+* **The Verification Challenge:** One of the immediate hurdles this week was the lack of a built-in verification tool. Unlike Tukey depth, there is no function for IRW depth within the ddalpha package (or any other standard R libraries that I explored). This meant I could not simply run my algorithm and compare the output to an answer key. To ensure the mathematical integrity of my code, I had to come up with a robust verification strategy relying on algorithmic independence. Dr. Leblanc suggested leveraging the convergence property of Monte Carlo simulations to verify the code. If an exact geometrical approach and a randomized approximation approach yield the same value, the implementation is successful. To achieve this, I implemented IRW depth in three distinct ways:
+
+  - Exact IRW Depth (The Sweep Method): For this implementation, I referenced the approach of representing IRW depth as a weighted average of a set of univariate Tukey ranks outlined in [@Ramsay&Durocher&Leblanc_2019]. This approach relies on the fact that the univariate depth is constant over distinct patches. Leveraging the sorted angular sweep from Week 3, I computed the exact IRW depth by tracking the boundaries where the depth changes. Instead of keeping track of the absolute minimum, I stored every univariate depth observed in a vector. I calculated the angular slice size (the weight of the total pie) for each depth, and summed them using the following logic: $$D_{IRW Exact} = \sum_{i=1}^{k} w_i d_i$$ where $w_i$ is the size of the angular slice (proportion of projections out of total), and $d_i$ is the depth observed in that slice.
+
+  - Semi-Randomized IRW (Sweep + Randomization): Using the exact slices computed above, I introduced randomization. I generated $m$ random angles ($\theta$) uniformly. For each $\theta$, the algorithm determined which angular slice it landed in and stored the corresponding pre-computed depth for that slice. The final depth was the average of these $m$ depths.
+
+  - Pure Monte Carlo Approximation (No Pre-Setup): Since IRW depth requires computing an average, there is a very simple Monte Carlo algorithm for approximating the depth of a point. For this implementation, we remove the angular sweep entirely. Similar to the strategy explained by [@Durocher_Leblanc_Skala_2017], this is purely a brute force implementation. I generated $m$ random projection vectors. For each vector, the data was projected onto the line, and the 1D depth was calculated. The final IRW depth is the average of the depths computed for all $m$ projections. The law of large numbers guarantees that this algorithm does converge to the exact value [@Ramsay&Durocher&Leblanc_2019] as computed in implementation 1 as $m \rightarrow \infty$, and the graph below confirms this result. 
+
+```{r} 
+#| echo: false
+#| warning: false
+#| code-fold: false
+#| fig-cap: "Monte Carlo Approximation of IRW Converging to the exact IRW Depth."
+
+library(ggplot2)
+set.seed(74685549)
+
+# setup the 2d dataset
+rows = seq(1, nrow(mtcars), by = 2) 
+df = mtcars[rows, c(1,6)]
+targetPoint = c(20.5, 3.1)
+
+#a function to calculate the projected point
+calcProjection = function(point, theta) {
+  return((point[1]*cos(theta)) + (point[2]*sin(theta)))
+}
+
+#generate random directions
+m = 10000
+thetas = runif(m, 0, 2*pi)
+univarDepth = numeric(m)
+
+for(j in 1:m){
+  targetProjection = calcProjection(targetPoint, thetas[j])
+  projection = calcProjection(df[,], thetas[j])
+  
+  lessThan = sum(projection < targetProjection)
+  greaterThan = sum(projection >= targetProjection)
+  univarDepth[j] = min(lessThan, greaterThan)
+}
+
+# cumsum(univarDepth) gives the running sum.
+# (1:m) gives the denominator (1, 2, 3... 5000)
+running_average = cumsum(univarDepth) / (1:m)
+
+directionsVsDepth = data.frame(x = 1:m, y = running_average)
+
+ggplot(directionsVsDepth, aes(x = x, y = y)) +
+  geom_line(color = "blue") + 
+  geom_hline(yintercept = 5.85, color = "darkgrey", linetype = "dashed")+
+  labs(x = "Number of Directions (m)", 
+       y = "IRW Depth Approximation",
+       title = "Monte Carlo IRW Convergence")
+
+```   
+The grey dashed line represents the depth computed under the exact implementation and we observe that after being chaotic for roughly 1000 directions, the approximation starts converging to the exact value (i.e. the dashed line.)  
+
+* **The Result:** All three implementations successfully converged to the same depth value. As Dr. Leblanc noted, because the exact implementation and the Monte Carlo implementation are independent of one another, their depth values matching acts as a reliable validation tool for the code.
+
+* **Note:** The complete, executable R script for all three implementations is available in the [project repository](https://github.com/bytebard404/The-USRA-Logs-Data-Depth/blob/main/R/IRW-Week4).  
+
+---
+
+### Future Work  
+* Optimize the R syntax in the algorithm to eliminate computational bottlenecks.
+* Check how the algorithm scales as $n \rightarrow \infty$. Confirm runtime matches the theoretical expectation.
+* Research curiosity - Explore implementation of IRW logic in 3D space.
+* Begin literature review and implementation for Simplicial depth.
