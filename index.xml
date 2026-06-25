@@ -10,7 +10,103 @@
 <atom:link href="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/index.xml" rel="self" type="application/rss+xml"/>
 <description>A 16-week research journal exploring computational and theoretical data depth.</description>
 <generator>quarto-1.9.37</generator>
-<lastBuildDate>Fri, 22 May 2026 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 29 May 2026 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>Week 4: Integrated Rank-Weighted (IRW) Depth and Monte Carlo Approximations</title>
+  <dc:creator>Ridhima Singla</dc:creator>
+  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="abstract" class="level3">
+<h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
+<p>With the geometrical foundation of the bivariate Tukey sweep algorithm solidified last week, my focus shifted toward Integrated Rank-Weighted (IRW) depth. While Tukey depth is a powerful depth measure, finding the minimum univariate depth over all possible projections makes Tukey Depth difficult to compute. IRW depth resolves this by averaging the univariate depths across all projections rather than taking the absolute minimum. Since there are no built-in R packages like ddalpha that help verify IRW computations, I implemented the algorithm three distinct ways upon Dr.&nbsp;Leblanc’s recommendation. My implementations range from an exact geometric calculation to a pure Monte Carlo approximation, which helped ensure the mathematical correctness of my results.</p>
+<hr>
+</section>
+<section id="visualizing-irw-depth" class="level3">
+<h3 class="anchored" data-anchor-id="visualizing-irw-depth">Visualizing IRW Depth</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="960"></p>
+<figcaption>A simple toy example to help understand how IRW Depth is computed.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In this highly simplified example, let’s assume there are a total of 4 projections. Now, Tukey depth measure tells us to find the minimum univariate depth over all projections. So, the Tukey depth of our query point would be <img src="https://latex.codecogs.com/png.latex?2">. On the other hand, IRW depth is computed by averaging the univariate depth over all projections. Thus, the IRW depth of the query point is <img src="https://latex.codecogs.com/png.latex?%5Cfrac%7B5+5+2+3%7D%7B4%7D%20=%203.75">. Hence, evaluating IRW is simply a matter of casting directional vectors, finding the univariate Tukey depth for each, and averaging the results.</p>
+<hr>
+</section>
+<section id="theoretical-foundations-tukey-vs-irw-depth" class="level3">
+<h3 class="anchored" data-anchor-id="theoretical-foundations-tukey-vs-irw-depth">Theoretical Foundations: Tukey vs IRW Depth</h3>
+<ul>
+<li><p><strong>Core Concepts:</strong> While IRW depth shares much of its structure with Tukey depth, the core difference lies in how the final value is extracted from the projections.</p>
+<ul>
+<li><p>The Tukey Shortcoming: Recall that Tukey depth takes the absolute minimum 1D depth across all possible projections. Since we strictly look for the minimum, it outputs a step function, which could result in many points sharing the same rank/depth value. Moreover, standard calculus techniques fail when optimizing a step function which further makes Tukey Depth difficult to compute.</p></li>
+<li><p>The IRW Advantage: IRW depth solves this by taking the average (or integral) of the 1D depths across all uniformly distributed projection directions. By averaging the depths rather than isolating the minimum, IRW provides a strictly decreasing, smooth continuous depth function from the center outward. Moreover, using this integration approach makes it easy to approximate the depth of a point in higher dimensions through Monte Carlo techniques. <span class="citation" data-cites="Ramsay&amp;Durocher&amp;Leblanc_2019">(Ramsay et al. 2019)</span></p></li>
+</ul></li>
+<li><p><strong>Literature Context:</strong> As extracted from <span class="citation" data-cites="Ramsay&amp;Durocher&amp;Leblanc_2019">(Ramsay et al. 2019)</span> and simplified by Dr.&nbsp;Leblanc in his research talk slides, the IRW Depth of a point <img src="https://latex.codecogs.com/png.latex?y"> with respect to a sample <img src="https://latex.codecogs.com/png.latex?X%20=%20(X_1,...,X_n)'"> of <img src="https://latex.codecogs.com/png.latex?R%5Ed"> is given by <img src="https://latex.codecogs.com/png.latex?D_%7BIRW%7D(y,%20X)%20=%20%5Cfrac%7B1%7D%7BArea(S%5E%7Bd-1%7D)%7D%20%5Cint_%7BS%5E%7Bd-1%7D%7DD_1(u'y,X(u))du"> where <img src="https://latex.codecogs.com/png.latex?S%5E%7Bd-1%7D%20=%20%5C%7Bu%20%5Cin%20R%5Ed:%5ClVert%20%5Cmathbf%7Bu%7D%20%5CrVert%20=%201%5C%7D">, <img src="https://latex.codecogs.com/png.latex?D_1(u'y,X(u))"> is the 1D Tukey depth, and <img src="https://latex.codecogs.com/png.latex?X(u)=(u'X_1,...,u'X_n)'"> is the projected sample.</p></li>
+</ul>
+<hr>
+</section>
+<section id="computational-implementation-verification-strategy" class="level3">
+<h3 class="anchored" data-anchor-id="computational-implementation-verification-strategy">Computational Implementation &amp; Verification Strategy</h3>
+<ul>
+<li><p><strong>The Verification Challenge:</strong> One of the immediate hurdles this week was the lack of a built-in verification tool. Unlike Tukey depth, there is no function for IRW depth within the ddalpha package (or any other standard R libraries that I explored). This meant I could not simply run my algorithm and compare the output to an answer key. To ensure the mathematical integrity of my code, I had to come up with a robust verification strategy relying on algorithmic independence. Dr.&nbsp;Leblanc suggested leveraging the convergence property of Monte Carlo simulations to verify the code. If an exact geometrical approach and a randomized approximation approach yield the same value, the implementation is successful. To achieve this, I implemented IRW depth in three distinct ways:</p>
+<ul>
+<li><p>Exact IRW Depth (The Sweep Method): For this implementation, I referenced the approach of representing IRW depth as a weighted average of a set of univariate Tukey ranks outlined in <span class="citation" data-cites="Ramsay&amp;Durocher&amp;Leblanc_2019">(Ramsay et al. 2019)</span>. This approach relies on the fact that the univariate depth is constant over distinct patches. Leveraging the sorted angular sweep from Week 3, I computed the exact IRW depth by tracking the boundaries where the depth changes. Instead of keeping track of the absolute minimum, I stored every univariate depth observed in a vector. I calculated the angular slice size (the weight of the total pie) for each depth, and summed them using the following logic: <img src="https://latex.codecogs.com/png.latex?D_%7BIRW%20Exact%7D%20=%20%5Csum_%7Bi=1%7D%5E%7Bk%7D%20w_i%20d_i"> where <img src="https://latex.codecogs.com/png.latex?w_i"> is the size of the angular slice (proportion of projections out of total), and <img src="https://latex.codecogs.com/png.latex?d_i"> is the depth observed in that slice.</p></li>
+<li><p>Semi-Randomized IRW (Sweep + Randomization): Using the exact slices computed above, I introduced randomization. I generated <img src="https://latex.codecogs.com/png.latex?m"> random angles (<img src="https://latex.codecogs.com/png.latex?%5Ctheta">) uniformly. For each <img src="https://latex.codecogs.com/png.latex?%5Ctheta">, the algorithm determined which angular slice it landed in and stored the corresponding pre-computed depth for that slice. The final depth was the average of these <img src="https://latex.codecogs.com/png.latex?m"> depths.</p></li>
+<li><p>Pure Monte Carlo Approximation (No Pre-Setup): Since IRW depth requires computing an average, there is a very simple Monte Carlo algorithm for approximating the depth of a point. For this implementation, we remove the angular sweep entirely. Similar to the strategy explained by <span class="citation" data-cites="Durocher_Leblanc_Skala_2017">(Durocher et al. 2017)</span>, this is purely a brute force implementation. I generated <img src="https://latex.codecogs.com/png.latex?m"> random projection vectors. For each vector, the data was projected onto the line, and the 1D depth was calculated. The final IRW depth is the average of the depths computed for all <img src="https://latex.codecogs.com/png.latex?m"> projections. The law of large numbers guarantees that this algorithm does converge to the exact value <span class="citation" data-cites="Ramsay&amp;Durocher&amp;Leblanc_2019">(Ramsay et al. 2019)</span> as computed in implementation 1 as <img src="https://latex.codecogs.com/png.latex?m%20%5Crightarrow%20%5Cinfty">, and the graph below confirms this result.</p></li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Monte Carlo Approximation of IRW Converging to the exact IRW Depth.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The grey dashed line represents the depth computed under the exact implementation and we observe that after being chaotic for roughly 1000 directions, the approximation starts converging to the exact value (i.e.&nbsp;the dashed line.)</p>
+<ul>
+<li><p><strong>The Result:</strong> All three implementations successfully converged to the same depth value. As Dr.&nbsp;Leblanc noted, because the exact implementation and the Monte Carlo implementation are independent of one another, their depth values matching acts as a reliable validation tool for the code.</p></li>
+<li><p><strong>Note:</strong> The complete, executable R script for all three implementations is available in the <a href="https://github.com/bytebard404/The-USRA-Logs-Data-Depth/blob/main/R/IRW-Week4">project repository</a>.</p></li>
+</ul>
+<hr>
+</section>
+<section id="future-work" class="level3">
+<h3 class="anchored" data-anchor-id="future-work">Future Work</h3>
+<ul>
+<li>Optimize the R syntax in the algorithm to eliminate computational bottlenecks.</li>
+<li>Check how the algorithm scales as <img src="https://latex.codecogs.com/png.latex?n%20%5Crightarrow%20%5Cinfty">. Confirm runtime matches the theoretical expectation.</li>
+<li>Research curiosity - Explore implementation of IRW logic in 3D space.</li>
+<li>Begin literature review and implementation for Simplicial depth.</li>
+</ul>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Durocher_Leblanc_Skala_2017" class="csl-entry">
+Durocher, Stephane, Alexandre Leblanc, and Matthew Skala. 2017. <span>“The Projection Median as a Weighted Average.”</span> <em>J. Comput. Geom.</em> 8: 78–104. <a href="https://api.semanticscholar.org/CorpusID:4936625">https://api.semanticscholar.org/CorpusID:4936625</a>.
+</div>
+<div id="ref-Ramsay&amp;Durocher&amp;Leblanc_2019" class="csl-entry">
+Ramsay, Kelly, Stéphane Durocher, and Alexandre Leblanc. 2019. <span>“Integrated Rank-Weighted Depth.”</span> <em>J. Multivar. Anal.</em> (USA) 173 (C): 51–69. <a href="https://doi.org/10.1016/j.jmva.2019.02.001">https://doi.org/10.1016/j.jmva.2019.02.001</a>.
+</div>
+</div></section></div> ]]></description>
+  <category>Implementation</category>
+  <category>R</category>
+  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/</guid>
+  <pubDate>Fri, 29 May 2026 05:00:00 GMT</pubDate>
+  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/convergenceplot.jpeg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Week 3: Clarifying Tukey Depth &amp; Debugging Sweep Algorithm</title>
   <dc:creator>Ridhima Singla</dc:creator>
