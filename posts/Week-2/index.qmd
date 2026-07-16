@@ -19,7 +19,7 @@ This week marked the transition from understanding mathematical theory to applyi
 
 * **Literature Context:** Relied primarily on Dr. Leblanc’s notes to solidify the theoretical foundation and understand computational geometry via animations. Briefly referenced [@mosler2022] for an introduction to Mahalanobis Depth and its properties. 
 
-* **Research Curiosities:** [@mosler2022] demonstrates that Mahalanobis depth can be calculated exactly in $O(n)$ time for any number of dimensions. However, because this depth method is not robust to outliers, it is unreliable for many modern applications. I am naturally curious to explore robustified versions of Mahalanobis depth. What computational trade-offs must we make when transitioning from the standard version to a robust one? 
+* **Research Curiosities:** [@mosler2022] demonstrates that Mahalanobis depth of all n points can be calculated exactly in linear time for any number of dimensions. However, because this depth method is not robust to outliers, it is unreliable for many modern applications. I am naturally curious to explore robustified versions of Mahalanobis depth. What computational trade-offs must we make when transitioning from the standard version to a robust one? 
 
 ### Visualizing the Output
 ```{r}
@@ -107,7 +107,7 @@ ggplot(updatedDF, aes(x = updatedDF$mpg, y = updatedDF$wt,
 * **Observation:** The most fascinating takeaway from the above Mahalanobis visualization was observing a highly counter intuitive result. I found a specific point (the red point) that was physically closer to the geometric center of the data as per Euclidean distance, yet it had a lower Mahalanobis depth than the blue point that was physically further away.   
 
   
-* **Understanding Why?:** Upon further discussion with Dr. Leblanc, I learnt that this is because the data distribution is elliptical (due to the two variables being correlated) rather than perfectly circular, and depth is determined by the data's covariance structure. 
+* **Understanding Why?:** Upon further discussion with Dr. Leblanc, I learnt that this is because the data distribution is elliptical (due to the two variables being correlated) rather than perfectly circular. Mahalanobis depth is determined by the data’s covariance matrix and is related to a weighted distance, penalizing more directions of small variability than those of large variability. Other depths do not necessarily do this as they often do not rely directly on a notion of distance. 
 
     - The First Eigenvector (Maximum Variance): The blue point lies in this direction (as shown by the grey arrow). Because the data spreads widely here due to high variance, a point can be physically distant but still maintain a high depth.
 
@@ -133,7 +133,7 @@ After discussing this with Dr. Leblanc, I realized that this "grid approach" was
 I abandoned the grid approach in favor of the sweep algorithm. Instead of rotating a line, we use linear algebra to compute the exact angles where a point switches from projecting on the right versus the left. By keeping track of the action to be taken at each angle, we can sweep the sorted list of angles one by one, tracking the absolute minimum. This pivot moved my algorithm from an inefficient approximation to computing the exact Tukey depth in 2D. 
 
 ### Current Roadblock
-* **The Unresolved Bug:** While the transition to the sweep algorithm was conceptually successful, my current R script for the single point Tukey depth is producing an answer that is different from the one computed by the ddalpha package function, even after accounting for the normalization. 
+* **The Unresolved Bug:** While the transition to the sweep algorithm was conceptually successful, my current R script for the single point Tukey depth is producing an answer that is different from the one computed by the ddalpha function in R, even after accounting for the normalization. 
 
 * **My Hypothesis:** I suspect there is a flaw in how I am tracking the initial right count (i.e. number of points that project on the right of the origin) before we start sweeping the list going from 0 to 360. I have isolated the code chunk that counts the initial count and plan to debug it next week after consulting Dr. Leblanc.
 

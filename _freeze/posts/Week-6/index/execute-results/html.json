@@ -1,0 +1,15 @@
+{
+  "hash": "21656d4937bb580080b16be8cc3a472a",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Week 6: \"\nauthor: \"Ridhima Singla\"\ndate: \"June 12, 2026\"\ncategories: [Runtime]\nimage: \"tukeyplot.jpeg\"\n---\n\n### Abstract    \nThis week, my focus shifted to runtime analysis and algorithm optimization for all bivariate depth functions I have implemented so far. I began by building a standard framework to test how my algorithms scale as $n \\to \\infty$, but quickly encountered severe execution bottlenecks. To understand what was slowing my code down under the hood, I turned to The R Inferno by Patrick Burns [@burns2011r] and systematically improved the runtime by pre-allocating memory, eliminating matrix binding, and replacing 'for' loops with vectorized operations. By isolating CPU execution time and applying local polynomial regression (loess) to filter out hardware noise, I confirmed that my empirical curves match their theoretical runtime expectation. Ultimately, this refactoring dropped the processing time for a dataset of 1,000,000 points to under 0.4 seconds which was a massive win for me. \n\n---\n\n```{=html}\n<style>\n/* Force tab buttons to use smaller padding and slightly smaller text */\n.panel-tabset .nav-link {\n  padding: 0.5rem 0.5rem !important;\n  font-size: 0.9rem !important;\n  white-space: nowrap !important;\n}\n/* Bold dark charcoal top border for the selected tab */\n.panel-tabset .nav-link.active {\n  background-color: #ffffff !important;\n  color: #212529 !important;\n  font-weight: 700 !important;\n  border-top: 3px solid #212529 !important;\n  box-shadow: 0 -2px 5px rgba(0,0,0,0.03);\n}\n</style>\n::: {.panel-tabset}\n\n## Tukey Depth\n\n\n::: {.cell}\n::: {.cell-output-display}\n![Empirical vs. Theoretical O(n log n) Scaling of Optimized and Unoptimized Algorithms](index_files/figure-html/unnamed-chunk-1-1.png){width=672}\n:::\n:::\n\n\n## Simplicial Depth\n\n::: {.cell}\n::: {.cell-output-display}\n![Simplicial Depth: Optimization from O(n^3) baseline to O(n log n)](index_files/figure-html/unnamed-chunk-2-1.png){width=864}\n:::\n:::\n\n\n## IRW Depth\n\n::: {.cell}\n\n:::\n\n\n## Mahalanobis Depth\n\n::: {.cell}\n::: {.cell-output-display}\n![Mahalanobis Depth: Execution time verification against theoretical expectation](index_files/figure-html/unnamed-chunk-4-1.png){width=672}\n:::\n:::\n\n\n:::",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

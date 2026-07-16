@@ -119,6 +119,7 @@ minDepth = min(left_count,right_count)
 univarDepth = numeric()
 univarDepth[1] = minDepth
 
+#finding the depth in each slice
 j = 1
 while(j <= nrow(ListOfAngleSwitches)){
   if(ListOfAngleSwitches[j,2] == 0){ #one of the points can't project anymore

@@ -82,19 +82,19 @@ p2 = ggplot(df, aes(x = df$x, y = df$y)) +
 p1 + p2
 ``` 
 
-While these two geometric interpretations look completely different, they are mathematically identical. Realizing how they align was the key aspect to fixing the error in my algorithm and strengthening my understanding. 
+While these two geometric interpretations look completely different, they are mathematically equivalent. Realizing how they align was the key aspect to fixing the error in my algorithm and strengthening my understanding. 
 
 ---
 
 ### Theoretical Foundations: Understanding the Definitions
 * **Core Concepts:** The graphs above will play a vital role in understanding the formal definitions of these views.   
   - Projection View (Left Side): As suggested by [@tukey1974] and explained in Dr. Leblanc's instructional materials, a measure of the depth of a point $y$ given a sample $X = (X_1,...,X_n)'$ in 1D is $D_1(y,X) = \min(\#\{i : X_i \le y\}, \#\{i : X_i \ge y\})$ and this can be generalised to $d$ dimensions as:
-  $$D_d(y,X) = \min_{||u|| = 1} D_1(u'y, X(u))$$ where $X(u) = (u'X_1,...,u'X_n)'$ is the projected sample. Let's unfold this definition with the help of the graph above.
+  $$D_d(y,X) = \min_{||u|| = 1} D_1(u'y, X(u))$$ where $X(u) = (u'X_1,...,u'X_n)'$ is the projected sample. Let's unfold this definition with the help of the graph above (see left panel).
 
     - The light blue line represents one possible directional vector. The dashed lines show how the 2D data cloud projects onto that 1D light blue line. The red dot represents our query point's projected position onto the 1D line. To find the depth on this specific line, we simply count the green dots on the left side and the right side of the red dot, and take the smaller of the two. The final depth of this query point is the minimum 1D depth observed over all directional vectors. This method reduces the multivariate problem into a series of univariate problems.
 
   - Halfspace View (Right Side): [@Rousseeuw&Ruts1998] outlines that the halfspace Tukey depth of a point $y$ relative to a dataset $X$ is defined as:
-  $$D(y,X) = \min_{H} \#\{i ; x_i \in H\}$$ where H ranges over all closed halfspaces where the boundary line passes through $y$. Let's unfold this definition with the help of the graph above.
+  $$D(y,X) = \min_{H} \#\{i ; x_i \in H\}$$ where H ranges over all closed halfspaces where the boundary line passes through $y$. Let's unfold this definition with the help of the graph above (see right panel).
   
     - The blue arrow represents the line from the query point 'y' (red dot) to one of the data points in the sample. The dashed line shows the result of extending this line to infinity. We observe that this line divides the plane into two spaces, left and right. To find the depth for this specific line, we just count the number of dots (sample points in black) on the left side and the right side of the line, and take the smaller number. The final depth of this query point is the minimum depth observed over all possible lines through the query point.
 
@@ -113,7 +113,7 @@ Last week, my single point Tukey algorithm was producing results that completely
 
 * **Error 2: Off-By-One**
 
-  - The Problem: Even after fixing the sweep, my depth was constantly exactly one less than the ddalpha depth. However, this only happened for in sample points (points that existed in the dataset). When I tested an out of sample point, my code matched ddalpha perfectly.
+  - The Problem: Even after fixing the sweep, my depth was constantly exactly one less than the ddalpha depth. However, this only happened for in-sample points (points that existed in the dataset). When I tested an out of sample point, my code matched ddalpha perfectly.
   
   - The Fix: Dr. Leblanc helped me understand that it comes down to the definition of a closed halfspace vs an open halfspace. A closed halfspace includes the boundary line itself. In my original logic, I didn't explicitly count the target point in the left/right totals because I assumed that adding 1 to both sides wouldn't change which side was the minimum. While it is true that adding 1 to both sides doesn't change which side is smaller, it definitely changes the final numerical depth value. Because the target point sits on the boundary, it must be counted if considering closed halfspaces. Understanding this helped me realise that ddalpha uses closed halfspaces whereas I implemented the open halfspace definition. Thus, this was not so much of an error but rather a difference in implementations. 
 
@@ -162,5 +162,5 @@ minDepth = min(left_count,right_count)
 ### Future Work  
 * Optimize the R syntax in the algorithm by replacing standard loops with vectorized operations to better handle larger datasets and eliminate computational bottlenecks.
 * Scale the corrected single-point Tukey algorithm to compute depth for an entire dataset.
-* Check how the algorithm scales as $n \rightarrow \infty$
+* Check how the algorithm scales as $n \rightarrow \infty$.
 * Begin literature review and implementation for Integrated Rank-Weighted (IRW) depth.

@@ -1,0 +1,1570 @@
+---
+title: "Week 7: Empirical vs. Theoretical Verification Dashboard"
+author: "Ridhima Singla"
+date: "2026-06-19"
+categories: [Runtime]
+image: tukeyplot.jpeg
+---
+
+### Abstract 
+With all the code optimized, my focus shifted to empirical vs. theoretical verification across the updated set of bivariate data depth algorithms. Having eliminated the computational bottleneck in Week 6, I evaluated how Integrated Rank-Weighted (IRW), Tukey’s halfspace, Mahalanobis, and Simplicial depth scale across dataset sizes ranging from $n = 100$ to $n = 100,000$. To evaluate mathematical complexity against hardware noise, I incorporated local polynomial regression (loess) smoothing curves to reveal the underlying asymptotic trends. My analysis confirms that the refactored implementations match their theoretical Big-O expectations.  
+
+### Introduction
+In last week’s post, we performed a deep analysis into The R Inferno, pre-allocating vector lengths, and replacing iterative loops with vectorized operations. Reducing our execution time down to under 0.4 seconds for a million points was a massive victory, but it was only half the battle.
+
+The ultimate objective of a runtime analysis is asymptotic verification: confirming whether the empirical scaling of our code as $n \to \infty$ matches the theoretical Big-O complexity established in statistical literature. This week, I took the refactored code, fed it massive, randomly generated datasets across a wide range of sizes, and built an interactive dashboard to evaluate their performance.
+
+---
+
+### Part 1: Filtering Hardware Noise
+When executing analysis over thousands of iterations, raw runtime data naturally exhibits minor micro-spikes and jitter. Because of physical hardware realities and background activity, runtime curves are inherently noisy [@wickham2019advanced, chap. 23].
+
+With the help of AI's data visualization techniques, I learned that data scientists often rely on local polynomial regression smoothing (loess) to filter out this physical hardware noise. By layering a smooth trend line over our raw data, we can isolate the true underlying mathematical trend of the algorithm's runtime and overlay our theoretical Big-O regression curves for direct comparison.
+
+#### The Control Variables: What Stayed the Same?
+Before evaluating the graphs, it is worth noting two intentional exceptions in my optimization pipeline.
+
+1. Mahalanobis Depth: This algorithm required no syntax optimization. Since parametric Mahalanobis depth relies entirely on covariance matrices and inverse linear algebra, it was already vectorized by R’s core built-in operations.
+
+2. The Simplicial $O(n^3)$ Baseline: I deliberately did not optimize my original brute-force Simplicial implementation. The entire purpose of that algorithm is to serve as a poor performance baseline that scales at a cubic $O(n^3)$ rate based on simple triangle counting. Leaving it unoptimized provides the baseline contrast required to visually appreciate the $O(n \log n)$ angular sweep algorithm.
+
+---
+
+### Part 2: The Interactive Dashboard
+To evaluate the performance gains across each algorithm without cluttering the page, I have structured the empirical vs. theoretical scaling curves into an interactive dashboard.
+
+To inspect the runtime scaling behavior of each optimized function against its theoretical expectation, click through the tabs below.
+
+```{=html}
+<style>
+/* Force tab buttons to use smaller padding and slightly smaller text */
+.panel-tabset .nav-link {
+  padding: 0.5rem 0.5rem !important;
+  font-size: 0.9rem !important;
+  white-space: nowrap !important;
+}
+/* Bold dark charcoal top border for the selected tab */
+.panel-tabset .nav-link.active {
+  background-color: #ffffff !important;
+  color: #212529 !important;
+  font-weight: 700 !important;
+  border-top: 3px solid #212529 !important;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.03);
+}
+</style>
+```
+
+::: {.panel-tabset}
+
+#### Tukey Depth
+Tukey’s halfspace depth implementation relies on projecting bivariate data onto 1D vectors and taking the minimum 1D depth observed over all directional vectors. To truly appreciate the efficiency of the optimized algorithm, we evaluate its runtime through two distinct lenses.
+
+- The Macro View (Zoomed-Out, left): The unoptimized algorithm's execution time explodes rapidly as dataset size increases. This creates a visual "crush effect", compressing our optimized curve into a perfectly flat line along the bottom of the graph.
+
+- The Micro View (Zoomed-In, right): Due to the "crush effect", the macro view hides the true asymptotic trajectory of the optimized algorithm. By zooming in on the bottom fraction of the y-axis, the expanded view allows us to overlay the theoretical regression curve and mathematically verify that our empirical runtime cleanly tracks its $O(n \log n)$ theoretical expectation [@D_F_L_M_S].
+
+```{r}
+#| echo: false
+#| warning: false
+#| code-fold: false
+#| cache: true
+#| fig-cap: "Empirical vs. Theoretical O(n log n) Scaling of Optimized and Unoptimized Algorithms"
+
+library(ggplot2)
+library(MASS)
+library(patchwork)
+
+#function for zoomed out version of graph
+functionOfNlogn = function(algorithmOpt, graphLabel, algorithmUnopt){
+  
+  #setting up the sizes
+  sizes = seq(from = 100, to = 50000, by = 500)
+  times = numeric(length(sizes))
+  times2 = numeric(length(sizes))
+  
+  #for each size, create a dataset, feed it to algorithms
+  #run the algorithm, measure the time elapsed, record and repeat
+  set.seed(2026)
+  for(i in 1:length(sizes)){
+    #generating data
+    sigma = matrix(c(10,3,3,2),2,2)
+    bivarData = mvrnorm(n = sizes[i], rep(0,2), sigma)
+    targetPoint = mvrnorm(1, rep(0,2), sigma)
+    
+    #collect garbage right away
+    gc(verbose = FALSE)
+    
+    #run the algorithms and record the time
+    temp = system.time({
+      output = algorithmOpt(bivarData, targetPoint)
+    })
+    
+    temp2 = system.time({
+      output2 = algorithmUnopt(bivarData, targetPoint)
+    })
+    
+    #extract user and system time only
+    times[i] = temp[1] + temp[2]
+    times2[i] = temp2[1] + temp2[2]
+  }
+  
+  sizeTime = data.frame(x = sizes, y = times)
+  sizeTime2 = data.frame(x = sizes, y = times2)
+  
+  return(ggplot(sizeTime, aes(x = x, y = y)) +
+           # The actual trend of the optimised data
+           geom_smooth(aes(color = "Optimized"), method = "loess", se = FALSE, linewidth = 1)  +
+           
+           #unoptimised line
+           geom_smooth(data = sizeTime2, aes(x = x, y = y, color = "Unoptimized"), method = "loess", se = FALSE, linewidth = 1, inherit.aes = FALSE)  +
+           
+           #Regression - The theoretical N log N fit
+           geom_smooth(aes(color = "Theoretical O(n log n)"), method = "lm", formula = y ~ I(x*log(x)), 
+                       linetype = "dashed", se = FALSE, linewidth = 1) +
+           
+           labs(x = "Dataset Size (N)", 
+                y = "CPU Execution Time (Seconds)",
+                color = "Implementation") +
+           theme(plot.title = element_text(size = 12),
+                 axis.title = element_text(size = 8),
+                 legend.position = "bottom") + 
+           coord_cartesian(ylim = c(0, 0.02)))
+}
+
+#function for zoomed in version of the graph
+functionOfNlogn2 = function(algorithmOpt, graphLabel, algorithmUnopt){
+  #setting up the sizes
+  sizes = seq(from = 100, to = 50000, by = 500)
+  times = numeric(length(sizes))
+  times2 = numeric(length(sizes))
+  
+  #for each size, create a dataset, feed it to algorithm
+  #run the algorithm, measure the time elapsed, record and repeat
+  set.seed(2026)
+  for(i in 1:length(sizes)){
+    #generating data
+    sigma = matrix(c(10,3,3,2),2,2)
+    bivarData = mvrnorm(n = sizes[i], rep(0,2), sigma)
+    targetPoint = mvrnorm(1, rep(0,2), sigma)
+    
+    #collect garbage
+    gc(verbose = FALSE)
+    
+    #run the algorithms and record the time
+    temp = system.time({
+      output = algorithmOpt(bivarData, targetPoint)
+    })
+    
+    temp2 = system.time({
+      output2 = algorithmUnopt(bivarData, targetPoint)
+    })
+    
+    #adding user and system time only
+    times[i] = temp[1] + temp[2]
+    times2[i] = temp2[1] + temp2[2]
+  }
+  
+  sizeTime = data.frame(x = sizes, y = times)
+  sizeTime2 = data.frame(x = sizes, y = times2)
+  
+  return(ggplot(sizeTime, aes(x = x, y = y)) +
+           # The actual trend of the data for optimised algorithm
+           geom_smooth(aes(color = "Optimized"), method = "loess", se = FALSE, linewidth = 1)  +
+           
+           #unoptimised line
+           geom_smooth(data = sizeTime2, aes(x = x, y = y, color = "Unoptimized"), method = "loess", se = FALSE, linewidth = 1, inherit.aes = FALSE)  +
+           
+           #Regression - The theoretical N log N fit
+           geom_smooth(aes(color = "Theoretical O(n log n)"), method = "lm", formula = y ~ I(x*log(x)), 
+                       linetype = "dashed", se = FALSE, linewidth = 1) +
+           
+           labs(x = "Dataset Size (N)", 
+                y = "CPU Execution Time (Seconds)",
+                title = graphLabel,
+                color = "Implementation") +
+           theme(
+             plot.title = element_text(size = 12),  
+             axis.title = element_text(size = 8),
+             legend.position = "bottom"
+           ))
+}
+
+tukeyDepthOpt = function(dataFrame, target){
+  df = dataFrame
+  targetPoint = target
+  
+  #for now we are only finding the depth of a single point
+  #we start by shifting all the points so the target point 
+  #is equivalent to finding the depth of the origin
+  
+  #shift to origin
+  shiftedMPG = df[,1] - targetPoint[1]
+  shiftedWT = df[,2] - targetPoint[2]
+  
+  #we also need to calculate the true angle that the point forms with the x-axis
+  #%% (2pi) allows to wrap the angle in the standard 0 to 2pi range
+  thetaAngle = atan2(shiftedWT, shiftedMPG) %% (2*pi)
+  
+  #we calculate two angles for each observation
+  # 1 - the switch from not being able to project to being able to project
+  # 2 - vice versa
+  inFrom_thetaMinusPiby2 = (thetaAngle - (pi/2)) %% (2*pi)
+  outAt_thetaPlusPiby2   = (thetaAngle + (pi/2)) %% (2*pi)
+  
+  #For every angle in the 'in' list, we add (indicated by 1) one to our depth recorded so far
+  #and for every angle in the 'out' list, we subtract (indicated by -1) one from our depth recorded
+  
+  actionForIn = rep(1, nrow(df))
+  actionForOut = rep(-1, nrow(df))
+  
+  #create a data frame of all information and sort the angles for the sweep
+  ListOfAngleSwitches = matrix(c(inFrom_thetaMinusPiby2, outAt_thetaPlusPiby2, 
+                                 actionForIn, actionForOut), nrow = (2*nrow(df)), ncol = 2)
+  ListOfAngleSwitches = ListOfAngleSwitches[order(ListOfAngleSwitches[,1]),]
+  
+  #calculating starting depth
+  #implementing the algorithm now
+  #iterate through the list of switch angles, 
+  #adding or subtracting always keeping track of the minimum seen
+  
+  minDepth = 0
+  #number of points projecting on the right initially
+  right_count_start = sum(shiftedMPG > 0)
+  #keeping a running tally of right_counts
+  right_count = right_count_start + cumsum(ListOfAngleSwitches[,2])
+  n = nrow(df)
+  left_count = n - right_count
+  start_depth = min(right_count_start, n - right_count_start)
+  minDepth = min(start_depth, left_count, right_count)
+  
+  return(minDepth)
+}
+
+tukeyDepthUnopt = function(dataFrame, target){
+  df = dataFrame
+  targetPoint = target
+  
+  #Since the line is rotated around the origin, we would need to shift every point
+  #the following functions help with the shifting
+  
+  #function to shift x
+  shiftX = function(targetX, currX){
+    answerX = currX - targetX
+    return(answerX)
+  }
+  
+  #function to shift y
+  shiftY = function(targetY, currY){
+    answerY = currY - targetY
+    return(answerY)
+  }
+  
+  #function to calculate theta
+  theta = function(x, y){
+    answer = atan2(y,x) 
+    if((x < 0 && y < 0) || 
+       (x > 0 && y < 0) ||
+       (x == 0 && y < 0)){ #4th quad and 3rd quad and negative y-axis
+      answer = (2*pi) + answer
+    } 
+    return(answer)
+  }
+  
+  #for now we are only finding the depth of a single point
+  #we start by shifting all the points so the target point 
+  #is equivalent to finding the depth of the origin
+  
+  shiftedMPG = numeric()
+  shiftedWT = numeric()
+  
+  #we also need to calculate the true angle that the point forms with the x-axis
+  thetaAngle = numeric()
+  
+  for(i in 1:nrow(df)){
+    shiftedMPG[i] = shiftX(targetPoint[1],df[i,1])
+    shiftedWT[i] = shiftY(targetPoint[2],df[i,2])
+    thetaAngle[i] = theta(shiftedMPG[[i]],shiftedWT[[i]])
+  }
+  
+  #we calculate two angles for each observation
+  # 1 - the switch from not being able to project to being able to project
+  # 2 - vice versa
+  inFrom_thetaMinusPiby2 = numeric()
+  outAt_thetaPlusPiby2 = numeric()
+  
+  for(i in 1:nrow(df)){
+    inFrom_thetaMinusPiby2[i] = thetaAngle[i] - (pi/2)
+    outAt_thetaPlusPiby2[i] = thetaAngle[i] + (pi/2)
+  }
+  
+  #note that we will have some angles less than 0 and some greater than 2pi
+  #the line we rotate is only from 0 to 2pi
+  #thus we must fix those angles
+  
+  fixRange = function(angle){
+    fixedAngle = angle
+    if(angle < 0){
+      fixedAngle = (2*pi) + angle
+    } else if(angle > (2*pi)){
+      fixedAngle = angle - (2*pi)
+    }
+    return(fixedAngle)
+  }
+  
+  for(i in 1:nrow(df)){
+    inFrom_thetaMinusPiby2[i] = fixRange(inFrom_thetaMinusPiby2[i])
+    outAt_thetaPlusPiby2[i] = fixRange(outAt_thetaPlusPiby2[i])
+  }
+  
+  #For every angle in the 'in' list, we add (indicated by 1) one to our depth recorded so far
+  #and for every angle in the 'out' list, we subtract (indicated by 0) one from our depth recorded
+  
+  actionForIn = numeric()
+  actionForOut = numeric()
+  
+  for(i in 1:nrow(df)){
+    actionForIn[i] = 1
+    actionForOut[i] = 0
+  }
+  
+  inFrom = cbind(inFrom_thetaMinusPiby2, actionForIn)
+  outAT = cbind(outAt_thetaPlusPiby2, actionForOut)
+  
+  #combine both into one list, sort the list ascending order by angle
+  ListOfAngleSwitches = rbind(inFrom, outAT)
+  ListOfAngleSwitches = ListOfAngleSwitches[order(ListOfAngleSwitches[,1]),]
+  
+  #function to check if we are in the right-half
+  checkQuad = function(x){
+    if(x > 0){
+      answer = 1
+    } else{
+      answer = 0
+    }
+    return(answer)
+  }
+  
+  #calculating starting depth
+  minDepth = 0
+  right_count = 0
+  n = nrow(df)
+  i = 1
+  while(i <= nrow(df)){
+    if(checkQuad(shiftedMPG[i]) == 1){
+      right_count = right_count + 1
+    }
+    i = i + 1
+  }
+  left_count = n - right_count
+  minDepth = min(left_count,right_count)
+  
+  #implementing the algorithm now
+  #iterate through the list of switch angles, 
+  #adding or subtracting always keeping track of the minimum seen
+  
+  j = 1
+  while(j <= nrow(ListOfAngleSwitches)){
+    if(ListOfAngleSwitches[j,2] == 0){ #one of the points can't project anymore
+      right_count = right_count - 1
+    } else{ #a new point can project now
+      right_count = right_count + 1 
+    }
+    left_count = n - right_count
+    if(min(left_count, right_count) < minDepth){
+      minDepth = min(left_count, right_count)
+    }
+    j = j + 1
+  }
+  
+  return(minDepth)
+}
+
+#generating all graphs and combining in a panel layout
+p = functionOfNlogn(tukeyDepthOpt, "Empirical vs Theoretical(nlog(n)) - Tukey Depth", tukeyDepthUnopt)
+p1 = functionOfNlogn2(tukeyDepthOpt, "Empirical vs Theoretical(nlog(n)) - Tukey Depth", tukeyDepthUnopt)
+combined_plot = p1 + p + plot_layout(guides = 'collect')
+
+combined_plot & theme(legend.position = 'bottom')
+
+```
+
+#### Simplicial Depth
+The bivariate Simplicial depth algorithm relies on calculating the number of closed data triangles containing the target point. Since the geometry naturally relies on identifying sets of three, the baseline algorithm scales at an excruciatingly slow cubic $O(n^3)$ rate (bottom graph) as expected. The top row of graphs visualize the pre and post optimization runtime of the combinatorial approach.
+
+- The Macro View (Zoomed-Out, top-left): As $n \to \infty$, the execution time of the unoptimized algorithm skyrockets exponentially, making massive datasets extremely slow to process. The "crush effect" is noticed here as well. The optimized implementation sits at the $y \approx 0$ floor of the graph, showcasing the massive improvement in runtime as a result of the optimizations from week 6.
+
+- The Micro View (Zoomed-In, top-right): Due to the "crush effect", the macro view portrays the true asymptotic trajectory of the optimized algorithm to be linear, which is inaccurate. By zooming in on the bottom fraction of the y-axis, the expanded view allows us to overlay the theoretical regression curve and mathematically verify that our empirical runtime cleanly tracks its $O(n \log n)$ theoretical expectation [@D_F_L_M_S].
+
+```{r}
+#| echo: false
+#| warning: false
+#| code-fold: false
+#| fig-width: 9      
+#| fig-height: 8
+#| cache: true
+#| fig-cap: "Simplicial Depth: Optimization from O(n^3) baseline to O(n log n)"
+
+library(ggplot2)
+library(MASS)
+library(patchwork)
+library(dplyr)
+
+#function for zoomed in graph
+functionOfNlogn = function(algorithmOpt, algorithmUnopt){
+  #setting up the sizes
+  sizes = seq(from = 100, to = 50000, by = 500)
+  times = numeric(length(sizes))
+  times2 = numeric(length(sizes))
+  
+  #for each size, create a dataset, feed it to algorithm
+  #run the algorithm, measure the time elapsed, record and repeat
+  set.seed(2026)
+  for(i in 1:length(sizes)){
+    #generating the data
+    sigma = matrix(c(10,3,3,2),2,2)
+    bivarData = mvrnorm(n = sizes[i], rep(0,2), sigma)
+    targetPoint = mvrnorm(1, rep(0,2), sigma)
+    
+    #collect garbage right away
+    gc(verbose = FALSE)
+    
+    #running algorithms and recording the time
+    temp = system.time({
+      output = algorithmOpt(bivarData, targetPoint)
+    })
+    
+    temp2 = system.time({
+      output2 = algorithmUnopt(bivarData, targetPoint)
+    })
+    
+    #adding user and system time only
+    times[i] = temp[1] + temp[2]
+    times2[i] = temp2[1] + temp2[2]
+  }
+  
+  sizeTime = data.frame(x = sizes, y = times)
+  sizeTime2 = data.frame(x = sizes, y = times2)
+  
+  return(ggplot(sizeTime, aes(x = x, y = y)) +
+           # The actual trend of the data for the optimised version
+           geom_smooth(aes(color = "Optimized"), method = "loess", se = FALSE, linewidth = 1)  +
+           #unoptimised line
+           geom_smooth(data = sizeTime2, aes(x = x, y = y, color = "Unoptimized"), method = "loess", se = FALSE, linewidth = 1, inherit.aes = FALSE)  +
+           #Regression - The theoretical N log N fit
+           geom_smooth(aes(color = "Theoretical O(n log n)"), method = "lm", formula = y ~ I(x*log(x)), 
+                       linetype = "dashed", se = FALSE, linewidth = 1) +
+           
+           labs(x = "Dataset Size (N)",
+                color = "Implementation") +
+           theme(
+             plot.title = element_text(size = 12),  
+             axis.title = element_text(size = 8),
+             legend.position = "bottom",
+             plot.margin = margin(t = 5, r = 10, b = 5, l = 5)
+           ) + coord_cartesian(ylim = c(0, 0.02)))
+}
+
+#function for zoomed out graph
+functionOfNlogn2 = function(algorithmOpt, graphLabel, algorithmUnopt){
+  #setting up the sizes
+  sizes = seq(from = 100, to = 50000, by = 500)
+  times = numeric(length(sizes))
+  times2 = numeric(length(sizes))
+  
+  #for each size, create a dataset, feed it to algorithm
+  #run the algorithm, measure the time elapsed, record and repeat
+  set.seed(2026)
+  for(i in 1:length(sizes)){
+    #generating the data
+    sigma = matrix(c(10,3,3,2),2,2)
+    bivarData = mvrnorm(n = sizes[i], rep(0,2), sigma)
+    targetPoint = mvrnorm(1, rep(0,2), sigma)
+    
+    #collect garbage right away
+    gc(verbose = FALSE)
+    
+    #running the algorithms and recording the times
+    temp = system.time({
+      output = algorithmOpt(bivarData, targetPoint)
+    })
+    
+    temp2 = system.time({
+      output2 = algorithmUnopt(bivarData, targetPoint)
+    })
+    
+    #adding user and system time only
+    times[i] = temp[1] + temp[2]
+    times2[i] = temp2[1] + temp2[2]
+  }
+  
+  sizeTime = data.frame(x = sizes, y = times)
+  sizeTime2 = data.frame(x = sizes, y = times2)
+  
+  return(ggplot(sizeTime, aes(x = x, y = y)) +
+           # The actual trend of the data for the optimised version
+           geom_smooth(aes(color = "Optimized"), method = "loess", se = FALSE, linewidth = 1)  +
+           #unoptimised line
+           geom_smooth(data = sizeTime2, aes(x = x, y = y, color = "Unoptimized"), method = "loess", se = FALSE, linewidth = 1, inherit.aes = FALSE)  +
+           #Regression - The theoretical N log N fit
+           geom_smooth(aes(color = "Theoretical O(n log n)"), method = "lm", formula = y ~ I(x*log(x)), 
+                       linetype = "dashed", se = FALSE, linewidth = 1) +
+           
+           labs(x = "Dataset Size (N)", 
+                y = "CPU Execution Time (Seconds)",
+                title = graphLabel,
+                color = "Implementation") +
+           theme(
+             plot.title = element_text(size = 12),  
+             axis.title = element_text(size = 8),
+             legend.position = "bottom",
+             plot.margin = margin(t = 5, r = 5, b = 5, l = 15)
+           ))
+}
+
+#for baseline graph
+functionOfn3 = function(algorithm, graphLabel){
+  #setting up the sizes (smaller range since O(n^3) is very slow)
+  sizes = seq(from = 10, to = 500, by = 50)
+  times = numeric(length(sizes))
+  
+  #for each size, create a dataset, feed it to algorithm
+  #run the algorithm, measure the time elapsed, record and repeat
+  set.seed(2026)
+  for(i in 1:length(sizes)){
+    #generating the data
+    sigma = matrix(c(10,3,3,2),2,2)
+    bivarData = mvrnorm(n = sizes[i], rep(0,2), sigma)
+    targetPoint = mvrnorm(1, rep(0,2), sigma)
+    
+    #collect garbage right away
+    gc(verbose = FALSE)
+    
+    #running the algorithms and recording the time
+    temp = system.time({
+      output = algorithm(bivarData, targetPoint)
+    })
+    
+    #adding user and system time
+    times[i] = temp[1] + temp[2]
+  }
+  
+  sizeTime = data.frame(x = sizes, y = times)
+  
+  return(ggplot(sizeTime, aes(x = x, y = y)) +
+           # The actual trend of the data for the optimised version
+           geom_smooth(aes(color = "Empirical"), method = "loess", se = FALSE, linewidth = 1)  +
+           
+           #Regression - The theoretical N^3 fit
+           geom_smooth(aes(color = "Theoretical O(n ^ 3)"), method = "lm", formula = y ~ I(x^3), 
+                       linetype = "dashed", se = FALSE, linewidth = 1) +
+           
+           labs(x = "Dataset Size (N)", 
+                y = "CPU Execution Time (Seconds)",
+                title = graphLabel,
+                color = "Implementation") +
+    theme(
+      plot.title = element_text(size = 12),  
+      axis.title = element_text(size = 8),
+      legend.position = "bottom",
+      plot.margin = margin(t = 20, r = 10, b = 5, l = 15)
+    ))
+}
+
+simplicialOpt = function(dataFrame, target){
+  df = dataFrame
+  targetPoint = target
+  n = nrow(df)
+  totalTriangles = choose(n,3)
+  
+  #shift to origin
+  shiftedMPG = df[,1] - targetPoint[1]
+  shiftedWT = df[,2] - targetPoint[2]
+  
+  #we also need to calculate the true angle that the point forms with the x-axis
+  thetaAngle = atan2(shiftedWT, shiftedMPG)
+  #fix negative angles for points below the x axis (i.e. negative y-coordinate)
+  thetaAngle = ifelse(thetaAngle < 0, ((2*pi) + thetaAngle), thetaAngle)
+  
+  #As per Rousseeuw and Ruts Paper algorithm, now we compute the antipodal angles
+  switchAngle = ifelse(between(thetaAngle, 0, pi), thetaAngle + pi, thetaAngle - pi)
+  
+  #implementing updating mechanism
+  decrease = rep.int(-1, n)
+  increase = rep.int(1, n)
+  
+  #combine both into one list, sort the list ascending order by angle
+  ListOfAngleSwitches = matrix(c(thetaAngle, switchAngle, increase, decrease), nrow = 2*n, ncol = 2)
+  ListOfAngleSwitches = ListOfAngleSwitches[order(ListOfAngleSwitches[,1]),]
+  
+  #we start at the smallest angle (first point in sweep)
+  firstTheta = min(thetaAngle)
+  
+  #finding the corresponding antipodal angle
+  antipodal1 = 0
+  if(firstTheta >= 0 && firstTheta <= pi){
+    antipodal1 = firstTheta + pi
+  } else{
+    antipodal1 = firstTheta - pi
+  }
+  
+  #implementing the algorithm
+  fArray = numeric(n)
+  fArray[1] = 0
+  
+  #making sure we don't compare decimals using ==
+  b1Index = which.min(abs(ListOfAngleSwitches[,1] - antipodal1))
+  
+  fArray[1] = sum((ListOfAngleSwitches[,2] == 1) & 
+                    (ListOfAngleSwitches[,1] < antipodal1))
+  
+  globalTotal = fArray[1]
+  k = 2 #keeping track of current index for F array
+  
+  #finding the range we traverse over
+  if(b1Index == 1){
+    temp = c((b1Index+1):nrow(ListOfAngleSwitches))
+  }else if(b1Index == nrow(ListOfAngleSwitches)){
+    temp = c(1:(b1Index-1))
+  }else{
+    temp = c((b1Index+1):nrow(ListOfAngleSwitches), 1:(b1Index-1))
+  }
+  
+  #following the updating mechanism
+  for(i in temp){ 
+    if(ListOfAngleSwitches[i,2] == 1){
+      globalTotal = globalTotal + 1
+    }else{
+      fArray[k] = globalTotal
+      k = k+1
+    }
+  }
+  
+  #as per the algorithm, we remove the points that don't belong in the halfplane
+  #to get the final halfspace counts
+  right_count = fArray - (1:n)
+  
+  #calculating the final depth using combinatorial definition
+  triangleCounter = sum(choose(right_count, 2))
+  simplicialDepth = (totalTriangles - triangleCounter)/totalTriangles
+  return(simplicialDepth)
+}
+
+SimplicialUnopt = function(dataFrame, target){
+  df = dataFrame
+  targetPoint = target
+  n = nrow(df)
+  totalTriangles = choose(n,3)
+  
+  #Since the line is rotated around the origin, we would need to shift every point
+  #the following functions help with the shifting
+  
+  #function to shift x
+  shiftX = function(targetX, currX){
+    answerX = currX - targetX
+    return(answerX)
+  }
+  
+  #function to shift y
+  shiftY = function(targetY, currY){
+    answerY = currY - targetY
+    return(answerY)
+  }
+  
+  #function to calculate theta
+  theta = function(x, y){
+    answer = atan2(y,x) 
+    if((x < 0 && y < 0) || 
+       (x > 0 && y < 0) ||
+       (x == 0 && y < 0)){ #4th quad and 3rd quad and negative y-axis
+      answer = (2*pi) + answer
+    } 
+    return(answer)
+  }
+  
+  shiftedMPG = numeric()
+  shiftedWT = numeric()
+  
+  #we also need to calculate the true angle that the point forms with the x-axis
+  thetaAngle = numeric()
+  
+  for(i in 1:n){
+    shiftedMPG[i] = shiftX(targetPoint[1],df[i,1])
+    shiftedWT[i] = shiftY(targetPoint[2],df[i,2])
+    thetaAngle[i] = theta(shiftedMPG[[i]],shiftedWT[[i]])
+  }
+  
+  #As per Rousseeuw and Ruts Paper algorithm, now we compute the 
+  #antipodal angles
+  switchAngle = numeric()
+  
+  for(i in 1:n){
+    if(between(thetaAngle[i], 0, pi)){
+      switchAngle[i] = thetaAngle[i] + pi
+    } else{
+      switchAngle[i] = thetaAngle[i] - pi
+    }
+  }
+  
+  #implementing updating mechanism
+  decrease = numeric()
+  increase = numeric()
+  
+  for(i in 1:n){
+    increase[i] = 1
+    decrease[i] = -1
+  }
+  
+  #attaching the correct reference with each angle
+  originalAngles = cbind(thetaAngle, increase)
+  antipodalAngles = cbind(switchAngle, decrease)
+  
+  #combine both into one list, sort the list ascending order by angle
+  ListOfAngleSwitches = rbind(originalAngles, antipodalAngles)
+  ListOfAngleSwitches = ListOfAngleSwitches[order(ListOfAngleSwitches[,1]),]
+  
+  first = 0 #finding first theta
+  j = 1
+  while(first != 1){
+    if(ListOfAngleSwitches[j,2] == 1){
+      first = 1
+    } else{
+      j = j + 1
+    }
+  }
+  
+  antipodal1 = 0 #getting first antipodal angle
+  if(between(ListOfAngleSwitches[j,1], 0, pi)){
+    antipodal1 = ListOfAngleSwitches[j,1] + pi
+  } else{
+    antipodal1 = ListOfAngleSwitches[j,1] - pi
+  }
+  
+  #implementing the algorithm 
+  #here fArray, b_i are as defined in the paper
+  fArray = numeric()
+  fArray[1] = 0
+  b1Index = 0
+  
+  #getting F[1] - counting how many 
+  #input data points we see before antipodal1
+  for(i in 1:nrow(ListOfAngleSwitches)){
+    if((ListOfAngleSwitches[i,2] == 1) && 
+       (ListOfAngleSwitches[i,1] < antipodal1)){
+      fArray[1] = fArray[1] + 1
+    }
+    
+    if(ListOfAngleSwitches[i,1] == antipodal1){
+      b1Index = i
+    }
+  }
+  
+  globalTotal = fArray[1]
+  k = 2 #keeping index track for F array
+  
+  #defining the range where we continue our sweep
+  temp = c((b1Index+1):nrow(ListOfAngleSwitches), 1:(b1Index-1))
+  for(i in temp){ 
+    if(ListOfAngleSwitches[i,2] == 1){
+      globalTotal = globalTotal + 1
+    }else{
+      fArray[k] = globalTotal
+      k = k+1
+    }
+  }
+  
+  right_count = numeric()
+  right_count[1] = 0
+  for(i in 1:length(fArray)){
+    right_count[i] = fArray[i] - i
+  }
+  
+  #calculating final depth as per combinatorial definition
+  triangleCounter = sum(choose(right_count, 2))
+  simplicialDepth = (totalTriangles - triangleCounter)/totalTriangles
+  return(simplicialDepth)
+}
+
+simplicialBaseline = function(dataFrame, target){
+  #A function to calculate the distance between two points
+  distance = function(point1, point2){
+    return(sqrt(sum((point2-point1)^2)))
+  }
+  
+  #formula to calculate the area of a triangle (heron's)
+  triangleArea = function(a, b, c){
+    s = (a + b + c)/2
+    return(sqrt(s*(s-a)*(s-b)*(s-c)))
+  }
+  
+  df = dataFrame
+  targetPoint = target
+  n = nrow(df)
+  totalTriangles = choose(n,3)
+  counter = 0
+  
+  #algorithm (for every possible triangle, check if the triangle contains the point)
+  for(i in 1:(n-2)){
+    for(j in (i+1):(n-1)){
+      for(k in (j+1):n){
+        #get the lengths of the sides of the triangle
+        a = distance(df[i,],df[j,])
+        b = distance(df[i,],df[k,])
+        c = distance(df[j,],df[k,])
+        #get the lengths of the sides formed by the targe point 
+          #and the triangle vertices
+        targetA = distance(df[i,],targetPoint)
+        targetB = distance(df[j,],targetPoint)
+        targetC = distance(df[k,],targetPoint)
+        
+        #compute all areas and check if the sum of the subtriangles 
+          #equals the total
+        totalArea = triangleArea(a, b, c)
+        subArea1 = triangleArea(a,targetB,targetA)
+        subArea2 = triangleArea(b,targetC,targetA)
+        subArea3 = triangleArea(c,targetB,targetC)
+        totalObserved = subArea1 + subArea2 + subArea3
+        
+        #using a tolerance instead of exact comparison
+        if(abs(totalArea - totalObserved) < 1e-6){ 
+          counter = counter + 1
+        }
+      }
+    }
+  }
+  
+  simplicialBase = counter/totalTriangles
+  return(simplicialBase)
+}
+
+p = functionOfNlogn(simplicialOpt, SimplicialUnopt)
+p1 = functionOfNlogn2(simplicialOpt, "Empirical vs Theoretical(nlog(n)) - Simplicial Depth", SimplicialUnopt)
+p7 = functionOfn3(simplicialBaseline, "Empirical vs Theoretical(n^3) - Baseline")
+
+combined_plot = (p1 + p) / p7 + plot_layout(guides = 'collect')
+combined_plot & theme(legend.position = 'bottom',
+                      legend.box = "vertical", 
+                      legend.margin = margin(t = 0, r = 0, b = 0, l = 0),
+                      plot.margin = margin(t = 10, r = 10, b = 10, l = 10))
+```
+
+#### IRW Depth
+Integrated Rank-Weighted depth relies on averaging the univariate depth measures across all directional vectors. Recall that, during Week 4 we implemented IRW depth three distinct ways - Exact IRW Depth (The Sweep Method), Sweep and Randomize Monte Carlo, and No Sweep Monte Carlo. Below we share the results for the runtime analysis of each pre and post optimization. 
+
+- No Sweep Monte Carlo: As can be seen in the Unoptimized (Micro) and Optimized (Macro) graphs, while both follow a linear trajectory for this algorithm, optimizing the code flattens the slope, making the linear process much faster in the optimized version. 
+
+- Angular Sweep Implementations: In the unoptimized panel (left side), the current dataset scale is insufficient to fully demonstrate the disparity between the theoretical $O(n \log n)$ bound and the unoptimized 'Exact with Pre-Setup' algorithm. The latter seems to track the theoretical line perfectly because the workload at $n=800$ is too small to show the underlying inefficiencies. However, the left panel effectively illustrates the poor performance of the unoptimized 'Pre-Setup with Randomization' algorithm. Using the optimized (micro) graph, we observe that post optimization, both the sweep algorithms perfectly track the theoretical $n \log n$ line as $n \to \infty$. 
+
+```{r}
+#| echo: false
+#| warning: false
+#| code-fold: false
+#| fig-width: 10      
+#| fig-height: 7
+#| cache: true
+#| fig-cap: "IRW Depth: Execution time comparison across implementations"
+
+#-------plotting-------
+library(ggplot2)
+library(MASS)
+library(patchwork)
+
+runtimeAnalysis = function(algorithm1, algorithm2, algorithm3, graphLabel, sizeSeq){
+  sizes = sizeSeq
+  times1 = numeric(length(sizes))
+  times2 = numeric(length(sizes))
+  times3 = numeric(length(sizes))
+  
+  #for each size, create a dataset, feed it to algorithms
+  #run the algorithm, measure the time elapsed, record and repeat
+  set.seed(2026)
+  for(i in 1:length(sizes)){
+    #generating data
+    sigma = matrix(c(10,3,3,2),2,2)
+    bivarData = mvrnorm(n = sizes[i], rep(0,2), sigma)
+    targetPoint = mvrnorm(1, rep(0,2), sigma)
+    
+    #collect garbage right away
+    gc(verbose = FALSE)
+    
+    #run the algorithms and record the time
+    temp1 = system.time({
+      output1 = algorithm1(bivarData, targetPoint)
+    })
+    
+    temp2 = system.time({
+      output2 = algorithm2(bivarData, targetPoint)
+    })
+    
+    temp3 = system.time({
+      output3 = algorithm3(bivarData, targetPoint)
+    })
+    
+    #extract user and system time only
+    times1[i] = temp1[1] + temp1[2]
+    times2[i] = temp2[1] + temp2[2]
+    times3[i] = temp3[1] + temp3[2]
+  }
+  
+  sizeTime1 = data.frame(x = sizes, y = times1)
+  sizeTime2 = data.frame(x = sizes, y = times2)
+  sizeTime3 = data.frame(x = sizes, y = times3)
+  
+  return(ggplot(sizeTime1, aes(x = x, y = y)) +
+           
+           #Empirical Monte Carlo
+           geom_smooth(aes(color = "Monte Carlo Approximation"), method = "loess", se = FALSE, linewidth = 1)  +
+           
+           #Empirical Exact Pre-Setup
+           geom_smooth(data = sizeTime2, aes(x = x, y = y, color = "Exact with Pre-Setup"), method = "loess", se = FALSE, linewidth = 1)  +
+           
+           #Empirical Random Pre-Setup
+           geom_smooth(data = sizeTime3, aes(x = x, y = y, color = "Pre-Setup with Randomization"), method = "loess", se = FALSE, linewidth = 1) +
+           
+           #Regression - Theoretical O(n) fit -> Matches Monte Carlo
+           geom_smooth(aes(color = "Theoretical O(mnd)"), method = "lm", formula = y ~ x, 
+                       linetype = "dashed", se = FALSE, linewidth = 1.5, alpha = 0.5) +
+           
+           #Regression - Theoretical O(n log n) fit -> matches Exact Pre-Setup
+           geom_smooth(data = sizeTime2, aes(x = x, y = y, color = "Theoretical O(n log n)"), method = "lm", formula = y ~ I(x*log(x)), 
+                       linetype = "dashed", se = FALSE, linewidth = 1.5, alpha = 0.5) +
+           
+           labs(x = "Dataset Size (N)", 
+                y = "CPU Execution Time (Seconds)",
+                title = graphLabel,
+                color = "Implementation") +
+           theme(plot.title = element_text(size = 12),
+                 axis.title = element_text(size = 8),
+                 legend.position = "bottom"))
+}
+
+#-----optimised------
+irwPreSetup = function(dataFrame, target){
+  df = dataFrame
+  targetPoint = target
+
+  #for now we are only finding the depth of a single point
+  #we start by shifting all the points so the target point 
+  #is equivalent to finding the depth of the origin
+  
+  #shift to origin
+  shiftedMPG = df[,1] - targetPoint[1]
+  shiftedWT = df[,2] - targetPoint[2]
+  
+  #we also need to calculate the true angle that the point forms with the x-axis
+  #%% (2pi) allows to wrap the angle in the standard 0 to 2pi range
+  thetaAngle = atan2(shiftedWT, shiftedMPG) %% (2*pi)
+  
+  #we calculate two angles for each observation
+  # 1 - the switch from not being able to project to being able to project
+  # 2 - vice versa
+  inFrom_thetaMinusPiby2 = (thetaAngle - (pi/2)) %% (2*pi)
+  outAt_thetaPlusPiby2   = (thetaAngle + (pi/2)) %% (2*pi)
+  
+  #For every angle in the 'in' list, we add (indicated by 1) one to our depth recorded so far
+  #and for every angle in the 'out' list, we subtract (indicated by -1) one from our depth recorded
+  
+  actionForIn = rep(1, nrow(df))
+  actionForOut = rep(-1, nrow(df))
+  
+  #create a data frame of all information and sort the angles for the sweep
+  ListOfAngleSwitches = matrix(c(inFrom_thetaMinusPiby2, outAt_thetaPlusPiby2, 
+                                 actionForIn, actionForOut), nrow = (2*nrow(df)), ncol = 2)
+  ListOfAngleSwitches = ListOfAngleSwitches[order(ListOfAngleSwitches[,1]),]
+  
+  #calculating starting depth
+  right_count_start = sum(shiftedMPG > 0)
+  n = nrow(df)
+  start_depth = min(right_count_start, n - right_count_start)
+
+  #implementing the algorithm now
+  #keeping a running tally of right_counts
+  right_count = right_count_start + cumsum(ListOfAngleSwitches[,2])
+  left_count = n - right_count
+  
+  #find the depth in each slice
+  sweep_depths = pmin(left_count, right_count)
+  univarDepth = c(start_depth, sweep_depths)
+  
+  #compute the size and weight of each slice
+  temp1 = c(0,ListOfAngleSwitches[,1])
+  temp2 = c(ListOfAngleSwitches[,1], (2*pi))
+  slice_size = temp2 - temp1
+  slice_weight = slice_size/(2*pi)
+  
+  #take the average to find the irw depth
+  irwDepth = sum(slice_weight*univarDepth)
+  return(irwDepth)
+}
+
+#-----------------------
+
+irwPreSetupRandom = function(dataFrame, target){
+  df = dataFrame
+  targetPoint = target
+
+  #for now we are only finding the depth of a single point
+  #we start by shifting all the points so the target point 
+  #is equivalent to finding the depth of the origin
+  
+  #shift to origin
+  shiftedMPG = df[,1] - targetPoint[1]
+  shiftedWT = df[,2] - targetPoint[2]
+  
+  #we also need to calculate the true angle that the point forms with the x-axis
+  #%% (2pi) allows to wrap the angle in the standard 0 to 2pi range
+  thetaAngle = atan2(shiftedWT, shiftedMPG) %% (2*pi)
+  
+  #we calculate two angles for each observation
+  # 1 - the switch from not being able to project to being able to project
+  # 2 - vice versa
+  inFrom_thetaMinusPiby2 = (thetaAngle - (pi/2)) %% (2*pi)
+  outAt_thetaPlusPiby2   = (thetaAngle + (pi/2)) %% (2*pi)
+  
+  #For every angle in the 'in' list, we add (indicated by 1) one to our depth recorded so far
+  #and for every angle in the 'out' list, we subtract (indicated by -1) one from our depth recorded
+  
+  actionForIn = rep(1, nrow(df))
+  actionForOut = rep(-1, nrow(df))
+  
+  #create a data frame of all information and sort the angles for the sweep
+  ListOfAngleSwitches = matrix(c(inFrom_thetaMinusPiby2, outAt_thetaPlusPiby2, 
+                                 actionForIn, actionForOut), nrow = (2*nrow(df)), ncol = 2)
+  ListOfAngleSwitches = ListOfAngleSwitches[order(ListOfAngleSwitches[,1]),]
+  
+  #calculating starting depth
+  right_count_start = sum(shiftedMPG > 0)
+  n = nrow(df)
+  start_depth = min(right_count_start, n - right_count_start)
+
+  #implementing the algorithm now
+  #keeping a running tally of right_counts
+  right_count = right_count_start + cumsum(ListOfAngleSwitches[,2])
+  left_count = n - right_count
+  
+  #find the depth in each slice
+  sweep_depths = pmin(left_count, right_count)
+  univarDepth = c(start_depth, sweep_depths)
+  
+  #upto this point we know what the depth in each slice is
+  #in this iteration, we simply generate a random theta and
+  #see what slice it lands in. 
+  #remember we already know what the depth in that slice is
+  
+  angleSwitches = c(0,ListOfAngleSwitches[,1],2*pi)
+  m = 5000
+  thetas = runif(m, 0, 2*pi) #generate uniformly randomly
+  univarDepthRand = numeric(m) #records the depth of each randomly generated theta
+  
+  #returns the index of the slice where each theta lands in
+  j = findInterval(thetas, angleSwitches)
+  univarDepthRand = univarDepth[j]
+  
+  PreSet_withRand_IrwDepth = mean(univarDepthRand)
+  return(PreSet_withRand_IrwDepth)
+}
+
+#-------------------------------------
+
+irwMonteCarlo = function(dataFrame, target){
+  df = dataFrame
+  df = as.matrix(df)
+  targetPoint = target
+  
+  #number of directions
+  m = 5000
+  thetas = runif(m, 0, 2*pi) #generate uniformly randomly
+  univarDepth = numeric(length(thetas)) #stores the depth associated with each randomly generated direction
+  
+  #function to calculate scalar projection
+  #unit direction vector for each theta is given by <cos(theta), sin(theta)>
+  calcProjection = function(point, theta){
+    return((point[1]*cos(theta))+(point[2]*sin(theta)))
+  }
+  
+  #for each theta, for each point, compute scalar projection of the target
+  #and all the data points, find out the left and the right counts
+  #record the univariate depth as the minimum of the two
+  for(i in 1:length(thetas)){
+    targetProjection = calcProjection(targetPoint, thetas[i])
+    projection = calcProjection(df[,], thetas[i])
+    lessThan = sum(projection < targetProjection)
+    greaterThan = sum(projection >= targetProjection)
+    univarDepth[i] = min(lessThan, greaterThan)
+  }
+  
+  monteCarloIrwDepth = mean(univarDepth)
+  return(monteCarloIrwDepth)
+}
+
+#---------unoptimised--------------
+
+irwPreSetupUnopt = function(dataFrame, target){
+  df = dataFrame
+  
+  #Since the line is rotated around the origin, we would need to shift every point
+  #the following functions help with the shifting
+  
+  #function to shift x
+  shiftX = function(targetX, currX){
+    answerX = currX - targetX
+    return(answerX)
+  }
+  
+  #function to shift y
+  shiftY = function(targetY, currY){
+    answerY = currY - targetY
+    return(answerY)
+  }
+  
+  #function to calculate theta
+  theta = function(x, y){
+    answer = atan2(y,x) 
+    if((x < 0 && y < 0) || 
+       (x > 0 && y < 0) ||
+       (x == 0 && y < 0)){ #4th quad and 3rd quad and negative y-axis
+      answer = (2*pi) + answer
+    } 
+    return(answer)
+  }
+  
+  #for now we are only finding the depth of a single point
+  #we start by shifting all the points so the target point 
+  #is equivalent to finding the depth of the origin
+  targetPoint = target
+  shiftedMPG = numeric()
+  shiftedWT = numeric()
+  
+  #we also need to calculate the true angle that the point forms with the x-axis
+  thetaAngle = numeric()
+  
+  for(i in 1:nrow(df)){
+    shiftedMPG[i] = shiftX(targetPoint[1],df[i,1])
+    shiftedWT[i] = shiftY(targetPoint[2],df[i,2])
+    thetaAngle[i] = theta(shiftedMPG[[i]],shiftedWT[[i]])
+  }
+  
+  #we calculate two angles for each observation
+  # 1 - the switch from projecting right to left
+  # 2 - the switch from projecting left to right
+  inFrom_thetaMinusPiby2 = numeric()
+  outAt_thetaPlusPiby2 = numeric()
+  
+  for(i in 1:nrow(df)){
+    inFrom_thetaMinusPiby2[i] = thetaAngle[i] - (pi/2)
+    outAt_thetaPlusPiby2[i] = thetaAngle[i] + (pi/2)
+  }
+  
+  #note that we will have some angles less than 0 and some greater than 2pi
+  #the line we rotate is only from 0 to 2pi
+  #thus we must fix those angles
+  
+  fixRange = function(angle){
+    fixedAngle = angle
+    if(angle < 0){
+      fixedAngle = (2*pi) + angle
+    } else if(angle > (2*pi)){
+      fixedAngle = angle - (2*pi)
+    }
+    return(fixedAngle)
+  }
+  
+  for(i in 1:nrow(df)){
+    inFrom_thetaMinusPiby2[i] = fixRange(inFrom_thetaMinusPiby2[i])
+    outAt_thetaPlusPiby2[i] = fixRange(outAt_thetaPlusPiby2[i])
+  }
+  
+  #For every angle in the 'in' list, we add (indicated by 1) one to our depth recorded so far
+  #and for every angle in the 'out' list, we subtract (indicated by 0) one from our depth recorded
+  
+  actionForIn = numeric()
+  actionForOut = numeric()
+  
+  for(i in 1:nrow(df)){
+    actionForIn[i] = 1
+    actionForOut[i] = 0
+  }
+  
+  inFrom = cbind(inFrom_thetaMinusPiby2, actionForIn)
+  outAT = cbind(outAt_thetaPlusPiby2, actionForOut)
+  
+  #combine both into one list, sort the list ascending order by angle
+  ListOfAngleSwitches = rbind(inFrom, outAT)
+  ListOfAngleSwitches = ListOfAngleSwitches[order(ListOfAngleSwitches[,1]),]
+  
+  #function to check if we are in the right-half
+  checkQuad = function(x){
+    if(x > 0){
+      answer = 1
+    } else{
+      answer = 0
+    }
+    return(answer)
+  }
+  
+  #calculating starting depth
+  minDepth = 0
+  right_count = 0
+  n = nrow(df)
+  i = 1
+  while(i <= nrow(df)){
+    if(checkQuad(shiftedMPG[i]) == 1){
+      right_count = right_count + 1
+    }
+    i = i + 1
+  }
+  left_count = n - right_count
+  minDepth = min(left_count,right_count)
+  
+  univarDepth = numeric()
+  univarDepth[1] = minDepth
+  
+  #finding the depth in each slice
+  j = 1
+  while(j <= nrow(ListOfAngleSwitches)){
+    if(ListOfAngleSwitches[j,2] == 0){ #one of the points can't project anymore
+      right_count = right_count - 1
+    } else{ #a new point can project now
+      right_count = right_count + 1 
+    }
+    left_count = n - right_count
+    univarDepth[j+1] = min(left_count, right_count)
+    j = j + 1
+  }
+  
+  slice_size = numeric()
+  slice_size[1] = ListOfAngleSwitches[1,1]
+  for(i in 2:nrow(ListOfAngleSwitches)){ 
+    slice_size[i] = ListOfAngleSwitches[i,1] - ListOfAngleSwitches[i-1,1]
+  }
+  
+  #update last slice size
+  slice_size[33] = (2*pi) - ListOfAngleSwitches[32,1]
+  
+  slice_weight = slice_size/(2*pi)
+  
+  irwDepth = sum(slice_weight*univarDepth)
+  return(irwDepth)
+}
+
+irwPreSetupRandomUnopt = function(dataFrame, target){
+  df = dataFrame
+  
+  #Since the line is rotated around the origin, we would need to shift every point
+  #the following functions help with the shifting
+  
+  #function to shift x
+  shiftX = function(targetX, currX){
+    answerX = currX - targetX
+    return(answerX)
+  }
+  
+  #function to shift y
+  shiftY = function(targetY, currY){
+    answerY = currY - targetY
+    return(answerY)
+  }
+  
+  #function to calculate theta
+  theta = function(x, y){
+    answer = atan2(y,x) 
+    if((x < 0 && y < 0) || 
+       (x > 0 && y < 0) ||
+       (x == 0 && y < 0)){ #4th quad and 3rd quad and negative y-axis
+      answer = (2*pi) + answer
+    } 
+    return(answer)
+  }
+  
+  #for now we are only finding the depth of a single point
+  #we start by shifting all the points so the target point 
+  #is equivalent to finding the depth of the origin
+  targetPoint = target
+  shiftedMPG = numeric()
+  shiftedWT = numeric()
+  
+  #we also need to calculate the true angle that the point forms with the x-axis
+  thetaAngle = numeric()
+  
+  for(i in 1:nrow(df)){
+    shiftedMPG[i] = shiftX(targetPoint[1],df[i,1])
+    shiftedWT[i] = shiftY(targetPoint[2],df[i,2])
+    thetaAngle[i] = theta(shiftedMPG[[i]],shiftedWT[[i]])
+  }
+  
+  #we calculate two angles for each observation
+  # 1 - the switch from projecting right to left
+  # 2 - the switch from projecting left to right
+  inFrom_thetaMinusPiby2 = numeric()
+  outAt_thetaPlusPiby2 = numeric()
+  
+  for(i in 1:nrow(df)){
+    inFrom_thetaMinusPiby2[i] = thetaAngle[i] - (pi/2)
+    outAt_thetaPlusPiby2[i] = thetaAngle[i] + (pi/2)
+  }
+  
+  #note that we will have some angles less than 0 and some greater than 2pi
+  #the line we rotate is only from 0 to 2pi
+  #thus we must fix those angles
+  
+  fixRange = function(angle){
+    fixedAngle = angle
+    if(angle < 0){
+      fixedAngle = (2*pi) + angle
+    } else if(angle > (2*pi)){
+      fixedAngle = angle - (2*pi)
+    }
+    return(fixedAngle)
+  }
+  
+  for(i in 1:nrow(df)){
+    inFrom_thetaMinusPiby2[i] = fixRange(inFrom_thetaMinusPiby2[i])
+    outAt_thetaPlusPiby2[i] = fixRange(outAt_thetaPlusPiby2[i])
+  }
+  
+  #For every angle in the 'in' list, we add (indicated by 1) one to our right count recorded so far
+  #and for every angle in the 'out' list, we subtract (indicated by 0) one from our right count recorded
+  
+  actionForIn = numeric()
+  actionForOut = numeric()
+  
+  for(i in 1:nrow(df)){
+    actionForIn[i] = 1
+    actionForOut[i] = 0
+  }
+  
+  inFrom = cbind(inFrom_thetaMinusPiby2, actionForIn)
+  outAT = cbind(outAt_thetaPlusPiby2, actionForOut)
+  
+  #combine both into one list, sort the list ascending order by angle
+  ListOfAngleSwitches = rbind(inFrom, outAT)
+  ListOfAngleSwitches = ListOfAngleSwitches[order(ListOfAngleSwitches[,1]),]
+  
+  #function to check if we are in the right-half from initial count
+  checkQuad = function(x){
+    if(x > 0){
+      answer = 1
+    } else{
+      answer = 0
+    }
+    return(answer)
+  }
+  
+  #calculating starting depth
+  minDepth = 0
+  right_count = 0
+  n = nrow(df)
+  i = 1
+  while(i <= nrow(df)){
+    if(checkQuad(shiftedMPG[i]) == 1){
+      right_count = right_count + 1
+    }
+    i = i + 1
+  }
+  left_count = n - right_count
+  minDepth = min(left_count,right_count)
+  
+  univarDepth = numeric()
+  univarDepth[1] = minDepth
+  
+  j = 1
+  while(j <= nrow(ListOfAngleSwitches)){
+    if(ListOfAngleSwitches[j,2] == 0){ #one of the points can't project on right anymore
+      right_count = right_count - 1
+    } else{ #a new point can project on the right now
+      right_count = right_count + 1 
+    }
+    left_count = n - right_count
+    univarDepth[j+1] = min(left_count, right_count)
+    j = j + 1
+  }
+  
+  #upto this point we know what the depth in each slice is
+  #in this iteration, we simply generate a random theta and
+  #see what slice it lands in. 
+  #remember we already know what the depth in that slice is
+  
+  angleSwitches = c(0,ListOfAngleSwitches[,1],2*pi)
+  m = 5000
+  thetas = runif(m, 0, 2*pi) #generate uniformly randomly
+  univarDepthRand = numeric()
+  
+  for (i in 1:m){ 
+    for(j in 1:(length(angleSwitches)-1)){
+      if(between(thetas[i], angleSwitches[j], angleSwitches[j+1])){
+        univarDepthRand[i] = univarDepth[j]
+      }
+    }
+  }
+  
+  PreSet_withRand_IrwDepth = mean(univarDepthRand)
+  return(PreSet_withRand_IrwDepth)
+  
+}
+
+irwMonteCarloUnopt = function(dataFrame, target){
+  df = dataFrame
+  targetPoint = target
+  
+  #number of directions
+  m = 5000
+  thetas = runif(m, 0, 2*pi) #generate uniformly randomly
+  univarDepth = numeric()
+  
+  #function to calculate scalar projection
+  calcProjection = function(point, theta){
+    return((point[1]*cos(theta))+(point[2]*sin(theta)))
+  }
+  
+  #unit direction vector for each theta is given by <cos(theta), sin(theta)>
+  
+  #for each theta, for each point, compute scalar projection of original first, 
+  #then the rest, for each increment the appropriate variable, 
+  #record the univariate depth
+  for(i in 1:length(thetas)){
+    lessThan = 0
+    greaterThan = 0 
+    targetProjection = calcProjection(targetPoint, thetas[i])
+    for (j in 1:nrow(df)) {
+      projection = calcProjection(df[j,], thetas[i])
+      if(projection < targetProjection){ 
+        lessThan = lessThan + 1
+      } else{
+        greaterThan = greaterThan + 1
+      }
+    }
+    univarDepth[i] = min(lessThan, greaterThan)
+  }
+  
+  monteCarloIrwDepth = mean(univarDepth)
+  return(monteCarloIrwDepth)
+}
+
+#--------------------
+
+# Generate the Macro Views
+# Capped at n = 800 for the unoptimized loops to prevent freezing
+sizes_unopt = seq(from = 100, to = 800, by = 100)
+unopt_macro = runtimeAnalysis(irwMonteCarloUnopt, irwPreSetupUnopt, irwPreSetupRandomUnopt,"Unoptimized (Macro)", sizes_unopt)
+
+# n = 50,000 for the optimized functions
+sizes_opt = seq(from = 100, to = 50000, by = 500)
+opt_macro = runtimeAnalysis(irwMonteCarlo, irwPreSetup, irwPreSetupRandom, "Optimized (Macro)", sizes_opt)
+
+#Create the Zoomed-In Versions
+unopt_micro = unopt_macro + 
+  coord_cartesian(ylim = c(0, 3)) + 
+  labs(title = "Unoptimized (Micro)", subtitle = "Y-axis cropped at 3 seconds")
+
+opt_micro = opt_macro + 
+  coord_cartesian(ylim = c(0, 0.03)) + 
+  labs(title = "Optimized (Micro)", subtitle = "Y-axis cropped at 0.03 seconds")
+
+# generating the grid of graphs
+((unopt_macro | opt_macro) / (unopt_micro | opt_micro)) + 
+  plot_layout(guides = 'collect') & 
+  theme(legend.position = "bottom",
+        legend.margin = margin(t = 0, r = 0, b = 0, l = 0)) &
+  guides(color = guide_legend(nrow = 2, byrow = TRUE))
+
+```
+
+#### Mahalanobis Depth
+Relying primarily on covariance matrices and inverse matrix algebra, this depth measure utilizes R's native vectorized operations, showcasing a linear runtime, and perfectly matching the theoretical expectation of $O(n)$ [@mosler2022].
+
+```{r}
+#| echo: false
+#| warning: false
+#| code-fold: false
+#| cache: true
+#| fig-cap: "Mahalanobis Depth: Execution time verification against theoretical expectation"
+
+options(scipen = 999) #ensure no scientific notation
+library(ggplot2)
+
+#function to plot the runtime graph
+functionOfn = function(algorithm, graphLabel){
+  #setting up the sizes
+  sizes = seq(from = 100, to = 500000, by = 500)
+  times = numeric(length(sizes))
+  
+  #for each size, create a dataset, feed it to algorithm
+  #run the algorithm, measure the time elapsed, record and repeat
+  set.seed(2026)
+  for(i in 1:length(sizes)){
+    #generating the data for each size
+    sigma = matrix(c(10,3,3,2),2,2)
+    bivarData = mvrnorm(n = sizes[i], rep(0,2), sigma)
+    targetPoint = mvrnorm(1, rep(0,2), sigma)
+    
+    #collect garbage right away
+    gc(verbose = FALSE)
+    
+    #run the algorithm and record the time
+    temp = system.time({
+      output = algorithm(bivarData, targetPoint)
+    })
+    
+    #adding user and system time only
+    times[i] = temp[1] + temp[2]
+  }
+  
+  sizeTime = data.frame(x = sizes, y = times)
+  
+  return(ggplot(sizeTime, aes(x = x, y = y)) +
+           # The actual trend of the data
+           geom_smooth(aes(color = "Empirical"), method = "loess", se = FALSE, linewidth = 1)  +
+           
+           #Regression - The theoretical N fit
+           geom_smooth(aes(color = "Theoretical O(n)"), method = "lm", formula = y ~ x, 
+                       linetype = "dashed", se = FALSE, linewidth = 1) +
+           
+           labs(x = "Dataset Size (N)", 
+                y = "CPU Execution Time (Seconds)",
+                title = graphLabel,
+                color = "Implementation") +
+    theme(
+      plot.title = element_text(size = 12),  
+      axis.title = element_text(size = 8),
+      legend.position = "bottom",
+      plot.margin = margin(t = 20, r = 25, b = 10, l = 20),
+      axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)
+    ))
+}
+
+#function to compute mahalanobis depth
+mhlDepth = function(dataFrame, target){
+  #Function that calculates mahalanobis distance
+  mhlnbs_Dist = function(obs, mean, covMatrix){
+    result = t(obs - mean) %*% 
+      solve(covMatrix) %*% 
+      (obs - mean)
+    return(result)
+  }
+
+  df = dataFrame
+  targetPoint = target
+  S = cov(df)
+  mu = t(t(colMeans(df)))
+  
+  distance = mhlnbs_Dist(targetPoint, mu, S)
+  mhlnbsDepth_2d = 1 / (1 + distance)
+  return(mhlnbsDepth_2d)
+}
+
+#output graph
+functionOfn(mhlDepth, "Empirical vs Theoretical(n) - Mahalanobis")
+```
+
+:::
+
+### Code Availability
+Each algorithm now performs at its theoretical asymptotic limit without computational bottlenecks. The final result is a complete suite of clean, optimized R functions. Each implementation is structured to accept a bivariate dataframe and a target query point, returning the depth value.
+
+The complete, executable R scripts for all functions are available in the [project repository](https://github.com/bytebard404/The-USRA-Logs-Data-Depth/blob/main/R/OptimizedCode-Week7).
+
+---
+
+### Future Work
+* Investigate methods to accurately compute data depth when datasets contain missing values. 
+* Explore the 'Projection Median', a measure of centrality introduced by [@projMed].
+* Explore applications of data depth in Machine Learning and Artificial Intelligence.

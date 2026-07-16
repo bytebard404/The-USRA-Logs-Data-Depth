@@ -178,18 +178,18 @@ p4 = ggplot(df) +
 p1 + p2 + p3 + p4 + plot_layout(ncol = 2, nrow = 2)
 ``` 
 
-In this highly simplified example, let's assume there are a total of 4 projections. Now, Tukey depth measure tells us to find the minimum univariate depth over all projections. So, the Tukey depth of our query point would be $2$. On the other hand, IRW depth is computed by averaging the univariate depth over all projections. Thus, the IRW depth of the query point is $\frac{5+5+2+3}{4} = 3.75$. Hence, evaluating IRW is simply a matter of casting directional vectors, finding the univariate Tukey depth for each, and averaging the results.
+Let's assume that we run a Monte Carlo Simulation, and these are the 4 specific directions that are generated randomly. Now, Tukey depth measure tells us to find the minimum univariate depth over all directions. So, the Tukey depth of our query point would be $2$. On the other hand, IRW depth is computed by averaging the univariate depths over all directions. Thus, the IRW depth of the query point is $\frac{5+5+2+3}{4} = 3.75$. Hence, evaluating IRW is simply a matter of casting directional vectors, finding the univariate depth for each, and averaging the results.
 
 ---
 
 ### Theoretical Foundations: Tukey vs IRW Depth
 * **Core Concepts:** While IRW depth shares much of its structure with Tukey depth, the core difference lies in how the final value is extracted from the projections. 
 
-  - The Tukey Shortcoming: Recall that Tukey depth takes the absolute minimum 1D depth across all possible projections. Since we strictly look for the minimum, it outputs a step function, which could result in many points sharing the same rank/depth value. Moreover, standard calculus techniques fail when optimizing a step function which further makes Tukey Depth difficult to compute. 
+  - The Tukey Shortcoming: Recall that Tukey depth takes the absolute minimum 1D depth across all possible projections. Since we strictly look for the minimum, it outputs a step function, which could result in many points sharing the same rank/depth value. Moreover, standard calculus techniques fail when optimizing a step function which further makes Tukey Depth difficult to compute in high dimensions. 
 
   - The IRW Advantage: IRW depth solves this by taking the average (or integral) of the 1D depths across all uniformly distributed projection directions. By averaging the depths rather than isolating the minimum, IRW provides a strictly decreasing, smooth continuous depth function from the center outward. Moreover, using this integration approach makes it easy to approximate the depth of a point in higher dimensions through Monte Carlo techniques. [@Ramsay&Durocher&Leblanc_2019] 
 
-* **Literature Context:** As extracted from [@Ramsay&Durocher&Leblanc_2019] and simplified by Dr. Leblanc in his research talk slides, the IRW Depth of a point $y$ with respect to a sample $X = (X_1,...,X_n)'$ of $R^d$ is given by
+* **Literature Context:** As adapted from [@Ramsay&Durocher&Leblanc_2019] (since the expression mentioned in the paper is different and more involved), the IRW Depth of a point $y$ with respect to a sample $X = (X_1,...,X_n)'$ of $R^d$ is given by
 $$D_{IRW}(y, X) = \frac{1}{Area(S^{d-1})} \int_{S^{d-1}}D_1(u'y,X(u))du$$ where $S^{d-1} = \{u \in R^d:\lVert \mathbf{u} \rVert = 1\}$, $D_1(u'y,X(u))$ is the 1D Tukey depth, and $X(u)=(u'X_1,...,u'X_n)'$ is the projected sample.
 
 ---
@@ -200,9 +200,9 @@ $$D_{IRW}(y, X) = \frac{1}{Area(S^{d-1})} \int_{S^{d-1}}D_1(u'y,X(u))du$$ where 
 
   - Exact IRW Depth (The Sweep Method): For this implementation, I referenced the approach of representing IRW depth as a weighted average of a set of univariate Tukey ranks outlined in [@Ramsay&Durocher&Leblanc_2019]. This approach relies on the fact that the univariate depth is constant over distinct patches. Leveraging the sorted angular sweep from Week 3, I computed the exact IRW depth by tracking the boundaries where the depth changes. Instead of keeping track of the absolute minimum, I stored every univariate depth observed in a vector. I calculated the angular slice size (the weight of the total pie) for each depth, and summed them using the following logic: $$D_{IRW Exact} = \sum_{i=1}^{k} w_i d_i$$ where $w_i$ is the size of the angular slice (proportion of projections out of total), and $d_i$ is the depth observed in that slice.
 
-  - Semi-Randomized IRW (Sweep + Randomization): Using the exact slices computed above, I introduced randomization. I generated $m$ random angles ($\theta$) uniformly. For each $\theta$, the algorithm determined which angular slice it landed in and stored the corresponding pre-computed depth for that slice. The final depth was the average of these $m$ depths.
+  - Sweep & Randomize Monte Carlo: Using the exact slices computed above, I introduced randomization. I generated $m$ random angles ($\theta$) uniformly. For each $\theta$, the algorithm determined which angular slice it landed in and stored the corresponding pre-computed depth for that slice. The final depth was the average of these $m$ depths.
 
-  - Pure Monte Carlo Approximation (No Pre-Setup): Since IRW depth requires computing an average, there is a very simple Monte Carlo algorithm for approximating the depth of a point. For this implementation, we remove the angular sweep entirely. Similar to the strategy explained by [@Durocher_Leblanc_Skala_2017], this is purely a brute force implementation. I generated $m$ random projection vectors. For each vector, the data was projected onto the line, and the 1D depth was calculated. The final IRW depth is the average of the depths computed for all $m$ projections. The law of large numbers guarantees that this algorithm does converge to the exact value [@Ramsay&Durocher&Leblanc_2019] as computed in implementation 1 as $m \rightarrow \infty$, and the graph below confirms this result. 
+  - No Pre-Setup Monte Carlo: Since IRW depth requires computing an average, there is a very simple Monte Carlo algorithm for approximating the depth of a point. For this implementation, we remove the angular sweep entirely. Similar to the strategy explained by [@Durocher_Leblanc_Skala_2017], this is purely a brute force implementation. I generated $m$ random projection vectors. For each vector, the data was projected onto the line, and the 1D depth was calculated. The final IRW depth is the average of the depths computed for all $m$ projections. The law of large numbers guarantees that this algorithm does converge to the exact value [@Ramsay&Durocher&Leblanc_2019] as computed in implementation 1 as $m \rightarrow \infty$, and the graph below confirms this result. 
 
 ```{r} 
 #| echo: false
