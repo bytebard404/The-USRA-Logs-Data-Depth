@@ -272,7 +272,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>While these two geometric interpretations look completely different, they are mathematically identical. Realizing how they align was the key aspect to fixing the error in my algorithm and strengthening my understanding.</p>
+<p>While these two geometric interpretations look completely different, they are mathematically equivalent. Realizing how they align was the key aspect to fixing the error in my algorithm and strengthening my understanding.</p>
 <hr>
 </section>
 <section id="theoretical-foundations-understanding-the-definitions" class="level3">
@@ -280,11 +280,11 @@ window.Quarto = {
 <ul>
 <li><strong>Core Concepts:</strong> The graphs above will play a vital role in understanding the formal definitions of these views.
 <ul>
-<li><p>Projection View (Left Side): As suggested by <span class="citation" data-cites="tukey1974">(<a href="#ref-tukey1974" role="doc-biblioref">Tukey 1975</a>)</span> and explained in Dr.&nbsp;Leblanc’s instructional materials, a measure of the depth of a point <span class="math inline">\(y\)</span> given a sample <span class="math inline">\(X = (X_1,...,X_n)'\)</span> in 1D is <span class="math inline">\(D_1(y,X) = \min(\#\{i : X_i \le y\}, \#\{i : X_i \ge y\})\)</span> and this can be generalised to <span class="math inline">\(d\)</span> dimensions as: <span class="math display">\[D_d(y,X) = \min_{||u|| = 1} D_1(u'y, X(u))\]</span> where <span class="math inline">\(X(u) = (u'X_1,...,u'X_n)'\)</span> is the projected sample. Let’s unfold this definition with the help of the graph above.</p>
+<li><p>Projection View (Left Side): As suggested by <span class="citation" data-cites="tukey1974">(<a href="#ref-tukey1974" role="doc-biblioref">Tukey 1975</a>)</span> and explained in Dr.&nbsp;Leblanc’s instructional materials, a measure of the depth of a point <span class="math inline">\(y\)</span> given a sample <span class="math inline">\(X = (X_1,...,X_n)'\)</span> in 1D is <span class="math inline">\(D_1(y,X) = \min(\#\{i : X_i \le y\}, \#\{i : X_i \ge y\})\)</span> and this can be generalised to <span class="math inline">\(d\)</span> dimensions as: <span class="math display">\[D_d(y,X) = \min_{||u|| = 1} D_1(u'y, X(u))\]</span> where <span class="math inline">\(X(u) = (u'X_1,...,u'X_n)'\)</span> is the projected sample. Let’s unfold this definition with the help of the graph above (see left panel).</p>
 <ul>
 <li>The light blue line represents one possible directional vector. The dashed lines show how the 2D data cloud projects onto that 1D light blue line. The red dot represents our query point’s projected position onto the 1D line. To find the depth on this specific line, we simply count the green dots on the left side and the right side of the red dot, and take the smaller of the two. The final depth of this query point is the minimum 1D depth observed over all directional vectors. This method reduces the multivariate problem into a series of univariate problems.</li>
 </ul></li>
-<li><p>Halfspace View (Right Side): <span class="citation" data-cites="Rousseeuw&amp;Ruts1998">(<a href="#ref-Rousseeuw&amp;Ruts1998" role="doc-biblioref">Rousseeuw and Ruts 1998</a>)</span> outlines that the halfspace Tukey depth of a point <span class="math inline">\(y\)</span> relative to a dataset <span class="math inline">\(X\)</span> is defined as: <span class="math display">\[D(y,X) = \min_{H} \#\{i ; x_i \in H\}\]</span> where H ranges over all closed halfspaces where the boundary line passes through <span class="math inline">\(y\)</span>. Let’s unfold this definition with the help of the graph above.</p>
+<li><p>Halfspace View (Right Side): <span class="citation" data-cites="Rousseeuw&amp;Ruts1998">(<a href="#ref-Rousseeuw&amp;Ruts1998" role="doc-biblioref">Rousseeuw and Ruts 1998</a>)</span> outlines that the halfspace Tukey depth of a point <span class="math inline">\(y\)</span> relative to a dataset <span class="math inline">\(X\)</span> is defined as: <span class="math display">\[D(y,X) = \min_{H} \#\{i ; x_i \in H\}\]</span> where H ranges over all closed halfspaces where the boundary line passes through <span class="math inline">\(y\)</span>. Let’s unfold this definition with the help of the graph above (see right panel).</p>
 <ul>
 <li>The blue arrow represents the line from the query point ‘y’ (red dot) to one of the data points in the sample. The dashed line shows the result of extending this line to infinity. We observe that this line divides the plane into two spaces, left and right. To find the depth for this specific line, we just count the number of dots (sample points in black) on the left side and the right side of the line, and take the smaller number. The final depth of this query point is the minimum depth observed over all possible lines through the query point.</li>
 </ul></li>
@@ -304,7 +304,7 @@ window.Quarto = {
 </ul></li>
 <li><p><strong>Error 2: Off-By-One</strong></p>
 <ul>
-<li><p>The Problem: Even after fixing the sweep, my depth was constantly exactly one less than the ddalpha depth. However, this only happened for in sample points (points that existed in the dataset). When I tested an out of sample point, my code matched ddalpha perfectly.</p></li>
+<li><p>The Problem: Even after fixing the sweep, my depth was constantly exactly one less than the ddalpha depth. However, this only happened for in-sample points (points that existed in the dataset). When I tested an out of sample point, my code matched ddalpha perfectly.</p></li>
 <li><p>The Fix: Dr.&nbsp;Leblanc helped me understand that it comes down to the definition of a closed halfspace vs an open halfspace. A closed halfspace includes the boundary line itself. In my original logic, I didn’t explicitly count the target point in the left/right totals because I assumed that adding 1 to both sides wouldn’t change which side was the minimum. While it is true that adding 1 to both sides doesn’t change which side is smaller, it definitely changes the final numerical depth value. Because the target point sits on the boundary, it must be counted if considering closed halfspaces. Understanding this helped me realise that ddalpha uses closed halfspaces whereas I implemented the open halfspace definition. Thus, this was not so much of an error but rather a difference in implementations.</p></li>
 </ul></li>
 </ul>
@@ -354,7 +354,7 @@ window.Quarto = {
 <ul>
 <li>Optimize the R syntax in the algorithm by replacing standard loops with vectorized operations to better handle larger datasets and eliminate computational bottlenecks.</li>
 <li>Scale the corrected single-point Tukey algorithm to compute depth for an entire dataset.</li>
-<li>Check how the algorithm scales as <span class="math inline">\(n \rightarrow \infty\)</span></li>
+<li>Check how the algorithm scales as <span class="math inline">\(n \rightarrow \infty\)</span>.</li>
 <li>Begin literature review and implementation for Integrated Rank-Weighted (IRW) depth.</li>
 </ul>
 

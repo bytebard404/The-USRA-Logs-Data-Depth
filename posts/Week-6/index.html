@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ridhima Singla">
-<meta name="dcterms.date" content="2026-05-15">
+<meta name="dcterms.date" content="2026-06-12">
 
-<title>Week 2: First Computations in R - Implementing Mahalanobis &amp; Tukey Depth – The USRA Logs: Data Depth</title>
+<title>Week 6: Runtime Analysis and Algorithm Optimization – The USRA Logs: Data Depth</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -24,41 +24,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 /* CSS for citations */
 div.csl-bib-body { }
@@ -127,6 +92,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -173,10 +167,9 @@ div.csl-indent {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Week 2: First Computations in R - Implementing Mahalanobis &amp; Tukey Depth</h1>
+      <h1 class="title">Week 6: Runtime Analysis and Algorithm Optimization</h1>
                                 <div class="quarto-categories">
-                <div class="quarto-category">Implementation</div>
-                <div class="quarto-category">R</div>
+                <div class="quarto-category">Runtime</div>
               </div>
                   </div>
   </div>
@@ -194,7 +187,7 @@ div.csl-indent {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">May 15, 2026</p>
+        <p class="date">June 12, 2026</p>
       </div>
     </div>
     
@@ -211,12 +204,11 @@ div.csl-indent {
    
   <ul>
   <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
-  <li><a href="#theoretical-foundations-two-approaches-to-computing-depth" id="toc-theoretical-foundations-two-approaches-to-computing-depth" class="nav-link" data-scroll-target="#theoretical-foundations-two-approaches-to-computing-depth">Theoretical Foundations: Two Approaches to Computing Depth</a></li>
-  <li><a href="#visualizing-the-output" id="toc-visualizing-the-output" class="nav-link" data-scroll-target="#visualizing-the-output">Visualizing the Output</a></li>
-  <li><a href="#computational-implementation" id="toc-computational-implementation" class="nav-link" data-scroll-target="#computational-implementation">Computational Implementation</a></li>
-  <li><a href="#methodological-pivots-insights" id="toc-methodological-pivots-insights" class="nav-link" data-scroll-target="#methodological-pivots-insights">Methodological Pivots &amp; Insights</a></li>
-  <li><a href="#current-roadblock" id="toc-current-roadblock" class="nav-link" data-scroll-target="#current-roadblock">Current Roadblock</a></li>
-  <li><a href="#future-work" id="toc-future-work" class="nav-link" data-scroll-target="#future-work">Future Work</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#part-1-background-interference-and-garbage-collection" id="toc-part-1-background-interference-and-garbage-collection" class="nav-link" data-scroll-target="#part-1-background-interference-and-garbage-collection">Part 1: Background Interference and Garbage Collection</a></li>
+  <li><a href="#part-2-rewiring-a-computer-science-brain-in-r" id="toc-part-2-rewiring-a-computer-science-brain-in-r" class="nav-link" data-scroll-target="#part-2-rewiring-a-computer-science-brain-in-r">Part 2: Rewiring a Computer Science Brain in R</a></li>
+  <li><a href="#part-3-the-payoff" id="toc-part-3-the-payoff" class="nav-link" data-scroll-target="#part-3-the-payoff">Part 3: The Payoff</a></li>
+  <li><a href="#next-week---asymptotic-verification" id="toc-next-week---asymptotic-verification" class="nav-link" data-scroll-target="#next-week---asymptotic-verification">Next Week - Asymptotic Verification</a></li>
   </ul>
 </nav>
     </div>
@@ -229,117 +221,75 @@ div.csl-indent {
 
 <section id="abstract" class="level3">
 <h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
-<p>This week marked the transition from understanding mathematical theory to applying it through computational implementation. The primary goal was to have a functioning algorithm, leaving runtime optimization for later iterations. After reviewing Dr.&nbsp;Leblanc’s notes to solidify the core geometry, I wrote my first R scripts to compute Mahalanobis depth (for an entire dataset) using matrix algebra and Tukey depth (for a single point), understanding why simple distance measurements fail in multivariate space, and learning two different but equivalent ways to compute Tukey depth. While built-in R functions made computing Mahalanobis depth straightforward, I spent the vast majority of my time struggling with the geometric complexities of Tukey depth.</p>
-<hr>
+<p>This week, my focus shifted from implementation to runtime analysis and algorithm optimization for all bivariate depth functions I have implemented so far. I began by building a standard framework to test how my algorithms scale as <span class="math inline">\(n \to \infty\)</span>, but quickly encountered severe execution bottlenecks. To understand what was slowing my code down under the hood, I turned to The R Inferno by Patrick Burns <span class="citation" data-cites="burns2011r">(<a href="#ref-burns2011r" role="doc-biblioref">Burns 2011</a>)</span> and systematically improved the runtime by pre-allocating memory, eliminating matrix binding, and replacing ‘for’ loops with vectorized operations. Ultimately, this refactoring dropped the processing time for a dataset of 1,000,000 points to under 0.4 seconds which was a massive win for me. This process also allowed me to secure my code from edge cases that arose only when testing on large datasets.</p>
 </section>
-<section id="theoretical-foundations-two-approaches-to-computing-depth" class="level3">
-<h3 class="anchored" data-anchor-id="theoretical-foundations-two-approaches-to-computing-depth">Theoretical Foundations: Two Approaches to Computing Depth</h3>
-<ul>
-<li><p><strong>The Core Concept:</strong> This week focused on two different methods for calculating depth.</p>
-<ul>
-<li><p>Mahalanobis depth is based on Mahalanobis distance. It relies on the covariance matrix to measure how central a point is relative to the distribution’s shape and spread.</p></li>
-<li><p>Tukey (halfspace) depth takes a geometric approach. Using the projection interpretation, it determines depth of a point by evaluating the minimum number of data points whose orthogonal projections fall to one side of the origin across all possible directional vectors.</p></li>
-</ul></li>
-<li><p><strong>Literature Context:</strong> Relied primarily on Dr.&nbsp;Leblanc’s notes to solidify the theoretical foundation and understand computational geometry via animations. Briefly referenced <span class="citation" data-cites="mosler2022">(<a href="#ref-mosler2022" role="doc-biblioref">Mosler and Mozharovskyi 2022</a>)</span> for an introduction to Mahalanobis Depth and its properties.</p></li>
-<li><p><strong>Research Curiosities:</strong> <span class="citation" data-cites="mosler2022">(<a href="#ref-mosler2022" role="doc-biblioref">Mosler and Mozharovskyi 2022</a>)</span> demonstrates that Mahalanobis depth of all n points can be calculated exactly in linear time for any number of dimensions. However, because this depth method is not robust to outliers, it is unreliable for many modern applications. I am naturally curious to explore robustified versions of Mahalanobis depth. What computational trade-offs must we make when transitioning from the standard version to a robust one?</p></li>
-</ul>
-</section>
-<section id="visualizing-the-output" class="level3">
-<h3 class="anchored" data-anchor-id="visualizing-the-output">Visualizing the Output</h3>
-<div class="cell">
-<details class="code-fold">
-<summary>View the Code to Generate the Scatterplot</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#two points mentioned in the write-up</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>obser1 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">x=</span><span class="fl">22.8</span>, <span class="at">y=</span><span class="fl">2.320</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>obser2 <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">x=</span><span class="fl">26.0</span>, <span class="at">y=</span><span class="fl">2.140</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#plot data to observe how the depth changes</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(updatedDF, <span class="fu">aes</span>(<span class="at">x =</span> updatedDF<span class="sc">$</span>mpg, <span class="at">y =</span> updatedDF<span class="sc">$</span>wt, </span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">label =</span> updatedDF<span class="sc">$</span>mhlnbsDepth_2d)) <span class="sc">+</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> obser1<span class="sc">$</span>x, <span class="at">y =</span> obser1<span class="sc">$</span>y), <span class="at">colour =</span> <span class="st">"red"</span>)<span class="sc">+</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> obser2<span class="sc">$</span>x, <span class="at">y =</span> obser2<span class="sc">$</span>y), <span class="at">colour =</span> <span class="st">"blue"</span>)<span class="sc">+</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>( <span class="co">#plotting the direction of maximum variance</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"segment"</span>, </span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="dv">24</span>, <span class="at">y =</span> <span class="fl">2.75</span>,     </span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">xend =</span> <span class="dv">29</span>, <span class="at">yend =</span> <span class="fl">2.1</span>,</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.2</span>, <span class="st">"cm"</span>)),</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"grey"</span>, </span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="fl">0.5</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>( <span class="co">#plotting the direction of minimum variance</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"segment"</span>, </span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="dv">23</span>, <span class="at">y =</span> <span class="fl">2.75</span>,     </span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">xend =</span> <span class="dv">21</span>, <span class="at">yend =</span> <span class="fl">2.2</span>,</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.2</span>, <span class="st">"cm"</span>)),</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"darkgreen"</span>, </span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="fl">0.5</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">color =</span> <span class="st">"darkred"</span>,</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>                           <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="dv">1</span>)<span class="sc">+</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"mpg"</span>, <span class="at">y =</span> <span class="st">"wt"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
+<section id="introduction" class="level3">
+<h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
+<p>With the core logic verified during the last few weeks, my objective transitioned from achieving the correct output to achieving the correct output efficiently. Having implemented a number of bivariate data depth algorithms like Integrated Rank-Weighted (IRW), Tukey, Mahalanobis, and Simplicial depth, my goal for this week was to eliminate R bottlenecks and syntax inefficiencies to achieve peak raw performance.</p>
+<p>To do this systematically, I built a standard looping framework: for dataset sizes ranging from <span class="math inline">\(n = 100\)</span> up to <span class="math inline">\(n = 100,000\)</span>, generate random bivariate distributions, execute the depth calculations, and record the CPU execution time.</p>
+<p>At this stage, I had not yet learned about statistical smoothing techniques like loess regression, so I was hyper-fixated on the exact shape of the raw empirical line that I was seeing. As can be seen in the graph attached below, while the general trajectory was somewhat linear, it was full of sharp peaks, and the script itself ran excruciatingly slow. What began as a simple plotting exercise quickly evolved into a deep dive into understanding what goes on behind the scenes and a complete rewiring of how I approach programming.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="index_files/figure-html/Mahalanobis Plot-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Scatter plot showing the Mahalanobis Depth of each data point.</figcaption>
+<p><img src="peaks.png" class="img-fluid figure-img"></p>
+<figcaption>Raw empirical runtime for Simplicial depth from N = 100 to N = 100,000 before any optimizations</figcaption>
 </figure>
 </div>
-</div>
-</div>
+<hr>
+</section>
+<section id="part-1-background-interference-and-garbage-collection" class="level3">
+<h3 class="anchored" data-anchor-id="part-1-background-interference-and-garbage-collection">Part 1: Background Interference and Garbage Collection</h3>
 <ul>
-<li><p><strong>Observation:</strong> The most fascinating takeaway from the above Mahalanobis visualization was observing a highly counter intuitive result. I found a specific point (the red point) that was physically closer to the geometric center of the data as per Euclidean distance, yet it had a lower Mahalanobis depth than the blue point that was physically further away.</p></li>
-<li><p><strong>Understanding Why?:</strong> Upon further discussion with Dr.&nbsp;Leblanc, I learnt that this is because the data distribution is elliptical (due to the two variables being correlated) rather than perfectly circular. Mahalanobis depth is determined by the data’s covariance matrix and is related to a weighted distance, penalizing more directions of small variability than those of large variability. Other depths do not necessarily do this as they often do not rely directly on a notion of distance.</p>
+<li><p><strong>Background Interference:</strong> My first hypothesis for the sharp peaks was background operating system interference. I was originally using R’s standard Sys.time() function to record the execution time for my algorithms. However, after discussing the issue with Dr.&nbsp;Leblanc, I learned that Sys.time() measures wall clock time, which means that it also captures any kind of background activity occurring alongside the algorithm. This could noticeably inflate the execution time and output incorrect numbers.</p>
+<p>To eliminate background noise, I switched to system.time() in my standard framework. As explained in Alexej Gossmann’s runtime guide <span class="citation" data-cites="alexej2017">(<a href="#ref-alexej2017" role="doc-biblioref">Gossmann 2017</a>)</span>, system.time() outputs three distinct values: user, system, and elapsed. By summing purely the user and system values, you extract the exact CPU time spent executing the algorithm while stripping away external background interference. While this was a much better practice for accuracy, it did not solve the problem: the peaks remained, and the execution was still very slow.</p></li>
+<li><p><strong>Lazy Garbage Collector:</strong> Next, I turned my attention to R’s memory management. I learned that the garbage collector in R is lazy <span class="citation" data-cites="wickham2019advanced">(<a href="#ref-wickham2019advanced" role="doc-biblioref">Wickham 2019, chap. 2</a>, sec.&nbsp;2.6)</span>, meaning it does not clean up discarded objects continuously as code runs. Instead, it waits until memory fills up before triggering a massive cleanup to reclaim memory.</p>
+<p>I hypothesized that those peaks were perhaps the exact timestamps where R’s garbage collector activated to clean up discarded objects from previous iterations. To test this, I added a specific command to manually trigger garbage collection after each dataset execution. My thinking was that starting every run with a clean memory slate would prevent massive, delayed cleanup cycles.</p>
+<p>Once again, this did not fix the issue. It was clear that the computational bottleneck was coming from the design choices that I had made in my algorithms, and that’s where I needed to look next.</p></li>
+</ul>
+<hr>
+</section>
+<section id="part-2-rewiring-a-computer-science-brain-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="part-2-rewiring-a-computer-science-brain-in-r">Part 2: Rewiring a Computer Science Brain in R</h3>
+<p>Coming from a Computer Science background where languages like Java and C++ naturally utilize loop iterations, my initial R scripts were essentially all built on coding habits that are known to slow down execution in R.</p>
+<p>To understand what was happening under the hood, I turned to The R Inferno by Patrick Burns <span class="citation" data-cites="burns2011r">(<a href="#ref-burns2011r" role="doc-biblioref">Burns 2011</a>)</span>, alongside Advanced R by Hadley Wickham <span class="citation" data-cites="wickham2019advanced">(<a href="#ref-wickham2019advanced" role="doc-biblioref">Wickham 2019</a>)</span>. Using my recently written Simplicial depth algorithm as a testing “guinea pig,” I identified and eliminated three major memory traps.</p>
 <ul>
-<li><p>The First Eigenvector (Maximum Variance): The blue point lies in this direction (as shown by the grey arrow). Because the data spreads widely here due to high variance, a point can be physically distant but still maintain a high depth.</p></li>
-<li><p>The Second Eigenvector (Minimum Variance): The red point lies in this direction (as shown by the green arrow). Because the data is tightly clustered here due to low variance, moving even slightly away from the center causes the depth to drop drastically.</p></li>
+<li><p><strong>Growing Objects &amp; Dynamic Allocation:</strong> In many of my original implementations, I initialized storage vectors without setting a definitive length, using syntax like <code>results = numeric()</code>.</p>
+<p>In Chapter 2 of The R Inferno (“Growing Objects”), Burns explains why this destroys performance as the dataset becomes larger. Since vectors are stored in contiguous blocks of physical memory, appending a new value to a dynamically growing vector forces the system to allocate a new larger block of memory, copy every existing element over to the new address, and then append the new value. Triggering this process inside a loop of 100,000 items results in severe computational bottleneck.</p>
+<p>The Fix: I updated all data structures to pre-allocate fixed memory from the start (e.g., <code>numeric(length(sizes))</code>), securing the required memory upfront and eliminating copying overhead entirely.</p></li>
+<li><p><strong>Failing to Vectorize:</strong> My original implementations were full of iterative loops even for simple things like counting how many values in a vector were greater than 0. In R, an iterative loop requires evaluation at every single step, creating massive computational overhead (as detailed in Chapter 3 of The R Inferno: “Failing to Vectorize”).</p>
+<p>Eliminating loops required me to completely rewire how I approached algorithm design. I had to realize that the sequential iteration I was trying to build with loops was already provided by R’s vectorized operations. Through extensive reading of built-in R documentation and Stack Overflow discussions, I swapped out my manual loops with vectorized operations. While cumbersome, this process helped me learn a lot about some specific features in R such as:</p>
+<ul>
+<li>Angle Wrapping without Loops: I learned the modulo operator trick (<code>atan2(y, x) %% (2*pi)</code>) to instantly wrap geometric angles into the <span class="math inline">\([0, 2\pi]\)</span> range across entire vectors at once.</li>
+<li>Binary Searches via findInterval(): Where I previously wrote custom nested loops to search sorted angle arrays to find exact intervals, I utilized R’s findInterval() function, which performs a very fast binary search for the same outcome.</li>
+<li>cumsum(): For algorithms where a running depth counter depended on its previous state, I replaced tally loops with vectorized cumulative sums (cumsum()).</li>
 </ul></li>
+<li><p><strong>Using rbind / cbind:</strong> Finally, I removed every instance of matrix binding (rbind and cbind) as I learnt that binding rows to a matrix incurs the exact same penalty as growing an array <span class="citation" data-cites="wickham2019advanced">(<a href="#ref-wickham2019advanced" role="doc-biblioref">Wickham 2019, chap. 24</a>, sec.&nbsp;24.6)</span>.</p></li>
 </ul>
 <hr>
 </section>
-<section id="computational-implementation" class="level3">
-<h3 class="anchored" data-anchor-id="computational-implementation">Computational Implementation</h3>
-<ul>
-<li><p><strong>Infrastructure &amp; Tools:</strong> Exclusively coded in R due to its large variety of built-in matrix operations, and the ddalpha package, which provided functions to verify my algorithm’s outputs.</p></li>
-<li><p><strong>The Approach:</strong></p>
-<ul>
-<li><p><strong>Mahalanobis:</strong> Due to the simple structure of the formula and the built-in matrix operation functions in R, implementing the algorithm was straightforward and easily extendable to the entire dataset across higher dimensions.</p></li>
-<li><p><strong>Tukey:</strong> Of the two definitions, I opted to implement the projection interpretation using a sweep style algorithm. To ensure mathematical accuracy and clarity in understanding, I isolated the algorithm to compute the depth of a single sample point only.</p></li>
-</ul></li>
-</ul>
+<section id="part-3-the-payoff" class="level3">
+<h3 class="anchored" data-anchor-id="part-3-the-payoff">Part 3: The Payoff</h3>
+<p>After completing these optimizations on the Simplicial <span class="math inline">\(O(n \log n)\)</span> algorithm, I went back and applied them to every single depth algorithm I had written to date.</p>
+<p>The Massive Win: For the Simplicial <span class="math inline">\(O(n \log n)\)</span> algorithm, the maximum time required for my computer to process a dataset of 1,000,000 points dropped down to under 0.4 seconds.</p>
+<p>An unexpected bonus of this optimization journey was code robustness. Originally, I had only tested my algorithms on relatively small datasets. However, this week I was able to identify and fix several edge cases that only became apparent when the algorithms were tested on large datasets.</p>
 <hr>
 </section>
-<section id="methodological-pivots-insights" class="level3">
-<h3 class="anchored" data-anchor-id="methodological-pivots-insights">Methodological Pivots &amp; Insights</h3>
-<p>Implementing Tukey depth required a major conceptual pivot. My initial idea to interpret the projection definition was to rotate a line in one degree increments to find the minimum depth.</p>
-<p>After discussing this with Dr.&nbsp;Leblanc, I realized that this “grid approach” was fundamentally flawed. It only provides an approximation for the depth and not the exact answer. If the true minimum is achieved at a fraction of a degree, the increment approach misses it entirely. Furthermore, it scales poorly as sample sizes grow.</p>
-<p>I abandoned the grid approach in favor of the sweep algorithm. Instead of rotating a line, we use linear algebra to compute the exact angles where a point switches from projecting on the right versus the left. By keeping track of the action to be taken at each angle, we can sweep the sorted list of angles one by one, tracking the absolute minimum. This pivot moved my algorithm from an inefficient approximation to computing the exact Tukey depth in 2D.</p>
-</section>
-<section id="current-roadblock" class="level3">
-<h3 class="anchored" data-anchor-id="current-roadblock">Current Roadblock</h3>
-<ul>
-<li><p><strong>The Unresolved Bug:</strong> While the transition to the sweep algorithm was conceptually successful, my current R script for the single point Tukey depth is producing an answer that is different from the one computed by the ddalpha function in R, even after accounting for the normalization.</p></li>
-<li><p><strong>My Hypothesis:</strong> I suspect there is a flaw in how I am tracking the initial right count (i.e.&nbsp;number of points that project on the right of the origin) before we start sweeping the list going from 0 to 360. I have isolated the code chunk that counts the initial count and plan to debug it next week after consulting Dr.&nbsp;Leblanc.</p></li>
-</ul>
-<hr>
-</section>
-<section id="future-work" class="level3">
-<h3 class="anchored" data-anchor-id="future-work">Future Work</h3>
-<ul>
-<li><p>Debug the logic in the Tukey algorithm to resolve the current calculation error.</p></li>
-<li><p>Scale the corrected single point Tukey algorithm to compute depth for an entire dataset.</p></li>
-<li><p>Introduction to “Integrated Rank-Weighted (IRW) Depth”.</p></li>
-</ul>
+<section id="next-week---asymptotic-verification" class="level3">
+<h3 class="anchored" data-anchor-id="next-week---asymptotic-verification">Next Week - Asymptotic Verification</h3>
+<p>With clean, optimized R functions established, I finally have the speed required to run massive datasets for asymptotic verification. In next week’s post, I will take these vectorized algorithms and evaluate how their empirical runtime trajectories compare with the theoretical Big-O expectations as <span class="math inline">\(n \to \infty\)</span>.</p>
 
 
 
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
-<div id="ref-mosler2022" class="csl-entry" role="listitem">
-Mosler, Karl, and Pavlo Mozharovskyi. 2022. <span>“<span class="nocase">Choosing Among Notions of Multivariate Depth Statistics</span>.”</span> <em>Statistical Science</em> 37 (3): 348–68. <a href="https://doi.org/10.1214/21-STS827">https://doi.org/10.1214/21-STS827</a>.
+<div id="ref-burns2011r" class="csl-entry" role="listitem">
+Burns, P. 2011. <em>The r Inferno</em>. Lulu.com. <a href="https://books.google.ca/books?id=TFWMAwAAQBAJ">https://books.google.ca/books?id=TFWMAwAAQBAJ</a>.
+</div>
+<div id="ref-alexej2017" class="csl-entry" role="listitem">
+Gossmann, Alexej. 2017. <span>“5 Ways to Measure Running Time of r Code.”</span> In <em>0-Fold Cross-Validation</em>. <a href="https://www.alexejgossmann.com/benchmarking_r/">https://www.alexejgossmann.com/benchmarking_r/</a>.
+</div>
+<div id="ref-wickham2019advanced" class="csl-entry" role="listitem">
+Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/CRC. <a href="https://doi.org/10.1201/9781351201315">https://doi.org/10.1201/9781351201315</a>.
 </div>
 </div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
