@@ -10,9 +10,9 @@ image: tukeyplot.jpeg
 With all the code optimized, my focus shifted to empirical vs. theoretical verification across the updated set of bivariate data depth algorithms. Having eliminated the computational bottleneck in Week 6, I evaluated how Integrated Rank-Weighted (IRW), Tukey’s halfspace, Mahalanobis, and Simplicial depth scale across dataset sizes ranging from $n = 100$ to $n = 100,000$. To evaluate mathematical complexity against hardware noise, I incorporated local polynomial regression (loess) smoothing curves to reveal the underlying asymptotic trends. My analysis confirms that the refactored implementations match their theoretical Big-O expectations.  
 
 ### Introduction
-In last week’s post, we performed a deep analysis into The R Inferno, pre-allocating vector lengths, and replacing iterative loops with vectorized operations. Reducing our execution time down to under 0.4 seconds for a million points was a massive victory, but it was only half the battle.
+In last week’s post, we performed a deep analysis into *The R Inferno* [@burns2011r], pre-allocating vector lengths, and replacing iterative loops with vectorized operations. Reducing our execution time down to under 0.4 seconds for a million points was a massive victory, but it was only half the battle.
 
-The ultimate objective of a runtime analysis is asymptotic verification: confirming whether the empirical scaling of our code as $n \to \infty$ matches the theoretical Big-O complexity established in statistical literature. This week, I took the refactored code, fed it massive, randomly generated datasets across a wide range of sizes, and built an interactive dashboard to evaluate their performance.
+The ultimate objective of a runtime analysis is asymptotic verification: confirming whether the empirical scaling of our code as $n \to \infty$ matches the theoretical Big-O complexity established in statistical/computational geometry literature. This week, I took the refactored code, fed it massive, randomly generated datasets across a wide range of sizes, and built an interactive dashboard to evaluate their performance.
 
 ---
 
@@ -33,7 +33,11 @@ Before evaluating the graphs, it is worth noting two intentional exceptions in m
 ### Part 2: The Interactive Dashboard
 To evaluate the performance gains across each algorithm without cluttering the page, I have structured the empirical vs. theoretical scaling curves into an interactive dashboard.
 
-To inspect the runtime scaling behavior of each optimized function against its theoretical expectation, click through the tabs below.
+To inspect the runtime scaling behavior of each optimized function against its theoretical expectation, click through the tabs below. In the following tabs, note that:
+
+- **Macro View** refers to the full, zoomed-out version of the graph, showing the overall runtime trajectory from start to finish.
+
+- **Micro View** refers to a zoomed-in perspective that eliminates the "crush effect" caused by slower algorithms dominating the y-axis, allowing you to clearly visualize the curves of the faster optimizations.
 
 ```{=html}
 <style>
@@ -402,7 +406,7 @@ The bivariate Simplicial depth algorithm relies on calculating the number of clo
 #| fig-width: 9      
 #| fig-height: 8
 #| cache: true
-#| fig-cap: "Simplicial Depth: Optimization from O(n^3) baseline to O(n log n)"
+#| fig-cap: "Simplicial Depth: Optimization from the cubic time complexity baseline to O(n log n)"
 
 library(ggplot2)
 library(MASS)
@@ -555,7 +559,7 @@ functionOfn3 = function(algorithm, graphLabel){
            geom_smooth(aes(color = "Empirical"), method = "loess", se = FALSE, linewidth = 1)  +
            
            #Regression - The theoretical N^3 fit
-           geom_smooth(aes(color = "Theoretical O(n ^ 3)"), method = "lm", formula = y ~ I(x^3), 
+           geom_smooth(aes(color = "Theoretical O(n^3)"), method = "lm", formula = y ~ I(x^3), 
                        linetype = "dashed", se = FALSE, linewidth = 1) +
            
            labs(x = "Dataset Size (N)", 
@@ -838,7 +842,7 @@ simplicialBaseline = function(dataFrame, target){
 
 p = functionOfNlogn(simplicialOpt, SimplicialUnopt)
 p1 = functionOfNlogn2(simplicialOpt, "Empirical vs Theoretical(nlog(n)) - Simplicial Depth", SimplicialUnopt)
-p7 = functionOfn3(simplicialBaseline, "Empirical vs Theoretical(n^3) - Baseline")
+p7 = functionOfn3(simplicialBaseline, "Empirical vs Theoretical O(n^3) - Baseline")
 
 combined_plot = (p1 + p) / p7 + plot_layout(guides = 'collect')
 combined_plot & theme(legend.position = 'bottom',
@@ -850,9 +854,9 @@ combined_plot & theme(legend.position = 'bottom',
 #### IRW Depth
 Integrated Rank-Weighted depth relies on averaging the univariate depth measures across all directional vectors. Recall that, during Week 4 we implemented IRW depth three distinct ways - Exact IRW Depth (The Sweep Method), Sweep and Randomize Monte Carlo, and No Sweep Monte Carlo. Below we share the results for the runtime analysis of each pre and post optimization. 
 
-- No Sweep Monte Carlo: As can be seen in the Unoptimized (Micro) and Optimized (Macro) graphs, while both follow a linear trajectory for this algorithm, optimizing the code flattens the slope, making the linear process much faster in the optimized version. 
+- No Sweep Monte Carlo: As can be seen in the Unoptimized (Micro - Bottom Left) and Optimized (Macro - Top Right) graphs, while both follow a linear trajectory for this algorithm, optimizing the code flattens the slope, making the linear process much faster in the optimized version. 
 
-- Angular Sweep Implementations: In the unoptimized panel (left side), the current dataset scale is insufficient to fully demonstrate the disparity between the theoretical $O(n \log n)$ bound and the unoptimized 'Exact with Pre-Setup' algorithm. The latter seems to track the theoretical line perfectly because the workload at $n=800$ is too small to show the underlying inefficiencies. However, the left panel effectively illustrates the poor performance of the unoptimized 'Pre-Setup with Randomization' algorithm. Using the optimized (micro) graph, we observe that post optimization, both the sweep algorithms perfectly track the theoretical $n \log n$ line as $n \to \infty$. 
+- Angular Sweep Implementations: In the unoptimized panel (left side), the current dataset scale is insufficient to fully demonstrate the disparity between the theoretical $O(n \log n)$ bound and the unoptimized 'Exact with Pre-Setup' algorithm. The latter seems to track the theoretical line perfectly because the workload at $n=800$ is too small to show the underlying inefficiencies. However, the left panel effectively illustrates the poor performance of the unoptimized 'Pre-Setup with Randomization' algorithm. Using the optimized (Micro - Bottom Right) graph, we observe that post optimization, both the sweep algorithms perfectly track the theoretical $n \log n$ line as $n \to \infty$. 
 
 ```{r}
 #| echo: false
@@ -861,7 +865,7 @@ Integrated Rank-Weighted depth relies on averaging the univariate depth measures
 #| fig-width: 10      
 #| fig-height: 7
 #| cache: true
-#| fig-cap: "IRW Depth: Execution time comparison across implementations"
+#| fig-cap: "IRW Depth: Execution time comparison across implementations. The left panel shows the plots for the unoptimized implementations, and the right panel shows the plots for the optimized implementations."
 
 #-------plotting-------
 library(ggplot2)
