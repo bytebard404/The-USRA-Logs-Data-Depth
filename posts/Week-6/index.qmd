@@ -1,7 +1,8 @@
 ---
 title: "Week 6: Runtime Analysis and Algorithm Optimization"
 author: "Ridhima Singla"
-date: "June 12, 2026"
+#date: "June 12, 2026"
+order: 6
 categories: [Runtime]
 image: "peaks.png"
 ---

@@ -1,7 +1,8 @@
 ---
 title: "Week 2: First Computations in R - Implementing Mahalanobis & Tukey Depth"
 author: "Ridhima Singla"
-date: "May 15, 2026"
+#date: "May 15, 2026"
+order: 2
 categories: [Implementation, R]
 image: "Week2-thumbnail.png"
 ---

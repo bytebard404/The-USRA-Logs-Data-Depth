@@ -1,10 +1,11 @@
 ---
 title: "Research Logs"
 subtitle: "USRA 2026: Exploring Computational Data Depth"
+description: "*Note: Blog and repository updates are temporarily paused while I focus on wrapping up my USRA research.*"
 listing:
   contents: posts
   feed: true
-  sort: "date desc"
+  sort: "order desc"
   type: grid
   categories: true
   sort-ui: false

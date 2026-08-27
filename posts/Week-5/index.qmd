@@ -1,7 +1,8 @@
 ---
 title: "Week 5: Simplicial Depth and Combinatorial Optimizations"
 author: "Ridhima Singla"
-date: "June 5, 2026"
+#date: "June 5, 2026"
+order: 5
 categories: [Implementation, R]
 image: "ToyExample.jpeg"
 ---
