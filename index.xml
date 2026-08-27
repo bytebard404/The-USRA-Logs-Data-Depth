@@ -8,9 +8,9 @@
 <title>The USRA Logs: Data Depth</title>
 <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/</link>
 <atom:link href="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/index.xml" rel="self" type="application/rss+xml"/>
-<description>A 16-week research journal exploring computational and theoretical data depth.</description>
+<description>*Note: Blog and repository updates are temporarily paused while I focus on wrapping up my USRA research.*</description>
 <generator>quarto-1.9.37</generator>
-<lastBuildDate>Fri, 19 Jun 2026 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 27 Aug 2026 19:22:44 GMT</lastBuildDate>
 <item>
   <title>Week 7: Empirical vs. Theoretical Verification Dashboard</title>
   <dc:creator>Ridhima Singla</dc:creator>
@@ -176,7 +176,7 @@ Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/C
 </div></section></div> ]]></description>
   <category>Runtime</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-7/</guid>
-  <pubDate>Fri, 19 Jun 2026 05:00:00 GMT</pubDate>
+  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-7/tukeyplot.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
@@ -268,7 +268,7 @@ Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/C
 </div></section></div> ]]></description>
   <category>Runtime</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-6/</guid>
-  <pubDate>Fri, 12 Jun 2026 05:00:00 GMT</pubDate>
+  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-6/peaks.png" medium="image" type="image/png" height="68" width="144"/>
 </item>
 <item>
@@ -365,7 +365,7 @@ Rousseeuw, Peter, and Ida Ruts. 1996. <span>“Algorithm AS 307: Bivariate Locat
   <category>Implementation</category>
   <category>R</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-5/</guid>
-  <pubDate>Fri, 05 Jun 2026 05:00:00 GMT</pubDate>
+  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-5/ToyExample.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
@@ -461,7 +461,7 @@ Ramsay, Kelly, Stéphane Durocher, and Alexandre Leblanc. 2019. <span>“Integra
   <category>Implementation</category>
   <category>R</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/</guid>
-  <pubDate>Fri, 29 May 2026 05:00:00 GMT</pubDate>
+  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/convergenceplot.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
@@ -681,7 +681,7 @@ Tukey, John W. 1975. <span>“Mathematics and the Picturing of Data.”</span> <
   <category>Implementation</category>
   <category>R</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-3/</guid>
-  <pubDate>Fri, 22 May 2026 05:00:00 GMT</pubDate>
+  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-3/projectionView.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
@@ -1016,7 +1016,7 @@ Mosler, Karl, and Pavlo Mozharovskyi. 2022. <span>“<span class="nocase">Choosi
   <category>Implementation</category>
   <category>R</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-2/</guid>
-  <pubDate>Fri, 15 May 2026 05:00:00 GMT</pubDate>
+  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-2/Week2-thumbnail.png" medium="image" type="image/png" height="67" width="144"/>
 </item>
 <item>
@@ -1080,7 +1080,7 @@ Mosler, Karl, and Pavlo Mozharovskyi. 2022. <span>“<span class="nocase">Choosi
 </section></div> ]]></description>
   <category>Theory</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-1/</guid>
-  <pubDate>Fri, 08 May 2026 05:00:00 GMT</pubDate>
+  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-1/Week1.png" medium="image" type="image/png" height="119" width="144"/>
 </item>
 </channel>
