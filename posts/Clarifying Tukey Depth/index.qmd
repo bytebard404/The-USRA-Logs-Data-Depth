@@ -8,7 +8,7 @@ image: "projectionView.jpeg"
 ---
 
 ### Abstract    
-This week was dedicated to resolving the calculation errors in my Tukey depth algorithm from Week 2, which ultimately required a much deeper dive into the underlying geometry. I discovered that my bugs weren't just syntactical. They stemmed from a gap in understanding of the Tukey depth measure, which resulted in unconsciously mixing two equivalent, but geometrically distinct, definitions of Tukey depth. By decoupling the "Halfspace" view from the "Projection" view, I was able to fix the initial-count logic of my sweep algorithm and resolve a persistent off-by-one boundary error. With an algorithm setup for Tukey Depth finally in place, I am now naturally transitioning into a deeper dive in the Integrated Rank-Weighted (IRW) depth as the two share many similarities.   
+Resolving calculation errors in the Tukey depth algorithm required a much deeper dive into the underlying geometry. I discovered that my bugs weren't just syntactical. They stemmed from a gap in understanding of the Tukey depth measure, which resulted in unconsciously mixing two equivalent, but geometrically distinct, definitions of Tukey depth. By decoupling the "Halfspace" view from the "Projection" view, I was able to fix the initial-count logic of my sweep algorithm and resolve a persistent off-by-one boundary error. With the Tukey depth algorithm successfully established, the focus transitions to Integrated Rank-Weighted (IRW) depth as the two share many similarities.   
 
 ---
 
@@ -104,11 +104,11 @@ While these two geometric interpretations look completely different, they are ma
 ---
 
 ### Methodological Pivots & Insights  
-Last week, my single point Tukey algorithm was producing results that completely mismatched the verified ddalpha package output. I spent the week tracing the variables and discovered two distinct logic errors.  
+During initial development, the single point Tukey algorithm produced results that didn't match the verified ddalpha package output. For this iteration, I spent time tracing the variables and discovered two distinct logic errors.   
 
 * **Error 1: Incorrect Initial Count (Mixing Definitions)**
 
-  - The Problem: The sweep algorithm I am writing is strictly based on the Projection definition. However, when I wrote the code to calculate the initial count (the number of points that project on the right side before the angular sweep begins from 0 to 360 degrees), I accidentally wrote logic based on the Halfspace definition. I was counting the total number of observations in the top-half (positive y-axis), instead of counting the total number of observations in the right-half (positive x-axis), which is all the points that project on the right before the sweep begins.
+  - The Problem: The implemented sweep algorithm is strictly based on the Projection definition. However, when I wrote the code to calculate the initial count (the number of points that project on the right side before the angular sweep begins from 0 to 360 degrees), I accidentally wrote logic based on the Halfspace definition. I was counting the total number of observations in the top-half (positive y-axis), instead of counting the total number of observations in the right-half (positive x-axis), which is all the points that project on the right before the sweep begins.
 
   - The Fix: I was implementing one definition but using the boundary rules of the other. Once I realized that the initial count simply represents all points that initially project onto the right side of the directional vector at angle 0, I rewrote the initialization chunk, and the sweep angles finally aligned.
 

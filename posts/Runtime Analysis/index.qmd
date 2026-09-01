@@ -8,12 +8,12 @@ image: tukeyplot.jpeg
 ---
 
 ### Abstract 
-With all the code optimized, my focus shifted to empirical vs. theoretical verification across the updated set of bivariate data depth algorithms. Having eliminated the computational bottleneck in Week 6, I evaluated how Integrated Rank-Weighted (IRW), Tukey’s halfspace, Mahalanobis, and Simplicial depth scale across dataset sizes ranging from $n = 100$ to $n = 100,000$. To evaluate mathematical complexity against hardware noise, I incorporated local polynomial regression (loess) smoothing curves to reveal the underlying asymptotic trends. My analysis confirms that the refactored implementations match their theoretical Big-O expectations.  
+With all the code optimized, my focus shifted to empirical vs. theoretical verification across the updated set of bivariate data depth algorithms. Having eliminated the computational bottleneck previously, I evaluated how Integrated Rank-Weighted (IRW), Tukey’s halfspace, Mahalanobis, and Simplicial depth scale across dataset sizes ranging from $n = 100$ to $n = 100,000$. To evaluate mathematical complexity against hardware noise, I incorporated local polynomial regression (loess) smoothing curves to reveal the underlying asymptotic trends. My analysis confirms that the refactored implementations match their theoretical Big-O expectations.  
 
 ### Introduction
-In last week’s post, we performed a deep analysis into *The R Inferno* [@burns2011r], pre-allocating vector lengths, and replacing iterative loops with vectorized operations. Reducing our execution time down to under 0.4 seconds for a million points was a massive victory, but it was only half the battle.
+Previously we performed a deep analysis into *The R Inferno* [@burns2011r], pre-allocating vector lengths, and replacing iterative loops with vectorized operations. Reducing our execution time down to under 0.4 seconds for a million points was a massive victory, but it was only half the battle.
 
-The ultimate objective of a runtime analysis is asymptotic verification: confirming whether the empirical scaling of our code as $n \to \infty$ matches the theoretical Big-O complexity established in statistical/computational geometry literature. This week, I took the refactored code, fed it massive, randomly generated datasets across a wide range of sizes, and built an interactive dashboard to evaluate their performance.
+The ultimate objective of a runtime analysis is asymptotic verification: confirming whether the empirical scaling of our code as $n \to \infty$ matches the theoretical Big-O complexity established in statistical/computational geometry literature. So, I took the refactored code, fed it massive, randomly generated datasets across a wide range of sizes, and built an interactive dashboard to evaluate their performance.
 
 ---
 
@@ -396,7 +396,7 @@ combined_plot & theme(legend.position = 'bottom')
 #### Simplicial Depth
 The bivariate Simplicial depth algorithm relies on calculating the number of closed data triangles containing the target point. Since the geometry naturally relies on identifying sets of three, the baseline algorithm scales at an excruciatingly slow cubic $O(n^3)$ rate (bottom graph) as expected. The top row of graphs visualize the pre and post optimization runtime of the combinatorial approach.
 
-- The Macro View (Zoomed-Out, top-left): As $n \to \infty$, the execution time of the unoptimized algorithm skyrockets exponentially, making massive datasets extremely slow to process. The "crush effect" is noticed here as well. The optimized implementation sits at the $y \approx 0$ floor of the graph, showcasing the massive improvement in runtime as a result of the optimizations from week 6.
+- The Macro View (Zoomed-Out, top-left): As $n \to \infty$, the execution time of the unoptimized algorithm skyrockets exponentially, making massive datasets extremely slow to process. The "crush effect" is noticed here as well. The optimized implementation sits at the $y \approx 0$ floor of the graph, showcasing the massive improvement in runtime as a result of the optimizations performed previously.
 
 - The Micro View (Zoomed-In, top-right): Due to the "crush effect", the macro view portrays the true asymptotic trajectory of the optimized algorithm to be linear, which is inaccurate. By zooming in on the bottom fraction of the y-axis, the expanded view allows us to overlay the theoretical regression curve and mathematically verify that our empirical runtime cleanly tracks its $O(n \log n)$ theoretical expectation [@D_F_L_M_S].
 
@@ -853,7 +853,7 @@ combined_plot & theme(legend.position = 'bottom',
 ```
 
 #### IRW Depth
-Integrated Rank-Weighted depth relies on averaging the univariate depth measures across all directional vectors. Recall that, during Week 4 we implemented IRW depth three distinct ways - Exact IRW Depth (The Sweep Method), Sweep and Randomize Monte Carlo, and No Sweep Monte Carlo. Below we share the results for the runtime analysis of each pre and post optimization. 
+Integrated Rank-Weighted depth relies on averaging the univariate depth measures across all directional vectors. Recall that we previously implemented IRW depth three distinct ways - Exact IRW Depth (The Sweep Method), Sweep and Randomize Monte Carlo, and No Sweep Monte Carlo. Below we share the results for the runtime analysis of each pre and post optimization. 
 
 - No Sweep Monte Carlo: As can be seen in the Unoptimized (Micro - Bottom Left) and Optimized (Macro - Top Right) graphs, while both follow a linear trajectory for this algorithm, optimizing the code flattens the slope, making the linear process much faster in the optimized version. 
 

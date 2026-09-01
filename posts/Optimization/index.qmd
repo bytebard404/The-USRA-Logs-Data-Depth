@@ -8,10 +8,10 @@ image: "peaks.png"
 ---
 
 ### Abstract    
-This week, my focus shifted from implementation to runtime analysis and algorithm optimization for all bivariate depth functions I have implemented so far. I began by building a standard framework to test how my algorithms scale as $n \to \infty$, but quickly encountered several execution bottlenecks. To understand what was slowing my code down under the hood, I turned to *The R Inferno* by Patrick Burns [@burns2011r] and systematically improved the runtime by pre-allocating memory, eliminating matrix binding, and replacing 'for' loops with vectorized operations. Ultimately, this refactoring dropped the processing time for a dataset of 1,000,000 points to under 0.4 seconds which was a massive win for me. This process also allowed me to secure my code from edge cases that arose only when testing on large datasets. 
+During this phase of the project, my focus shifted from implementation to runtime analysis and algorithm optimization for all previously implemented bivariate depth functions. I began by building a standard framework to test how my algorithms scale as $n \to \infty$, but quickly encountered several execution bottlenecks. To understand what was slowing my code down under the hood, I turned to *The R Inferno* by Patrick Burns [@burns2011r] and systematically improved the runtime by pre-allocating memory, eliminating matrix binding, and replacing 'for' loops with vectorized operations. Ultimately, this refactoring dropped the processing time for a dataset of 1,000,000 points to under 0.4 seconds which was a massive win for me. This process also allowed me to secure my code from edge cases that arose only when testing on large datasets. 
 
 ### Introduction 
-With the core logic verified during the last few weeks, my objective transitioned from achieving the correct output to achieving the correct output efficiently. Having implemented a number of bivariate data depth algorithms like Integrated Rank-Weighted (IRW), Tukey, Mahalanobis, and Simplicial depth, my goal for this week was to eliminate R bottlenecks and syntax inefficiencies to achieve peak raw performance.
+With the core logic verified, my objective transitioned from achieving the correct output to achieving the correct output efficiently. Having implemented a number of bivariate data depth algorithms like Integrated Rank-Weighted (IRW), Tukey, Mahalanobis, and Simplicial depth, my goal for this phase was to eliminate R bottlenecks and syntax inefficiencies to achieve peak raw performance.
 
 To do this systematically, I built a standard looping framework: for dataset sizes ranging from $n = 100$ up to $n = 100,000$, generate random bivariate distributions, execute the depth calculations, and record the CPU execution time.
 
@@ -57,16 +57,16 @@ To understand what was happening under the hood, I once again turned to *The R I
 ---
 
 ### Part 3: The Payoff
-After completing these optimizations on the $O(n \log n)$ Simplicial depth algorithm, I went back and applied them to every single depth algorithm I had written to date.
+After completing these optimizations on the $O(n \log n)$ Simplicial depth algorithm, I went back and applied them to all previously implemented depth algorithms.
 
 The Massive Win: For the $O(n \log n)$ Simplicial depth algorithm, the maximum time required for my computer to process a dataset of 1,000,000 points dropped down to under 0.4 seconds.
 
-An unexpected bonus of this optimization journey was code robustness. Originally, I had only tested my algorithms on relatively small datasets. However, this week I was able to identify and fix several edge cases that only became apparent when the algorithms were tested on large datasets.
+An unexpected bonus of this optimization journey was code robustness. Originally, I had only tested my algorithms on relatively small datasets. However, during this process I was able to identify and fix several edge cases that only became apparent when the algorithms were tested on large datasets.
 
 ---
 
 ### Question: What Caused the 'Peaks'?
 So, what was causing the structured, non-random peaks we observed during our initial testing? Honestly, the definitive answer remains open and none of our original hypotheses seem to explain this behavior. While we successfully optimized the algorithmic implementations as much as possible and eliminated the main bottlenecks, the underlying cause behind the non-random structure of those peaks is still ambiguous. I am learning that recognizing and documenting unsolved observations is also a part of the research process. If you happen to have any insights, or experience with similar algorithmic behavior, please connect with me on LinkedIn. I would love to hear your thoughts!
 
-### Next Week - Asymptotic Verification
-With clean, optimized R functions established, I finally have the speed required to run massive datasets for asymptotic verification. In next week's post, I will take these vectorized algorithms and evaluate how their empirical runtime trajectories compare with the theoretical Big-O expectations as $n \to \infty$.
+### Next Step - Asymptotic Verification
+With clean, optimized R functions established, I finally have the speed required to run massive datasets for asymptotic verification. In a subsequent update, I will take these vectorized algorithms and evaluate how their empirical runtime trajectories compare with the theoretical Big-O expectations as $n \to \infty$.

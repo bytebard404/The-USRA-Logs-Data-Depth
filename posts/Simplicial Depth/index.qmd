@@ -8,7 +8,7 @@ image: "ToyExample.jpeg"
 ---
 
 ### Abstract    
-This week, my focus shifted to understanding and implementing Simplicial depth in $R^2$. I began by constructing a baseline $O(n^3)$ geometric algorithm based on the simple and intuitive definition of the depth measure. While verifying this baseline against the ddalpha package in R, I encountered an interesting edge case regarding collinear points that skewed my depth calculations. After resolving the geometry, I pivoted to the computational challenge: $O(n^3)$ is not feasible for large datasets. By transitioning to the combinatorial perspective based on halfspace counts, I was able to implement the algorithm in an optimal $O(n \log n)$ time complexity, leading to deep explorations of angular sweep logic. 
+With IRW depth solidified, my focus shifted to understanding and implementing Simplicial depth in $R^2$. I began by constructing a baseline $O(n^3)$ geometric algorithm based on the simple and intuitive definition of the depth measure. While verifying this baseline against the ddalpha package in R, I encountered an interesting edge case regarding collinear points that skewed my depth calculations. After resolving the geometry, I pivoted to the computational challenge: $O(n^3)$ is not feasible for large datasets. By transitioning to the combinatorial perspective based on halfspace counts, I was able to implement the algorithm in an optimal $O(n \log n)$ time complexity, leading to deep explorations of angular sweep logic. 
 
 ---
 
@@ -93,7 +93,7 @@ Consulting literature on combinatorial depth measures [@D_F_L_M_S], I learned th
 A triangle will not contain the query point if one of its vertices lies on a line that passes through the query point and the vertex, and the other two of its vertices lie strictly on one side of this line. Thus, the problem reduces to finding the halfspace counts.  
 
 ### Implementation 2: Halfspace Counts
-To implement this, I referred to the algorithm by [@RR1996]. This transition was mentally challenging. In Week 3, I had to strictly separate the "projection" view from the "halfspace" view for Tukey depth. Now, I had to adapt to the halfspace mindset and carefully ensure that I didn't use the two interchangeably.
+To implement this, I referred to the algorithm by [@RR1996]. This transition was mentally challenging. While implementing Tukey depth, I had to strictly separate the "projection" view from the "halfspace" view for Tukey depth. Now, I had to adapt to the halfspace mindset and carefully ensure that I didn't use the two interchangeably.
 
 Instead of explaining the dense step by step mechanics here, the basic intuition is that you sort the points by angle (which takes $O(n \log n)$ time) and then sweep a line around the query point, keeping a running tally of how many points enter and exit the halfspace at each step.
 
@@ -102,7 +102,7 @@ Instead of explaining the dense step by step mechanics here, the basic intuition
 ### Investigating Alternative Sweep Logics
 While I successfully implemented the Rousseeuw and Ruts algorithm, I found their specific method of tracking halfspace counts unintuitive, and the notation used slightly confusing. In their logic, sweeping the line can result in bulk additions or subtractions of points to the halfspace count.
 
-Recalling the elegance of my Tukey implementation from week 3, the sweep in that algorithm strictly gains or loses exactly one point at a time. Dr. Leblanc and I collaborated to explore and implement an alternative $O(n \log n)$ sweep logic for Simplicial depth. We are currently verifying whether this counting logic is an existing technique in computational geometry or a new approach. I look forward to detailing this alternative algorithm in a future update once we have thoroughly confirmed its novelty.
+Recalling the elegance of my Tukey implementation, the sweep in that algorithm strictly gains or loses exactly one point at a time. Dr. Leblanc and I collaborated to explore and implement an alternative $O(n \log n)$ sweep logic for Simplicial depth. We are currently verifying whether this counting logic is an existing technique in computational geometry or a new approach. I look forward to detailing this alternative algorithm in a future update once we have thoroughly confirmed its novelty.
 
 ---
 

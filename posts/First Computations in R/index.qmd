@@ -4,16 +4,16 @@ author: "Ridhima Singla"
 #date: "May 15, 2026"
 order: 2
 categories: [Implementation, R]
-image: "Week2-thumbnail.png"
+image: "2-thumbnail.png"
 ---
 
 ### Abstract    
-This week marked the transition from understanding mathematical theory to applying it through computational implementation. The primary goal was to have a functioning algorithm, leaving runtime optimization for later iterations. After reviewing Dr. Leblanc’s notes to solidify the core geometry, I wrote my first R scripts to compute Mahalanobis depth (for an entire dataset) using matrix algebra and Tukey depth (for a single point), understanding why simple distance measurements fail in multivariate space, and learning two different but equivalent ways to compute Tukey depth. While built-in R functions made computing Mahalanobis depth straightforward, I spent the vast majority of my time struggling with the geometric complexities of Tukey depth.   
+This phase of the project marked the transition from understanding mathematical theory to applying it through computational implementation. The primary goal was to have a functioning algorithm, leaving runtime optimization for later iterations. After reviewing Dr. Leblanc’s notes to solidify the core geometry, I wrote my first R scripts to compute Mahalanobis depth (for an entire dataset) using matrix algebra and Tukey depth (for a single point), understanding why simple distance measurements fail in multivariate space, and learning two different but equivalent ways to compute Tukey depth. While built-in R functions made computing Mahalanobis depth straightforward, I spent the vast majority of my time struggling with the geometric complexities of Tukey depth.   
 
 ---
 
 ### Theoretical Foundations: Two Approaches to Computing Depth
-* **The Core Concept:** This week focused on two different methods for calculating depth.
+* **The Core Concept:** This phase focused on two different methods for calculating depth.
     - Mahalanobis depth is based on Mahalanobis distance. It relies on the covariance matrix to measure how central a point is relative to the distribution's shape and spread.  
       
     - Tukey (halfspace) depth takes a geometric approach. Using the projection interpretation, it determines depth of a point by evaluating the minimum number of data points whose orthogonal projections fall to one side of the origin across all possible directional vectors.
@@ -136,7 +136,7 @@ I abandoned the grid approach in favor of the sweep algorithm. Instead of rotati
 ### Current Roadblock
 * **The Unresolved Bug:** While the transition to the sweep algorithm was conceptually successful, my current R script for the single point Tukey depth is producing an answer that is different from the one computed by the ddalpha function in R, even after accounting for the normalization. 
 
-* **My Hypothesis:** I suspect there is a flaw in how I am tracking the initial right count (i.e. number of points that project on the right of the origin) before we start sweeping the list going from 0 to 360. I have isolated the code chunk that counts the initial count and plan to debug it next week after consulting Dr. Leblanc.
+* **My Hypothesis:** I suspect there is a flaw in how I am tracking the initial right count (i.e. number of points that project on the right of the origin) before we start sweeping the list going from 0 to 360. I have isolated the code chunk that counts the initial count and plan to debug it after consulting Dr. Leblanc.
 
 ---
 
