@@ -1,5 +1,5 @@
 ---
-title: "Week 4: Integrated Rank-Weighted (IRW) Depth and Monte Carlo Approximations"
+title: "Integrated Rank-Weighted (IRW) Depth and Monte Carlo Approximations"
 author: "Ridhima Singla"
 #date: "May 29, 2026"
 order: 4

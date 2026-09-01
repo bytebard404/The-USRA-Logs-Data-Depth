@@ -1,5 +1,5 @@
 ---
-title: "Week 5: Simplicial Depth and Combinatorial Optimizations"
+title: "Simplicial Depth and Combinatorial Optimizations"
 author: "Ridhima Singla"
 #date: "June 5, 2026"
 order: 5

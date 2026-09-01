@@ -1,14 +1,14 @@
 ---
-title: "Week 1: Defining the Depth Function & Infrastructure Setup"
+title: "Defining the Depth Function & Infrastructure Setup"
 author: "Ridhima Singla"
 #date: "May 8, 2026"
 order: 1
 categories: [Theory]
-image: "Week1.png"
+image: "setup.png"
 ---
 
 ### Abstract ^[Thumbnail image credit: Graph sourced from Dr. Leblanc's seminar slide deck on Integrated Rank-Weighted Depth.]
-I kicked off my 16 week undergraduate research term this week under the supervision of Dr. Alexandre Leblanc by defining the core scope of our project: the statistical and computational challenges of Data Depth. While the week was heavily focused on literature review, foundational theory, and establishing the technical infrastructure to document the progress over the summer, it also allowed me to pinpoint the applications of this concept that I am most interested in exploring. Specifically, I want to investigate how data depth can be used for robust outlier detection under missing data. Is there a depth method that can isolate high quality data points from the noise? Can the approach be generalised to higher dimensions?   
+I kicked off my undergraduate research term under the supervision of Dr. Alexandre Leblanc by defining the core scope of our project: the statistical and computational challenges of Data Depth. While the initial phase was heavily focused on literature review, foundational theory, and establishing the technical infrastructure to document the progress of the project, it also allowed me to pinpoint the applications of this concept that I am most interested in exploring. Specifically, I want to investigate how data depth can be used for robust outlier detection under missing data. Is there a depth method that can isolate high quality data points from the noise? Can the approach be generalised to higher dimensions?   
 
 ---
 
@@ -27,7 +27,7 @@ I kicked off my 16 week undergraduate research term this week under the supervis
 ---
 
 ### Methodological Pivots & Insights  
-The first major roadblock I encountered was informational, not technical. While there is a substantial volume of literature on the subject, much of it assumes a high level of prior knowledge, and heavily leans toward advanced applications rather than foundational theory. As a beginner, the challenge was figuring out where to start, identifying foundational readings, and reserving advanced ones for later. To navigate this, Dr. Leblanc helped narrow down a reading list for the initial weeks, allowing me to select a single paper as my starting point. 
+The first major roadblock I encountered was informational, not technical. While there is a substantial volume of literature on the subject, much of it assumes a high level of prior knowledge, and heavily leans toward advanced applications rather than foundational theory. As a beginner, the challenge was figuring out where to start, identifying foundational readings, and reserving advanced ones for later. To navigate this, Dr. Leblanc helped narrow down an introductory reading list, allowing me to select a single paper as my starting point. 
 
 ---
 

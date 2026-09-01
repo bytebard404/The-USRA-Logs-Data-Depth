@@ -1,5 +1,5 @@
 ---
-title: "Week 3: Clarifying Tukey Depth & Debugging Sweep Algorithm"
+title: "Clarifying Tukey Depth & Debugging Sweep Algorithm"
 author: "Ridhima Singla"
 #date: "May 22, 2026"
 order: 3

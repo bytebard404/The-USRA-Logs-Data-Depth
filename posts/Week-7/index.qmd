@@ -1,5 +1,5 @@
 ---
-title: "Week 7: Empirical vs. Theoretical Verification Dashboard"
+title: "Empirical vs. Theoretical Verification Dashboard"
 author: "Ridhima Singla"
 #date: "2026-06-19"
 order: 7
