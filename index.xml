@@ -10,11 +10,11 @@
 <atom:link href="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/index.xml" rel="self" type="application/rss+xml"/>
 <description>A 16-week research journal exploring computational and theoretical data depth.</description>
 <generator>quarto-1.9.37</generator>
-<lastBuildDate>Tue, 01 Sep 2026 16:43:38 GMT</lastBuildDate>
+<lastBuildDate>Tue, 01 Sep 2026 21:19:06 GMT</lastBuildDate>
 <item>
-  <title>Week 7: Empirical vs. Theoretical Verification Dashboard</title>
+  <title>Empirical vs. Theoretical Verification Dashboard</title>
   <dc:creator>Ridhima Singla</dc:creator>
-  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-7/</link>
+  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Runtime Analysis/</link>
   <description><![CDATA[ 
 
 
@@ -23,12 +23,12 @@
 
 <section id="abstract" class="level3">
 <h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
-<p>With all the code optimized, my focus shifted to empirical vs.&nbsp;theoretical verification across the updated set of bivariate data depth algorithms. Having eliminated the computational bottleneck in Week 6, I evaluated how Integrated Rank-Weighted (IRW), Tukey’s halfspace, Mahalanobis, and Simplicial depth scale across dataset sizes ranging from <img src="https://latex.codecogs.com/png.latex?n%20=%20100"> to <img src="https://latex.codecogs.com/png.latex?n%20=%20100,000">. To evaluate mathematical complexity against hardware noise, I incorporated local polynomial regression (loess) smoothing curves to reveal the underlying asymptotic trends. My analysis confirms that the refactored implementations match their theoretical Big-O expectations.</p>
+<p>With all the code optimized, my focus shifted to empirical vs.&nbsp;theoretical verification across the updated set of bivariate data depth algorithms. Having eliminated the computational bottleneck previously, I evaluated how Integrated Rank-Weighted (IRW), Tukey’s halfspace, Mahalanobis, and Simplicial depth scale across dataset sizes ranging from <img src="https://latex.codecogs.com/png.latex?n%20=%20100"> to <img src="https://latex.codecogs.com/png.latex?n%20=%20100,000">. To evaluate mathematical complexity against hardware noise, I incorporated local polynomial regression (loess) smoothing curves to reveal the underlying asymptotic trends. My analysis confirms that the refactored implementations match their theoretical Big-O expectations.</p>
 </section>
 <section id="introduction" class="level3">
 <h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
-<p>In last week’s post, we performed a deep analysis into <em>The R Inferno</em> <span class="citation" data-cites="burns2011r">(Burns 2011)</span>, pre-allocating vector lengths, and replacing iterative loops with vectorized operations. Reducing our execution time down to under 0.4 seconds for a million points was a massive victory, but it was only half the battle.</p>
-<p>The ultimate objective of a runtime analysis is asymptotic verification: confirming whether the empirical scaling of our code as <img src="https://latex.codecogs.com/png.latex?n%20%5Cto%20%5Cinfty"> matches the theoretical Big-O complexity established in statistical/computational geometry literature. This week, I took the refactored code, fed it massive, randomly generated datasets across a wide range of sizes, and built an interactive dashboard to evaluate their performance.</p>
+<p>Previously we performed a deep analysis into <em>The R Inferno</em> <span class="citation" data-cites="burns2011r">(Burns 2011)</span>, pre-allocating vector lengths, and replacing iterative loops with vectorized operations. Reducing our execution time down to under 0.4 seconds for a million points was a massive victory, but it was only half the battle.</p>
+<p>The ultimate objective of a runtime analysis is asymptotic verification: confirming whether the empirical scaling of our code as <img src="https://latex.codecogs.com/png.latex?n%20%5Cto%20%5Cinfty"> matches the theoretical Big-O complexity established in statistical/computational geometry literature. So, I took the refactored code, fed it massive, randomly generated datasets across a wide range of sizes, and built an interactive dashboard to evaluate their performance.</p>
 <hr>
 </section>
 <section id="part-1-filtering-hardware-noise" class="level3">
@@ -82,7 +82,7 @@
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-7/index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Runtime Analysis/index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption>Empirical vs.&nbsp;Theoretical O(n log n) Scaling of Optimized and Unoptimized Algorithms</figcaption>
 </figure>
 </div>
@@ -92,14 +92,14 @@
 <div id="tabset-1-2" class="tab-pane" aria-labelledby="tabset-1-2-tab">
 <p>The bivariate Simplicial depth algorithm relies on calculating the number of closed data triangles containing the target point. Since the geometry naturally relies on identifying sets of three, the baseline algorithm scales at an excruciatingly slow cubic <img src="https://latex.codecogs.com/png.latex?O(n%5E3)"> rate (bottom graph) as expected. The top row of graphs visualize the pre and post optimization runtime of the combinatorial approach.</p>
 <ul>
-<li><p>The Macro View (Zoomed-Out, top-left): As <img src="https://latex.codecogs.com/png.latex?n%20%5Cto%20%5Cinfty">, the execution time of the unoptimized algorithm skyrockets exponentially, making massive datasets extremely slow to process. The “crush effect” is noticed here as well. The optimized implementation sits at the <img src="https://latex.codecogs.com/png.latex?y%20%5Capprox%200"> floor of the graph, showcasing the massive improvement in runtime as a result of the optimizations from week 6.</p></li>
+<li><p>The Macro View (Zoomed-Out, top-left): As <img src="https://latex.codecogs.com/png.latex?n%20%5Cto%20%5Cinfty">, the execution time of the unoptimized algorithm skyrockets exponentially, making massive datasets extremely slow to process. The “crush effect” is noticed here as well. The optimized implementation sits at the <img src="https://latex.codecogs.com/png.latex?y%20%5Capprox%200"> floor of the graph, showcasing the massive improvement in runtime as a result of the optimizations performed previously.</p></li>
 <li><p>The Micro View (Zoomed-In, top-right): Due to the “crush effect”, the macro view portrays the true asymptotic trajectory of the optimized algorithm to be linear, which is inaccurate. By zooming in on the bottom fraction of the y-axis, the expanded view allows us to overlay the theoretical regression curve and mathematically verify that our empirical runtime cleanly tracks its <img src="https://latex.codecogs.com/png.latex?O(n%20%5Clog%20n)"> theoretical expectation <span class="citation" data-cites="D_F_L_M_S">(Durocher et al. 2018)</span>.</p></li>
 </ul>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-7/index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="864"></p>
+<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Runtime Analysis/index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="864"></p>
 <figcaption>Simplicial Depth: Optimization from the cubic time complexity baseline to O(n log n)</figcaption>
 </figure>
 </div>
@@ -107,7 +107,7 @@
 </div>
 </div>
 <div id="tabset-1-3" class="tab-pane" aria-labelledby="tabset-1-3-tab">
-<p>Integrated Rank-Weighted depth relies on averaging the univariate depth measures across all directional vectors. Recall that, during Week 4 we implemented IRW depth three distinct ways - Exact IRW Depth (The Sweep Method), Sweep and Randomize Monte Carlo, and No Sweep Monte Carlo. Below we share the results for the runtime analysis of each pre and post optimization.</p>
+<p>Integrated Rank-Weighted depth relies on averaging the univariate depth measures across all directional vectors. Recall that we previously implemented IRW depth three distinct ways - Exact IRW Depth (The Sweep Method), Sweep and Randomize Monte Carlo, and No Sweep Monte Carlo. Below we share the results for the runtime analysis of each pre and post optimization.</p>
 <ul>
 <li><p>No Sweep Monte Carlo: As can be seen in the Unoptimized (Micro - Bottom Left) and Optimized (Macro - Top Right) graphs, while both follow a linear trajectory for this algorithm, optimizing the code flattens the slope, making the linear process much faster in the optimized version.</p></li>
 <li><p>Angular Sweep Implementations: In the unoptimized panel (left side), the current dataset scale is insufficient to fully demonstrate the disparity between the theoretical <img src="https://latex.codecogs.com/png.latex?O(n%20%5Clog%20n)"> bound and the unoptimized ‘Exact with Pre-Setup’ algorithm. The latter seems to track the theoretical line perfectly because the workload at <img src="https://latex.codecogs.com/png.latex?n=800"> is too small to show the underlying inefficiencies. However, the left panel effectively illustrates the poor performance of the unoptimized ‘Pre-Setup with Randomization’ algorithm. Using the optimized (Micro - Bottom Right) graph, we observe that post optimization, both the sweep algorithms perfectly track the theoretical <img src="https://latex.codecogs.com/png.latex?n%20%5Clog%20n"> line as <img src="https://latex.codecogs.com/png.latex?n%20%5Cto%20%5Cinfty">.</p></li>
@@ -116,7 +116,7 @@
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-7/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="960"></p>
+<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Runtime Analysis/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="960"></p>
 <figcaption>IRW Depth: Execution time comparison across implementations. The left panel shows the plots for the unoptimized implementations, and the right panel shows the plots for the optimized implementations.</figcaption>
 </figure>
 </div>
@@ -129,7 +129,7 @@
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-7/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Runtime Analysis/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption>Mahalanobis Depth: Execution time verification against theoretical expectation</figcaption>
 </figure>
 </div>
@@ -175,14 +175,14 @@ Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/C
 </div>
 </div></section></div> ]]></description>
   <category>Runtime</category>
-  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-7/</guid>
-  <pubDate>Tue, 01 Sep 2026 16:43:38 GMT</pubDate>
-  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-7/tukeyplot.jpeg" medium="image" type="image/jpeg"/>
+  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Runtime Analysis/</guid>
+  <pubDate>Tue, 01 Sep 2026 21:19:06 GMT</pubDate>
+  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Runtime Analysis/tukeyplot.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
   <title>Runtime Analysis and Algorithm Optimization</title>
   <dc:creator>Ridhima Singla</dc:creator>
-  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-6/</link>
+  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Optimization/</link>
   <description><![CDATA[ 
 
 
@@ -191,16 +191,16 @@ Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/C
 
 <section id="abstract" class="level3">
 <h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
-<p>This week, my focus shifted from implementation to runtime analysis and algorithm optimization for all bivariate depth functions I have implemented so far. I began by building a standard framework to test how my algorithms scale as <img src="https://latex.codecogs.com/png.latex?n%20%5Cto%20%5Cinfty">, but quickly encountered several execution bottlenecks. To understand what was slowing my code down under the hood, I turned to <em>The R Inferno</em> by Patrick Burns <span class="citation" data-cites="burns2011r">(Burns 2011)</span> and systematically improved the runtime by pre-allocating memory, eliminating matrix binding, and replacing ‘for’ loops with vectorized operations. Ultimately, this refactoring dropped the processing time for a dataset of 1,000,000 points to under 0.4 seconds which was a massive win for me. This process also allowed me to secure my code from edge cases that arose only when testing on large datasets.</p>
+<p>During this phase of the project, my focus shifted from implementation to runtime analysis and algorithm optimization for all previously implemented bivariate depth functions. I began by building a standard framework to test how my algorithms scale as <img src="https://latex.codecogs.com/png.latex?n%20%5Cto%20%5Cinfty">, but quickly encountered several execution bottlenecks. To understand what was slowing my code down under the hood, I turned to <em>The R Inferno</em> by Patrick Burns <span class="citation" data-cites="burns2011r">(Burns 2011)</span> and systematically improved the runtime by pre-allocating memory, eliminating matrix binding, and replacing ‘for’ loops with vectorized operations. Ultimately, this refactoring dropped the processing time for a dataset of 1,000,000 points to under 0.4 seconds which was a massive win for me. This process also allowed me to secure my code from edge cases that arose only when testing on large datasets.</p>
 </section>
 <section id="introduction" class="level3">
 <h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
-<p>With the core logic verified during the last few weeks, my objective transitioned from achieving the correct output to achieving the correct output efficiently. Having implemented a number of bivariate data depth algorithms like Integrated Rank-Weighted (IRW), Tukey, Mahalanobis, and Simplicial depth, my goal for this week was to eliminate R bottlenecks and syntax inefficiencies to achieve peak raw performance.</p>
+<p>With the core logic verified, my objective transitioned from achieving the correct output to achieving the correct output efficiently. Having implemented a number of bivariate data depth algorithms like Integrated Rank-Weighted (IRW), Tukey, Mahalanobis, and Simplicial depth, my goal for this phase was to eliminate R bottlenecks and syntax inefficiencies to achieve peak raw performance.</p>
 <p>To do this systematically, I built a standard looping framework: for dataset sizes ranging from <img src="https://latex.codecogs.com/png.latex?n%20=%20100"> up to <img src="https://latex.codecogs.com/png.latex?n%20=%20100,000">, generate random bivariate distributions, execute the depth calculations, and record the CPU execution time.</p>
 <p>At this stage, I had not yet learned about statistical smoothing techniques like loess regression, so I was hyper-fixated on the exact shape of the raw empirical line that I was seeing. As can be seen in the graph attached below, while the general trajectory was somewhat linear, it was full of sharp peaks that appeared to be structured and not entirely random. Moreover, the script itself ran excruciatingly slow. What began as a simple plotting exercise quickly evolved into a deep dive into understanding what goes on behind the scenes and a complete rewiring of how I approach programming.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-6/peaks.png" class="img-fluid figure-img"></p>
+<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Optimization/peaks.png" class="img-fluid figure-img"></p>
 <figcaption>Raw empirical runtime for Simplicial depth from N = 100 to N = 100,000 before any optimizations</figcaption>
 </figure>
 </div>
@@ -238,18 +238,18 @@ Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/C
 </section>
 <section id="part-3-the-payoff" class="level3">
 <h3 class="anchored" data-anchor-id="part-3-the-payoff">Part 3: The Payoff</h3>
-<p>After completing these optimizations on the <img src="https://latex.codecogs.com/png.latex?O(n%20%5Clog%20n)"> Simplicial depth algorithm, I went back and applied them to every single depth algorithm I had written to date.</p>
+<p>After completing these optimizations on the <img src="https://latex.codecogs.com/png.latex?O(n%20%5Clog%20n)"> Simplicial depth algorithm, I went back and applied them to all previously implemented depth algorithms.</p>
 <p>The Massive Win: For the <img src="https://latex.codecogs.com/png.latex?O(n%20%5Clog%20n)"> Simplicial depth algorithm, the maximum time required for my computer to process a dataset of 1,000,000 points dropped down to under 0.4 seconds.</p>
-<p>An unexpected bonus of this optimization journey was code robustness. Originally, I had only tested my algorithms on relatively small datasets. However, this week I was able to identify and fix several edge cases that only became apparent when the algorithms were tested on large datasets.</p>
+<p>An unexpected bonus of this optimization journey was code robustness. Originally, I had only tested my algorithms on relatively small datasets. However, during this process I was able to identify and fix several edge cases that only became apparent when the algorithms were tested on large datasets.</p>
 <hr>
 </section>
 <section id="question-what-caused-the-peaks" class="level3">
 <h3 class="anchored" data-anchor-id="question-what-caused-the-peaks">Question: What Caused the ‘Peaks’?</h3>
 <p>So, what was causing the structured, non-random peaks we observed during our initial testing? Honestly, the definitive answer remains open and none of our original hypotheses seem to explain this behavior. While we successfully optimized the algorithmic implementations as much as possible and eliminated the main bottlenecks, the underlying cause behind the non-random structure of those peaks is still ambiguous. I am learning that recognizing and documenting unsolved observations is also a part of the research process. If you happen to have any insights, or experience with similar algorithmic behavior, please connect with me on LinkedIn. I would love to hear your thoughts!</p>
 </section>
-<section id="next-week---asymptotic-verification" class="level3">
-<h3 class="anchored" data-anchor-id="next-week---asymptotic-verification">Next Week - Asymptotic Verification</h3>
-<p>With clean, optimized R functions established, I finally have the speed required to run massive datasets for asymptotic verification. In next week’s post, I will take these vectorized algorithms and evaluate how their empirical runtime trajectories compare with the theoretical Big-O expectations as <img src="https://latex.codecogs.com/png.latex?n%20%5Cto%20%5Cinfty">.</p>
+<section id="next-step---asymptotic-verification" class="level3">
+<h3 class="anchored" data-anchor-id="next-step---asymptotic-verification">Next Step - Asymptotic Verification</h3>
+<p>With clean, optimized R functions established, I finally have the speed required to run massive datasets for asymptotic verification. In a subsequent update, I will take these vectorized algorithms and evaluate how their empirical runtime trajectories compare with the theoretical Big-O expectations as <img src="https://latex.codecogs.com/png.latex?n%20%5Cto%20%5Cinfty">.</p>
 
 
 
@@ -267,14 +267,14 @@ Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/C
 </div>
 </div></section></div> ]]></description>
   <category>Runtime</category>
-  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-6/</guid>
-  <pubDate>Tue, 01 Sep 2026 16:43:38 GMT</pubDate>
-  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-6/peaks.png" medium="image" type="image/png" height="68" width="144"/>
+  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Optimization/</guid>
+  <pubDate>Tue, 01 Sep 2026 21:19:06 GMT</pubDate>
+  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Optimization/peaks.png" medium="image" type="image/png" height="68" width="144"/>
 </item>
 <item>
-  <title>Week 5: Simplicial Depth and Combinatorial Optimizations</title>
+  <title>Simplicial Depth and Combinatorial Optimizations</title>
   <dc:creator>Ridhima Singla</dc:creator>
-  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-5/</link>
+  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Simplicial Depth/</link>
   <description><![CDATA[ 
 
 
@@ -283,7 +283,7 @@ Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/C
 
 <section id="abstract" class="level3">
 <h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
-<p>This week, my focus shifted to understanding and implementing Simplicial depth in <img src="https://latex.codecogs.com/png.latex?R%5E2">. I began by constructing a baseline <img src="https://latex.codecogs.com/png.latex?O(n%5E3)"> geometric algorithm based on the simple and intuitive definition of the depth measure. While verifying this baseline against the ddalpha package in R, I encountered an interesting edge case regarding collinear points that skewed my depth calculations. After resolving the geometry, I pivoted to the computational challenge: <img src="https://latex.codecogs.com/png.latex?O(n%5E3)"> is not feasible for large datasets. By transitioning to the combinatorial perspective based on halfspace counts, I was able to implement the algorithm in an optimal <img src="https://latex.codecogs.com/png.latex?O(n%20%5Clog%20n)"> time complexity, leading to deep explorations of angular sweep logic.</p>
+<p>With IRW depth solidified, my focus shifted to understanding and implementing Simplicial depth in <img src="https://latex.codecogs.com/png.latex?R%5E2">. I began by constructing a baseline <img src="https://latex.codecogs.com/png.latex?O(n%5E3)"> geometric algorithm based on the simple and intuitive definition of the depth measure. While verifying this baseline against the ddalpha package in R, I encountered an interesting edge case regarding collinear points that skewed my depth calculations. After resolving the geometry, I pivoted to the computational challenge: <img src="https://latex.codecogs.com/png.latex?O(n%5E3)"> is not feasible for large datasets. By transitioning to the combinatorial perspective based on halfspace counts, I was able to implement the algorithm in an optimal <img src="https://latex.codecogs.com/png.latex?O(n%20%5Clog%20n)"> time complexity, leading to deep explorations of angular sweep logic.</p>
 <hr>
 </section>
 <section id="visualizing-simplicial-depth" class="level3">
@@ -292,7 +292,7 @@ Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/C
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-5/index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Simplicial Depth/index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption>A simple toy example to help understand how Simplicial Depth is computed.</figcaption>
 </figure>
 </div>
@@ -328,7 +328,7 @@ Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/C
 </section>
 <section id="implementation-2-halfspace-counts" class="level3">
 <h3 class="anchored" data-anchor-id="implementation-2-halfspace-counts">Implementation 2: Halfspace Counts</h3>
-<p>To implement this, I referred to the algorithm by <span class="citation" data-cites="RR1996">(Rousseeuw and Ruts 1996)</span>. This transition was mentally challenging. In Week 3, I had to strictly separate the “projection” view from the “halfspace” view for Tukey depth. Now, I had to adapt to the halfspace mindset and carefully ensure that I didn’t use the two interchangeably.</p>
+<p>To implement this, I referred to the algorithm by <span class="citation" data-cites="RR1996">(Rousseeuw and Ruts 1996)</span>. This transition was mentally challenging. While implementing Tukey depth, I had to strictly separate the “projection” view from the “halfspace” view for Tukey depth. Now, I had to adapt to the halfspace mindset and carefully ensure that I didn’t use the two interchangeably.</p>
 <p>Instead of explaining the dense step by step mechanics here, the basic intuition is that you sort the points by angle (which takes <img src="https://latex.codecogs.com/png.latex?O(n%20%5Clog%20n)"> time) and then sweep a line around the query point, keeping a running tally of how many points enter and exit the halfspace at each step.</p>
 <ul>
 <li><strong>Note:</strong> The complete, executable R script for both the <img src="https://latex.codecogs.com/png.latex?O(n%5E3)"> baseline and the <img src="https://latex.codecogs.com/png.latex?O(n%20%5Clog%20n)"> Rousseeuw &amp; Ruts implementation is available in the <a href="https://github.com/bytebard404/The-USRA-Logs-Data-Depth/blob/main/R/Simplicial-Week5">project repository</a>.</li>
@@ -337,7 +337,7 @@ Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/C
 <section id="investigating-alternative-sweep-logics" class="level3">
 <h3 class="anchored" data-anchor-id="investigating-alternative-sweep-logics">Investigating Alternative Sweep Logics</h3>
 <p>While I successfully implemented the Rousseeuw and Ruts algorithm, I found their specific method of tracking halfspace counts unintuitive, and the notation used slightly confusing. In their logic, sweeping the line can result in bulk additions or subtractions of points to the halfspace count.</p>
-<p>Recalling the elegance of my Tukey implementation from week 3, the sweep in that algorithm strictly gains or loses exactly one point at a time. Dr.&nbsp;Leblanc and I collaborated to explore and implement an alternative <img src="https://latex.codecogs.com/png.latex?O(n%20%5Clog%20n)"> sweep logic for Simplicial depth. We are currently verifying whether this counting logic is an existing technique in computational geometry or a new approach. I look forward to detailing this alternative algorithm in a future update once we have thoroughly confirmed its novelty.</p>
+<p>Recalling the elegance of my Tukey implementation, the sweep in that algorithm strictly gains or loses exactly one point at a time. Dr.&nbsp;Leblanc and I collaborated to explore and implement an alternative <img src="https://latex.codecogs.com/png.latex?O(n%20%5Clog%20n)"> sweep logic for Simplicial depth. We are currently verifying whether this counting logic is an existing technique in computational geometry or a new approach. I look forward to detailing this alternative algorithm in a future update once we have thoroughly confirmed its novelty.</p>
 <hr>
 </section>
 <section id="future-work" class="level3">
@@ -364,14 +364,14 @@ Rousseeuw, Peter, and Ida Ruts. 1996. <span>“Algorithm AS 307: Bivariate Locat
 </div></section></div> ]]></description>
   <category>Implementation</category>
   <category>R</category>
-  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-5/</guid>
-  <pubDate>Tue, 01 Sep 2026 16:43:38 GMT</pubDate>
-  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-5/ToyExample.jpeg" medium="image" type="image/jpeg"/>
+  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Simplicial Depth/</guid>
+  <pubDate>Tue, 01 Sep 2026 21:19:06 GMT</pubDate>
+  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Simplicial Depth/ToyExample.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
-  <title>Week 4: Integrated Rank-Weighted (IRW) Depth and Monte Carlo Approximations</title>
+  <title>Integrated Rank-Weighted (IRW) Depth and Monte Carlo Approximations</title>
   <dc:creator>Ridhima Singla</dc:creator>
-  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/</link>
+  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/IRW/</link>
   <description><![CDATA[ 
 
 
@@ -380,7 +380,7 @@ Rousseeuw, Peter, and Ida Ruts. 1996. <span>“Algorithm AS 307: Bivariate Locat
 
 <section id="abstract" class="level3">
 <h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
-<p>With the geometrical foundation of the bivariate Tukey sweep algorithm solidified last week, my focus shifted toward Integrated Rank-Weighted (IRW) depth. While Tukey depth is a powerful depth measure, finding the minimum univariate depth over all possible projections makes Tukey Depth difficult to compute. IRW depth resolves this by averaging the univariate depths across all projections rather than taking the absolute minimum. Since there are no built-in R packages like ddalpha that help verify IRW computations, I implemented the algorithm three distinct ways upon Dr.&nbsp;Leblanc’s recommendation. My implementations range from an exact geometric calculation to a pure Monte Carlo approximation, which helped ensure the mathematical correctness of my results.</p>
+<p>With the geometrical foundation of the bivariate Tukey sweep algorithm solidified, my focus shifted toward Integrated Rank-Weighted (IRW) depth. While Tukey depth is a powerful depth measure, finding the minimum univariate depth over all possible projections makes Tukey Depth difficult to compute. IRW depth resolves this by averaging the univariate depths across all projections rather than taking the absolute minimum. Since there are no built-in R packages like ddalpha that help verify IRW computations, I implemented the algorithm three distinct ways upon Dr.&nbsp;Leblanc’s recommendation. My implementations range from an exact geometric calculation to a pure Monte Carlo approximation, which helped ensure the mathematical correctness of my results.</p>
 <hr>
 </section>
 <section id="visualizing-irw-depth" class="level3">
@@ -389,7 +389,7 @@ Rousseeuw, Peter, and Ida Ruts. 1996. <span>“Algorithm AS 307: Bivariate Locat
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="960"></p>
+<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/IRW/index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="960"></p>
 <figcaption>A simple toy example to help understand how IRW Depth is computed.</figcaption>
 </figure>
 </div>
@@ -413,9 +413,9 @@ Rousseeuw, Peter, and Ida Ruts. 1996. <span>“Algorithm AS 307: Bivariate Locat
 <section id="computational-implementation-verification-strategy" class="level3">
 <h3 class="anchored" data-anchor-id="computational-implementation-verification-strategy">Computational Implementation &amp; Verification Strategy</h3>
 <ul>
-<li><p><strong>The Verification Challenge:</strong> One of the immediate hurdles this week was the lack of a built-in verification tool. Unlike Tukey depth, there is no function for IRW depth within the ddalpha package (or any other standard R libraries that I explored). This meant I could not simply run my algorithm and compare the output to an answer key. To ensure the mathematical integrity of my code, I had to come up with a robust verification strategy relying on algorithmic independence. Dr.&nbsp;Leblanc suggested leveraging the convergence property of Monte Carlo simulations to verify the code. If an exact geometrical approach and a randomized approximation approach yield the same value, the implementation is successful. To achieve this, I implemented IRW depth in three distinct ways:</p>
+<li><p><strong>The Verification Challenge:</strong> One of the immediate hurdles during this phase was the lack of a built-in verification tool. Unlike Tukey depth, there is no function for IRW depth within the ddalpha package (or any other standard R libraries that I explored). This meant I could not simply run my algorithm and compare the output to an answer key. To ensure the mathematical integrity of my code, I had to come up with a robust verification strategy relying on algorithmic independence. Dr.&nbsp;Leblanc suggested leveraging the convergence property of Monte Carlo simulations to verify the code. If an exact geometrical approach and a randomized approximation approach yield the same value, the implementation is successful. To achieve this, I implemented IRW depth in three distinct ways:</p>
 <ul>
-<li><p>Exact IRW Depth (The Sweep Method): For this implementation, I referenced the approach of representing IRW depth as a weighted average of a set of univariate Tukey ranks outlined in <span class="citation" data-cites="Ramsay&amp;Durocher&amp;Leblanc_2019">(Ramsay et al. 2019)</span>. This approach relies on the fact that the univariate depth is constant over distinct patches. Leveraging the sorted angular sweep from Week 3, I computed the exact IRW depth by tracking the boundaries where the depth changes. Instead of keeping track of the absolute minimum, I stored every univariate depth observed in a vector. I calculated the angular slice size (the weight of the total pie) for each depth, and summed them using the following logic: <img src="https://latex.codecogs.com/png.latex?D_%7BIRW%20Exact%7D%20=%20%5Csum_%7Bi=1%7D%5E%7Bk%7D%20w_i%20d_i"> where <img src="https://latex.codecogs.com/png.latex?w_i"> is the size of the angular slice (proportion of projections out of total), and <img src="https://latex.codecogs.com/png.latex?d_i"> is the depth observed in that slice.</p></li>
+<li><p>Exact IRW Depth (The Sweep Method): For this implementation, I referenced the approach of representing IRW depth as a weighted average of a set of univariate Tukey ranks outlined in <span class="citation" data-cites="Ramsay&amp;Durocher&amp;Leblanc_2019">(Ramsay et al. 2019)</span>. This approach relies on the fact that the univariate depth is constant over distinct patches. Leveraging the sorted angular sweep from the Tukey implementation, I computed the exact IRW depth by tracking the boundaries where the depth changes. Instead of keeping track of the absolute minimum, I stored every univariate depth observed in a vector. I calculated the angular slice size (the weight of the total pie) for each depth, and summed them using the following logic: <img src="https://latex.codecogs.com/png.latex?D_%7BIRW%20Exact%7D%20=%20%5Csum_%7Bi=1%7D%5E%7Bk%7D%20w_i%20d_i"> where <img src="https://latex.codecogs.com/png.latex?w_i"> is the size of the angular slice (proportion of projections out of total), and <img src="https://latex.codecogs.com/png.latex?d_i"> is the depth observed in that slice.</p></li>
 <li><p>Sweep &amp; Randomize Monte Carlo: Using the exact slices computed above, I introduced randomization. I generated <img src="https://latex.codecogs.com/png.latex?m"> random angles (<img src="https://latex.codecogs.com/png.latex?%5Ctheta">) uniformly. For each <img src="https://latex.codecogs.com/png.latex?%5Ctheta">, the algorithm determined which angular slice it landed in and stored the corresponding pre-computed depth for that slice. The final depth was the average of these <img src="https://latex.codecogs.com/png.latex?m"> depths.</p></li>
 <li><p>No Sweep Monte Carlo: Since IRW depth requires computing an average, there is a very simple Monte Carlo algorithm for approximating the depth of a point. For this implementation, we remove the angular sweep entirely. Similar to the strategy explained by <span class="citation" data-cites="Durocher_Leblanc_Skala_2017">(Durocher et al. 2017)</span>, this is purely a brute force implementation. I generated <img src="https://latex.codecogs.com/png.latex?m"> random projection vectors. For each vector, the data was projected onto the line, and the 1D depth was calculated. The final IRW depth is the average of the depths computed for all <img src="https://latex.codecogs.com/png.latex?m"> projections. The law of large numbers guarantees that this algorithm does converge to the exact value <span class="citation" data-cites="Ramsay&amp;Durocher&amp;Leblanc_2019">(Ramsay et al. 2019)</span> as computed in implementation 1 as <img src="https://latex.codecogs.com/png.latex?m%20%5Crightarrow%20%5Cinfty">, and the graph below confirms this result.</p></li>
 </ul></li>
@@ -424,7 +424,7 @@ Rousseeuw, Peter, and Ida Ruts. 1996. <span>“Algorithm AS 307: Bivariate Locat
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/IRW/index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption>Monte Carlo Approximation of IRW Converging to the exact IRW Depth.</figcaption>
 </figure>
 </div>
@@ -460,14 +460,14 @@ Ramsay, Kelly, Stéphane Durocher, and Alexandre Leblanc. 2019. <span>“Integra
 </div></section></div> ]]></description>
   <category>Implementation</category>
   <category>R</category>
-  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/</guid>
-  <pubDate>Tue, 01 Sep 2026 16:43:38 GMT</pubDate>
-  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/convergenceplot.jpeg" medium="image" type="image/jpeg"/>
+  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/IRW/</guid>
+  <pubDate>Tue, 01 Sep 2026 21:19:06 GMT</pubDate>
+  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/IRW/convergenceplot.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
-  <title>Week 3: Clarifying Tukey Depth &amp; Debugging Sweep Algorithm</title>
+  <title>Clarifying Tukey Depth &amp; Debugging Sweep Algorithm</title>
   <dc:creator>Ridhima Singla</dc:creator>
-  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-3/</link>
+  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Clarifying Tukey Depth/</link>
   <description><![CDATA[ 
 
 
@@ -476,7 +476,7 @@ Ramsay, Kelly, Stéphane Durocher, and Alexandre Leblanc. 2019. <span>“Integra
 
 <section id="abstract" class="level3">
 <h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
-<p>This week was dedicated to resolving the calculation errors in my Tukey depth algorithm from Week 2, which ultimately required a much deeper dive into the underlying geometry. I discovered that my bugs weren’t just syntactical. They stemmed from a gap in understanding of the Tukey depth measure, which resulted in unconsciously mixing two equivalent, but geometrically distinct, definitions of Tukey depth. By decoupling the “Halfspace” view from the “Projection” view, I was able to fix the initial-count logic of my sweep algorithm and resolve a persistent off-by-one boundary error. With an algorithm setup for Tukey Depth finally in place, I am now naturally transitioning into a deeper dive in the Integrated Rank-Weighted (IRW) depth as the two share many similarities.</p>
+<p>Resolving calculation errors in the Tukey depth algorithm required a much deeper dive into the underlying geometry. I discovered that my bugs weren’t just syntactical. They stemmed from a gap in understanding of the Tukey depth measure, which resulted in unconsciously mixing two equivalent, but geometrically distinct, definitions of Tukey depth. By decoupling the “Halfspace” view from the “Projection” view, I was able to fix the initial-count logic of my sweep algorithm and resolve a persistent off-by-one boundary error. With the Tukey depth algorithm successfully established, the focus transitions to Integrated Rank-Weighted (IRW) depth as the two share many similarities.</p>
 <hr>
 </section>
 <section id="visualizing-two-views-of-tukey-depth" class="level3">
@@ -485,7 +485,7 @@ Ramsay, Kelly, Stéphane Durocher, and Alexandre Leblanc. 2019. <span>“Integra
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-3/index_files/figure-html/Two Views of Tukey Depth-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Clarifying Tukey Depth/index_files/figure-html/Two Views of Tukey Depth-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption>Side by side plots that depict two different ways to interpret and calculate Tukey Depth</figcaption>
 </figure>
 </div>
@@ -514,11 +514,11 @@ Ramsay, Kelly, Stéphane Durocher, and Alexandre Leblanc. 2019. <span>“Integra
 </section>
 <section id="methodological-pivots-insights" class="level3">
 <h3 class="anchored" data-anchor-id="methodological-pivots-insights">Methodological Pivots &amp; Insights</h3>
-<p>Last week, my single point Tukey algorithm was producing results that completely mismatched the verified ddalpha package output. I spent the week tracing the variables and discovered two distinct logic errors.</p>
+<p>During initial development, the single point Tukey algorithm produced results that didn’t match the verified ddalpha package output. For this iteration, I spent time tracing the variables and discovered two distinct logic errors.</p>
 <ul>
 <li><p><strong>Error 1: Incorrect Initial Count (Mixing Definitions)</strong></p>
 <ul>
-<li><p>The Problem: The sweep algorithm I am writing is strictly based on the Projection definition. However, when I wrote the code to calculate the initial count (the number of points that project on the right side before the angular sweep begins from 0 to 360 degrees), I accidentally wrote logic based on the Halfspace definition. I was counting the total number of observations in the top-half (positive y-axis), instead of counting the total number of observations in the right-half (positive x-axis), which is all the points that project on the right before the sweep begins.</p></li>
+<li><p>The Problem: The implemented sweep algorithm is strictly based on the Projection definition. However, when I wrote the code to calculate the initial count (the number of points that project on the right side before the angular sweep begins from 0 to 360 degrees), I accidentally wrote logic based on the Halfspace definition. I was counting the total number of observations in the top-half (positive y-axis), instead of counting the total number of observations in the right-half (positive x-axis), which is all the points that project on the right before the sweep begins.</p></li>
 <li><p>The Fix: I was implementing one definition but using the boundary rules of the other. Once I realized that the initial count simply represents all points that initially project onto the right side of the directional vector at angle 0, I rewrote the initialization chunk, and the sweep angles finally aligned.</p></li>
 </ul></li>
 <li><p><strong>Error 2: Off-By-One</strong></p>
@@ -680,14 +680,14 @@ Tukey, John W. 1975. <span>“Mathematics and the Picturing of Data.”</span> <
 </div></section></div> ]]></description>
   <category>Implementation</category>
   <category>R</category>
-  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-3/</guid>
-  <pubDate>Tue, 01 Sep 2026 16:43:38 GMT</pubDate>
-  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-3/projectionView.jpeg" medium="image" type="image/jpeg"/>
+  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Clarifying Tukey Depth/</guid>
+  <pubDate>Tue, 01 Sep 2026 21:19:06 GMT</pubDate>
+  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Clarifying Tukey Depth/projectionView.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
-  <title>Week 2: First Computations in R - Implementing Mahalanobis &amp; Tukey Depth</title>
+  <title>First Computations in R - Implementing Mahalanobis &amp; Tukey Depth</title>
   <dc:creator>Ridhima Singla</dc:creator>
-  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-2/</link>
+  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/First Computations in R/</link>
   <description><![CDATA[ 
 
 
@@ -696,13 +696,13 @@ Tukey, John W. 1975. <span>“Mathematics and the Picturing of Data.”</span> <
 
 <section id="abstract" class="level3">
 <h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
-<p>This week marked the transition from understanding mathematical theory to applying it through computational implementation. The primary goal was to have a functioning algorithm, leaving runtime optimization for later iterations. After reviewing Dr.&nbsp;Leblanc’s notes to solidify the core geometry, I wrote my first R scripts to compute Mahalanobis depth (for an entire dataset) using matrix algebra and Tukey depth (for a single point), understanding why simple distance measurements fail in multivariate space, and learning two different but equivalent ways to compute Tukey depth. While built-in R functions made computing Mahalanobis depth straightforward, I spent the vast majority of my time struggling with the geometric complexities of Tukey depth.</p>
+<p>This phase of the project marked the transition from understanding mathematical theory to applying it through computational implementation. The primary goal was to have a functioning algorithm, leaving runtime optimization for later iterations. After reviewing Dr.&nbsp;Leblanc’s notes to solidify the core geometry, I wrote my first R scripts to compute Mahalanobis depth (for an entire dataset) using matrix algebra and Tukey depth (for a single point), understanding why simple distance measurements fail in multivariate space, and learning two different but equivalent ways to compute Tukey depth. While built-in R functions made computing Mahalanobis depth straightforward, I spent the vast majority of my time struggling with the geometric complexities of Tukey depth.</p>
 <hr>
 </section>
 <section id="theoretical-foundations-two-approaches-to-computing-depth" class="level3">
 <h3 class="anchored" data-anchor-id="theoretical-foundations-two-approaches-to-computing-depth">Theoretical Foundations: Two Approaches to Computing Depth</h3>
 <ul>
-<li><p><strong>The Core Concept:</strong> This week focused on two different methods for calculating depth.</p>
+<li><p><strong>The Core Concept:</strong> This phase focused on two different methods for calculating depth.</p>
 <ul>
 <li><p>Mahalanobis depth is based on Mahalanobis distance. It relies on the covariance matrix to measure how central a point is relative to the distribution’s shape and spread.</p></li>
 <li><p>Tukey (halfspace) depth takes a geometric approach. Using the projection interpretation, it determines depth of a point by evaluating the minimum number of data points whose orthogonal projections fall to one side of the origin across all possible directional vectors.</p></li>
@@ -954,7 +954,7 @@ font-style: inherit;">"wt"</span>)</span></code></pre></div></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-2/index_files/figure-html/Mahalanobis Plot-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/First Computations in R/index_files/figure-html/Mahalanobis Plot-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption>Scatter plot showing the Mahalanobis Depth of each data point.</figcaption>
 </figure>
 </div>
@@ -992,7 +992,7 @@ font-style: inherit;">"wt"</span>)</span></code></pre></div></div>
 <h3 class="anchored" data-anchor-id="current-roadblock">Current Roadblock</h3>
 <ul>
 <li><p><strong>The Unresolved Bug:</strong> While the transition to the sweep algorithm was conceptually successful, my current R script for the single point Tukey depth is producing an answer that is different from the one computed by the ddalpha function in R, even after accounting for the normalization.</p></li>
-<li><p><strong>My Hypothesis:</strong> I suspect there is a flaw in how I am tracking the initial right count (i.e.&nbsp;number of points that project on the right of the origin) before we start sweeping the list going from 0 to 360. I have isolated the code chunk that counts the initial count and plan to debug it next week after consulting Dr.&nbsp;Leblanc.</p></li>
+<li><p><strong>My Hypothesis:</strong> I suspect there is a flaw in how I am tracking the initial right count (i.e.&nbsp;number of points that project on the right of the origin) before we start sweeping the list going from 0 to 360. I have isolated the code chunk that counts the initial count and plan to debug it after consulting Dr.&nbsp;Leblanc.</p></li>
 </ul>
 <hr>
 </section>
@@ -1015,9 +1015,9 @@ Mosler, Karl, and Pavlo Mozharovskyi. 2022. <span>“<span class="nocase">Choosi
 </div></section></div> ]]></description>
   <category>Implementation</category>
   <category>R</category>
-  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-2/</guid>
-  <pubDate>Tue, 01 Sep 2026 16:43:38 GMT</pubDate>
-  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-2/Week2-thumbnail.png" medium="image" type="image/png" height="67" width="144"/>
+  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/First Computations in R/</guid>
+  <pubDate>Tue, 01 Sep 2026 21:19:06 GMT</pubDate>
+  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/First Computations in R/2-thumbnail.png" medium="image" type="image/png" height="67" width="144"/>
 </item>
 <item>
   <title>Defining the Depth Function &amp; Infrastructure Setup</title>
@@ -1080,7 +1080,7 @@ Mosler, Karl, and Pavlo Mozharovskyi. 2022. <span>“<span class="nocase">Choosi
 </section></div> ]]></description>
   <category>Theory</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Introduction/</guid>
-  <pubDate>Tue, 01 Sep 2026 16:43:38 GMT</pubDate>
+  <pubDate>Tue, 01 Sep 2026 21:19:06 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Introduction/setup.png" medium="image" type="image/png" height="119" width="144"/>
 </item>
 </channel>

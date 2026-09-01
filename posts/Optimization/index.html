@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Ridhima Singla">
 
-<title>Research Logs – The USRA Logs: Data Depth</title>
+<title>Runtime Analysis and Algorithm Optimization – The USRA Logs: Data Depth</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,28 +24,45 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-8dfce0f9f08a59e28375127dbd9997f5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-8dfce0f9f08a59e28375127dbd9997f5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -72,35 +90,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -132,7 +121,7 @@ window.Quarto = {
 };
 </script>
 
-<link rel="alternate" type="application/rss+xml" title="The USRA Logs: Data Depth" href="index.xml" data-external="1"></head>
+</head>
 
 <body class="nav-fixed quarto-light">
 
@@ -141,7 +130,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">The USRA Logs: Data Depth</span>
     </a>
   </div>
@@ -152,11 +141,11 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -176,233 +165,131 @@ window.Quarto = {
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
-      <h1 class="title">Research Logs</h1>
-            <p class="subtitle lead">Exploring Computational Data Depth</p>
-                      </div>
+    <div class="quarto-title column-body">
+      <h1 class="title">Runtime Analysis and Algorithm Optimization</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Runtime</div>
+              </div>
+                  </div>
   </div>
     
   
-  <div class="quarto-title-meta column-page-left">
+  <div class="quarto-title-meta">
 
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Ridhima Singla </p>
+            </div>
+    </div>
       
     
       
     </div>
     
   
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(7)</span></div><div class="category" data-category="SW1wbGVtZW50YXRpb24=">Implementation <span class="quarto-category-count">(4)</span></div><div class="category" data-category="Ug==">R <span class="quarto-category-count">(4)</span></div><div class="category" data-category="UnVudGltZQ==">Runtime <span class="quarto-category-count">(2)</span></div><div class="category" data-category="VGhlb3J5">Theory <span class="quarto-category-count">(1)</span></div></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#part-1-background-interference-and-garbage-collection" id="toc-part-1-background-interference-and-garbage-collection" class="nav-link" data-scroll-target="#part-1-background-interference-and-garbage-collection">Part 1: Background Interference and Garbage Collection</a></li>
+  <li><a href="#part-2-rewiring-a-computer-science-brain-in-r" id="toc-part-2-rewiring-a-computer-science-brain-in-r" class="nav-link" data-scroll-target="#part-2-rewiring-a-computer-science-brain-in-r">Part 2: Rewiring a Computer Science Brain in R</a></li>
+  <li><a href="#part-3-the-payoff" id="toc-part-3-the-payoff" class="nav-link" data-scroll-target="#part-3-the-payoff">Part 3: The Payoff</a></li>
+  <li><a href="#question-what-caused-the-peaks" id="toc-question-what-caused-the-peaks" class="nav-link" data-scroll-target="#question-what-caused-the-peaks">Question: What Caused the ‘Peaks’?</a></li>
+  <li><a href="#next-step---asymptotic-verification" id="toc-next-step---asymptotic-verification" class="nav-link" data-scroll-target="#next-step---asymptotic-verification">Next Step - Asymptotic Verification</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
 
+<section id="abstract" class="level3">
+<h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
+<p>During this phase of the project, my focus shifted from implementation to runtime analysis and algorithm optimization for all previously implemented bivariate depth functions. I began by building a standard framework to test how my algorithms scale as <span class="math inline">\(n \to \infty\)</span>, but quickly encountered several execution bottlenecks. To understand what was slowing my code down under the hood, I turned to <em>The R Inferno</em> by Patrick Burns <span class="citation" data-cites="burns2011r">(<a href="#ref-burns2011r" role="doc-biblioref">Burns 2011</a>)</span> and systematically improved the runtime by pre-allocating memory, eliminating matrix binding, and replacing ‘for’ loops with vectorized operations. Ultimately, this refactoring dropped the processing time for a dataset of 1,000,000 points to under 0.4 seconds which was a massive win for me. This process also allowed me to secure my code from edge cases that arose only when testing on large datasets.</p>
+</section>
+<section id="introduction" class="level3">
+<h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
+<p>With the core logic verified, my objective transitioned from achieving the correct output to achieving the correct output efficiently. Having implemented a number of bivariate data depth algorithms like Integrated Rank-Weighted (IRW), Tukey, Mahalanobis, and Simplicial depth, my goal for this phase was to eliminate R bottlenecks and syntax inefficiencies to achieve peak raw performance.</p>
+<p>To do this systematically, I built a standard looping framework: for dataset sizes ranging from <span class="math inline">\(n = 100\)</span> up to <span class="math inline">\(n = 100,000\)</span>, generate random bivariate distributions, execute the depth calculations, and record the CPU execution time.</p>
+<p>At this stage, I had not yet learned about statistical smoothing techniques like loess regression, so I was hyper-fixated on the exact shape of the raw empirical line that I was seeing. As can be seen in the graph attached below, while the general trajectory was somewhat linear, it was full of sharp peaks that appeared to be structured and not entirely random. Moreover, the script itself ran excruciatingly slow. What began as a simple plotting exercise quickly evolved into a deep dive into understanding what goes on behind the scenes and a complete rewiring of how I approach programming.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="peaks.png" class="img-fluid figure-img"></p>
+<figcaption>Raw empirical runtime for Simplicial depth from N = 100 to N = 100,000 before any optimizations</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="part-1-background-interference-and-garbage-collection" class="level3">
+<h3 class="anchored" data-anchor-id="part-1-background-interference-and-garbage-collection">Part 1: Background Interference and Garbage Collection</h3>
+<ul>
+<li><p><strong>Background Interference:</strong> My first hypothesis for the sharp peaks was background operating system interference. I was originally using R’s standard Sys.time() function to record the execution time for my algorithms. However, after discussing the issue with Dr.&nbsp;Leblanc, I learned that Sys.time() measures wall clock time, which means that it also captures any kind of background activity occurring alongside the algorithm. This could noticeably inflate the execution time and output incorrect numbers.</p>
+<p>To eliminate background noise, I switched to system.time() in my standard framework. As explained in Alexej Gossmann’s runtime guide <span class="citation" data-cites="alexej2017">(<a href="#ref-alexej2017" role="doc-biblioref">Gossmann 2017</a>)</span>, system.time() outputs three distinct values: user, system, and elapsed. By summing purely the user and system values, you extract the exact CPU time spent executing the algorithm while stripping away external background interference. While this was a much better practice for accuracy, it did not solve the problem: the peaks remained, and the execution was still very slow.</p></li>
+<li><p><strong>Lazy Garbage Collector:</strong> Next, I turned my attention to R’s memory management. I learned that the garbage collector in R is lazy <span class="citation" data-cites="wickham2019advanced">(<a href="#ref-wickham2019advanced" role="doc-biblioref">Wickham 2019, chap. 2</a>, sec.&nbsp;2.6)</span>, meaning it does not clean up discarded objects continuously as code runs. Instead, it waits until memory fills up before triggering a massive cleanup to reclaim memory.</p>
+<p>I hypothesized that those peaks were perhaps the exact timestamps where R’s garbage collector activated to clean up discarded objects from previous iterations. To test this, I added a specific command to manually trigger garbage collection after each dataset execution. My thinking was that starting every run with a clean memory slate would prevent massive, delayed cleanup cycles.</p>
+<p>Once again, this did not fix the issue. It was clear that the computational bottleneck was coming from the design choices that I had made in my algorithms, and that’s where I needed to look next.</p></li>
+</ul>
+<hr>
+</section>
+<section id="part-2-rewiring-a-computer-science-brain-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="part-2-rewiring-a-computer-science-brain-in-r">Part 2: Rewiring a Computer Science Brain in R</h3>
+<p>Coming from a Computer Science background where languages like Java and C++ naturally utilize loop iterations, my initial R scripts were essentially all built on coding habits that are known to slow down execution in R.</p>
+<p>To understand what was happening under the hood, I once again turned to <em>The R Inferno</em> by Patrick Burns <span class="citation" data-cites="burns2011r">(<a href="#ref-burns2011r" role="doc-biblioref">Burns 2011</a>)</span>, alongside Advanced R by Hadley Wickham <span class="citation" data-cites="wickham2019advanced">(<a href="#ref-wickham2019advanced" role="doc-biblioref">Wickham 2019</a>)</span>. Using my recently written Simplicial depth algorithm as a testing “guinea pig,” I identified and eliminated three major memory traps.</p>
+<ul>
+<li><p><strong>Growing Objects &amp; Dynamic Allocation:</strong> In many of my original implementations, I initialized storage vectors without setting a definitive length, using syntax like <code>results = numeric()</code>.</p>
+<p>In Chapter 2 of <em>The R Inferno</em> (“Growing Objects”), Burns explains why this destroys performance as the dataset becomes larger. Since vectors are stored in contiguous blocks of physical memory, appending a new value to a dynamically growing vector forces the system to allocate a new larger block of memory, copy every existing element over to the new address, and then append the new value. Triggering this process inside a loop of 100,000 items results in severe computational bottleneck.</p>
+<p>The Fix: I updated all data structures to pre-allocate fixed memory from the start (e.g., <code>numeric(length(sizes))</code>), securing the required memory upfront and eliminating copying overhead entirely.</p></li>
+<li><p><strong>Failing to Vectorize:</strong> My original implementations were full of iterative loops even for simple things like counting how many values in a vector were greater than 0. In R, an iterative loop requires evaluation at every single step, creating massive computational overhead (as detailed in Chapter 3 of <em>The R Inferno</em>: “Failing to Vectorize”).</p>
+<p>Eliminating loops required me to completely rewire how I approached algorithm design. I had to realize that the sequential iteration I was trying to build with loops was already provided by R’s vectorized operations. Through extensive reading of built-in R documentation and Stack Overflow discussions, I swapped out my manual loops with vectorized operations. While cumbersome, this process helped me learn a lot about some specific features in R such as:</p>
+<ul>
+<li>Angle Wrapping without Loops: I learned the modulo operator trick (<code>atan2(y, x) %% (2*pi)</code>) to instantly wrap geometric angles into the <span class="math inline">\([0, 2\pi]\)</span> range across entire vectors at once.</li>
+<li>Binary Searches via findInterval(): Where I previously wrote custom nested loops to search sorted angle arrays to find exact intervals, I utilized R’s findInterval() function, which performs a very fast binary search for the same outcome.</li>
+<li>cumsum(): For algorithms where a running depth counter depended on its previous state, I replaced tally loops with vectorized cumulative sums (cumsum()).</li>
+</ul></li>
+<li><p><strong>Using rbind / cbind:</strong> Finally, I removed every instance of matrix binding (rbind and cbind) as I learnt that binding rows to a matrix incurs the exact same penalty as growing an array <span class="citation" data-cites="wickham2019advanced">(<a href="#ref-wickham2019advanced" role="doc-biblioref">Wickham 2019, chap. 24</a>, sec.&nbsp;24.6)</span>.</p></li>
+</ul>
+<hr>
+</section>
+<section id="part-3-the-payoff" class="level3">
+<h3 class="anchored" data-anchor-id="part-3-the-payoff">Part 3: The Payoff</h3>
+<p>After completing these optimizations on the <span class="math inline">\(O(n \log n)\)</span> Simplicial depth algorithm, I went back and applied them to all previously implemented depth algorithms.</p>
+<p>The Massive Win: For the <span class="math inline">\(O(n \log n)\)</span> Simplicial depth algorithm, the maximum time required for my computer to process a dataset of 1,000,000 points dropped down to under 0.4 seconds.</p>
+<p>An unexpected bonus of this optimization journey was code robustness. Originally, I had only tested my algorithms on relatively small datasets. However, during this process I was able to identify and fix several edge cases that only became apparent when the algorithms were tested on large datasets.</p>
+<hr>
+</section>
+<section id="question-what-caused-the-peaks" class="level3">
+<h3 class="anchored" data-anchor-id="question-what-caused-the-peaks">Question: What Caused the ‘Peaks’?</h3>
+<p>So, what was causing the structured, non-random peaks we observed during our initial testing? Honestly, the definitive answer remains open and none of our original hypotheses seem to explain this behavior. While we successfully optimized the algorithmic implementations as much as possible and eliminated the main bottlenecks, the underlying cause behind the non-random structure of those peaks is still ambiguous. I am learning that recognizing and documenting unsolved observations is also a part of the research process. If you happen to have any insights, or experience with similar algorithmic behavior, please connect with me on LinkedIn. I would love to hear your thoughts!</p>
+</section>
+<section id="next-step---asymptotic-verification" class="level3">
+<h3 class="anchored" data-anchor-id="next-step---asymptotic-verification">Next Step - Asymptotic Verification</h3>
+<p>With clean, optimized R functions established, I finally have the speed required to run massive datasets for asymptotic verification. In a subsequent update, I will take these vectorized algorithms and evaluate how their empirical runtime trajectories compare with the theoretical Big-O expectations as <span class="math inline">\(n \to \infty\)</span>.</p>
 
 
 
+</section>
 
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="UnVudGltZQ==" data-listing-file-modified-sort="1788297475168" data-listing-reading-time-sort="57" data-listing-word-count-sort="11341">
-<a href="./posts/Runtime Analysis/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Runtime Analysis/tukeyplot.jpeg" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Empirical vs.&nbsp;Theoretical Verification Dashboard
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('UnVudGltZQ=='); return false;">Runtime</div>
-
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-burns2011r" class="csl-entry" role="listitem">
+Burns, P. 2011. <em>The r Inferno</em>. Lulu.com. <a href="https://books.google.ca/books?id=TFWMAwAAQBAJ">https://books.google.ca/books?id=TFWMAwAAQBAJ</a>.
 </div>
-<div class="card-text listing-description delink">
-With all the code optimized, my focus shifted to empirical vs.&nbsp;theoretical verification across the updated set of bivariate data depth algorithms. Having eliminated the…<span class="math inline"></span><span class="math inline"></span>
+<div id="ref-alexej2017" class="csl-entry" role="listitem">
+Gossmann, Alexej. 2017. <span>“5 Ways to Measure Running Time of r Code.”</span> In <em>0-Fold Cross-Validation</em>. <a href="https://www.alexejgossmann.com/benchmarking_r/">https://www.alexejgossmann.com/benchmarking_r/</a>.
 </div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
+<div id="ref-wickham2019advanced" class="csl-entry" role="listitem">
+Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/CRC. <a href="https://doi.org/10.1201/9781351201315">https://doi.org/10.1201/9781351201315</a>.
 </div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="1" data-categories="UnVudGltZQ==" data-listing-file-modified-sort="1788297049587" data-listing-reading-time-sort="8" data-listing-word-count-sort="1409">
-<a href="./posts/Optimization/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Optimization/peaks.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Runtime Analysis and Algorithm Optimization
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('UnVudGltZQ=='); return false;">Runtime</div>
-
-</div>
-<div class="card-text listing-description delink">
-During this phase of the project, my focus shifted from implementation to runtime analysis and algorithm optimization for all previously implemented bivariate depth…<span class="math inline"></span><em></em><span class="citation" data-cites="burns2011r"></span>
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="2" data-categories="SW1wbGVtZW50YXRpb24lMkNS" data-listing-file-modified-sort="1788296605396" data-listing-reading-time-sort="8" data-listing-word-count-sort="1426">
-<a href="./posts/Simplicial Depth/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Simplicial Depth/ToyExample.jpeg" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Simplicial Depth and Combinatorial Optimizations
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('SW1wbGVtZW50YXRpb24='); return false;">Implementation</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Ug=='); return false;">R</div>
-
-</div>
-<div class="card-text listing-description delink">
-With IRW depth solidified, my focus shifted to understanding and implementing Simplicial depth in <span class="math inline">\(R^2\)</span>. I began by constructing a baseline <span class="math inline">\(O(n^3)\)</span> geometric algorithm…<span class="math inline"></span><span class="math inline"></span>
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="3" data-categories="SW1wbGVtZW50YXRpb24lMkNS" data-listing-file-modified-sort="1788294851500" data-listing-reading-time-sort="12" data-listing-word-count-sort="2225">
-<a href="./posts/IRW/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/IRW/convergenceplot.jpeg" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Integrated Rank-Weighted (IRW) Depth and Monte Carlo Approximations
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('SW1wbGVtZW50YXRpb24='); return false;">Implementation</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Ug=='); return false;">R</div>
-
-</div>
-<div class="card-text listing-description delink">
-With the geometrical foundation of the bivariate Tukey sweep algorithm solidified, my focus shifted toward Integrated Rank-Weighted (IRW) depth. While Tukey depth is a…
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="4" data-categories="SW1wbGVtZW50YXRpb24lMkNS" data-listing-file-modified-sort="1788287333622" data-listing-reading-time-sort="9" data-listing-word-count-sort="1715">
-<a href="./posts/Clarifying Tukey Depth/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Clarifying Tukey Depth/projectionView.jpeg" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Clarifying Tukey Depth &amp; Debugging Sweep Algorithm
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('SW1wbGVtZW50YXRpb24='); return false;">Implementation</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Ug=='); return false;">R</div>
-
-</div>
-<div class="card-text listing-description delink">
-Resolving calculation errors in the Tukey depth algorithm required a much deeper dive into the underlying geometry. I discovered that my bugs weren’t just syntactical. They…
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="5" data-categories="SW1wbGVtZW50YXRpb24lMkNS" data-listing-file-modified-sort="1788285594840" data-listing-reading-time-sort="8" data-listing-word-count-sort="1412">
-<a href="./posts/First Computations in R/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/First Computations in R/2-thumbnail.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-First Computations in R - Implementing Mahalanobis &amp; Tukey Depth
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('SW1wbGVtZW50YXRpb24='); return false;">Implementation</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Ug=='); return false;">R</div>
-
-</div>
-<div class="card-text listing-description delink">
-This phase of the project marked the transition from understanding mathematical theory to applying it through computational implementation. The primary goal was to have a…
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="6" data-categories="VGhlb3J5" data-listing-file-modified-sort="1788279890777" data-listing-reading-time-sort="3" data-listing-word-count-sort="429">
-<a href="./posts/Introduction/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Introduction/setup.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Defining the Depth Function &amp; Infrastructure Setup
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('VGhlb3J5'); return false;">Theory</div>
-
-</div>
-<div class="card-text listing-description delink">
-I kicked off my undergraduate research term under the supervision of Dr.&nbsp;Alexandre Leblanc by defining the core scope of our project: the statistical and computational…
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
-</div>
-</div>
-</div>
-</div></a>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Ridhima Singla">
 
-<title>Research Logs – The USRA Logs: Data Depth</title>
+<title>Simplicial Depth and Combinatorial Optimizations – The USRA Logs: Data Depth</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,28 +24,45 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-8dfce0f9f08a59e28375127dbd9997f5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-8dfce0f9f08a59e28375127dbd9997f5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -72,35 +90,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -132,7 +121,7 @@ window.Quarto = {
 };
 </script>
 
-<link rel="alternate" type="application/rss+xml" title="The USRA Logs: Data Depth" href="index.xml" data-external="1"></head>
+</head>
 
 <body class="nav-fixed quarto-light">
 
@@ -141,7 +130,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">The USRA Logs: Data Depth</span>
     </a>
   </div>
@@ -152,11 +141,11 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -176,233 +165,138 @@ window.Quarto = {
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
-      <h1 class="title">Research Logs</h1>
-            <p class="subtitle lead">Exploring Computational Data Depth</p>
-                      </div>
+    <div class="quarto-title column-body">
+      <h1 class="title">Simplicial Depth and Combinatorial Optimizations</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">Implementation</div>
+                <div class="quarto-category">R</div>
+              </div>
+                  </div>
   </div>
     
   
-  <div class="quarto-title-meta column-page-left">
+  <div class="quarto-title-meta">
 
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Ridhima Singla </p>
+            </div>
+    </div>
       
     
       
     </div>
     
   
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(7)</span></div><div class="category" data-category="SW1wbGVtZW50YXRpb24=">Implementation <span class="quarto-category-count">(4)</span></div><div class="category" data-category="Ug==">R <span class="quarto-category-count">(4)</span></div><div class="category" data-category="UnVudGltZQ==">Runtime <span class="quarto-category-count">(2)</span></div><div class="category" data-category="VGhlb3J5">Theory <span class="quarto-category-count">(1)</span></div></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
+  <li><a href="#visualizing-simplicial-depth" id="toc-visualizing-simplicial-depth" class="nav-link" data-scroll-target="#visualizing-simplicial-depth">Visualizing Simplicial Depth</a></li>
+  <li><a href="#theoretical-foundations-the-baseline" id="toc-theoretical-foundations-the-baseline" class="nav-link" data-scroll-target="#theoretical-foundations-the-baseline">Theoretical Foundations: The Baseline</a></li>
+  <li><a href="#roadblock-1-the-collinearity-edge-case" id="toc-roadblock-1-the-collinearity-edge-case" class="nav-link" data-scroll-target="#roadblock-1-the-collinearity-edge-case">Roadblock 1: The Collinearity Edge Case</a></li>
+  <li><a href="#roadblock-2-the-computational-bottleneck" id="toc-roadblock-2-the-computational-bottleneck" class="nav-link" data-scroll-target="#roadblock-2-the-computational-bottleneck">Roadblock 2: The Computational Bottleneck</a></li>
+  <li><a href="#the-combinatorial-perspective" id="toc-the-combinatorial-perspective" class="nav-link" data-scroll-target="#the-combinatorial-perspective">The Combinatorial Perspective</a></li>
+  <li><a href="#implementation-2-halfspace-counts" id="toc-implementation-2-halfspace-counts" class="nav-link" data-scroll-target="#implementation-2-halfspace-counts">Implementation 2: Halfspace Counts</a></li>
+  <li><a href="#investigating-alternative-sweep-logics" id="toc-investigating-alternative-sweep-logics" class="nav-link" data-scroll-target="#investigating-alternative-sweep-logics">Investigating Alternative Sweep Logics</a></li>
+  <li><a href="#future-work" id="toc-future-work" class="nav-link" data-scroll-target="#future-work">Future Work</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
 
+<section id="abstract" class="level3">
+<h3 class="anchored" data-anchor-id="abstract">Abstract</h3>
+<p>With IRW depth solidified, my focus shifted to understanding and implementing Simplicial depth in <span class="math inline">\(R^2\)</span>. I began by constructing a baseline <span class="math inline">\(O(n^3)\)</span> geometric algorithm based on the simple and intuitive definition of the depth measure. While verifying this baseline against the ddalpha package in R, I encountered an interesting edge case regarding collinear points that skewed my depth calculations. After resolving the geometry, I pivoted to the computational challenge: <span class="math inline">\(O(n^3)\)</span> is not feasible for large datasets. By transitioning to the combinatorial perspective based on halfspace counts, I was able to implement the algorithm in an optimal <span class="math inline">\(O(n \log n)\)</span> time complexity, leading to deep explorations of angular sweep logic.</p>
+<hr>
+</section>
+<section id="visualizing-simplicial-depth" class="level3">
+<h3 class="anchored" data-anchor-id="visualizing-simplicial-depth">Visualizing Simplicial Depth</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>A simple toy example to help understand how Simplicial Depth is computed.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The visual above demonstrates the key intuition of Simplicial depth in <span class="math inline">\(R^2\)</span>. Given a query point (x in red) and a dataset (black points), if we form every possible triangle using triplets of data points from the dataset, what proportion of those triangles strictly contain the query point? In the example above, the dataset contains 4 data points, so there are a total of 4 (<span class="math inline">\(4\choose3\)</span> <span class="math inline">\(= 4\)</span>) unique triangles possible. Out of the 4 triangles, 2 triangles contain the query point. Thus, the simplicial depth of the query point is <span class="math inline">\(\frac{2}{4} = 0.5\)</span>.</p>
+<hr>
+</section>
+<section id="theoretical-foundations-the-baseline" class="level3">
+<h3 class="anchored" data-anchor-id="theoretical-foundations-the-baseline">Theoretical Foundations: The Baseline</h3>
+<p>To build my foundational understanding, Dr.&nbsp;Leblanc recommended starting with a highly readable paper by <span class="citation" data-cites="LiLiu2004">(<a href="#ref-LiLiu2004" role="doc-biblioref">Li and Liu 2004</a>)</span>, which utilizes simplicial depth to construct multivariate nonparametric tests.</p>
+<ul>
+<li><p><strong>The Geometric Definition:</strong> In <span class="math inline">\(R^2\)</span>, the simplicial depth of a point <span class="math inline">\(y\)</span> with respect to a dataset <span class="math inline">\(X\)</span> is essentially the probability that <span class="math inline">\(y\)</span> is contained within a random simplex (a triangle in 2D) formed by three points from <span class="math inline">\(X\)</span>. If <span class="math inline">\(X\)</span> contains <span class="math inline">\(m\)</span> points, then <span class="citation" data-cites="LiLiu2004">(<a href="#ref-LiLiu2004" role="doc-biblioref">Li and Liu 2004</a>)</span> states that the simplicial depth of <span class="math inline">\(y\)</span> is given by <span class="math display">\[{m\choose3}^{-1} \sum_{*} I(y \in \triangle(X_{i_1}, X_{i_2}, X_{i_3}))\]</span> where * runs over all possible triplets of data points and <span class="math inline">\(\triangle(a, b, c)\)</span> denotes a triangle with vertices a, b and c.&nbsp;</p></li>
+<li><p><strong>Implementation 1 (The Baseline):</strong> Based on this definition, I built my first algorithm. Using the built-in R function ‘choose’, I calculated the total number of possible triangles <span class="math inline">\(n \choose 3\)</span>. Then, utilizing three nested ‘for’ loops, the algorithm checked every single triangle. To determine if the target point was inside the triangle, I compared areas, i.e.&nbsp;if the sum of the areas of the three sub-triangles formed by the query point equaled the area of the main triangle, then the point was contained in the triangle.</p></li>
+</ul>
+<p>While mathematically sound, this baseline approach introduced two major challenges.</p>
+</section>
+<section id="roadblock-1-the-collinearity-edge-case" class="level3">
+<h3 class="anchored" data-anchor-id="roadblock-1-the-collinearity-edge-case">Roadblock 1: The Collinearity Edge Case</h3>
+<p>When I verified my exact output on a test example against the ddalpha package, my depth value was off by exactly <span class="math inline">\(0.0061\)</span>. While this seems insignificant, reverse-engineering the probability revealed that my algorithm was off by exactly 30 triangles.</p>
+<p>With the help of Dr.&nbsp;Leblanc, I learnt that this issue was being caused by collinear points. Since I was testing on a very small, structured dataset, several points fell perfectly on the same line. A triangle formed by three collinear points has an area of zero, which completely breaks the area-based inclusion logic of the baseline algorithm. When I generated a large, normally distributed dataset (which mathematically reduces the probability of exact collinearity to near-zero), the discrepancy vanished.</p>
+</section>
+<section id="roadblock-2-the-computational-bottleneck" class="level3">
+<h3 class="anchored" data-anchor-id="roadblock-2-the-computational-bottleneck">Roadblock 2: The Computational Bottleneck</h3>
+<p>As a computer science student, I immediately recognized that my triple-nested loop yielded a time complexity of <span class="math inline">\(O(n^3)\)</span>. For large statistical datasets, <span class="math inline">\(O(n^3)\)</span> is computationally slow.</p>
+<p>Literature review confirmed that the optimal bound for computing bivariate simplicial depth is <span class="math inline">\(O(n \log n)\)</span> <span class="citation" data-cites="D_F_L_M_S">(<a href="#ref-D_F_L_M_S" role="doc-biblioref">Durocher et al. 2018</a>)</span>. To achieve this, I had to abandon the geometric area calculations and adopt a combinatorial perspective based on halfspace counts.</p>
+<hr>
+</section>
+<section id="the-combinatorial-perspective" class="level3">
+<h3 class="anchored" data-anchor-id="the-combinatorial-perspective">The Combinatorial Perspective</h3>
+<p>Consulting literature on combinatorial depth measures <span class="citation" data-cites="D_F_L_M_S">(<a href="#ref-D_F_L_M_S" role="doc-biblioref">Durocher et al. 2018</a>)</span>, I learned that instead of directly counting the triangles that do contain the query point (which requires looking at triplets of points), the combinatorial approach counts the triangles that do not contain the query point, and subtracts that from the total <span class="math inline">\(n \choose 3\)</span>. Referencing Aloupis’s work, <span class="citation" data-cites="D_F_L_M_S">(<a href="#ref-D_F_L_M_S" role="doc-biblioref">Durocher et al. 2018</a>)</span> shows that an alternate definition of simplicial depth of a query point <span class="math inline">\(q\)</span> in <span class="math inline">\(R^2\)</span> is given by <span class="math display">\[{n \choose 3} - \sum_{i = 1}^{n} {h_{i}(q) \choose 2}\]</span> where <span class="math inline">\(h_{i}(q)\)</span> denotes the halfspace counts, i.e.&nbsp;the number of points that lie to the right of the line that passes through <span class="math inline">\(q\)</span> and the <span class="math inline">\(i^{th}\)</span> data point.</p>
+<p>A triangle will not contain the query point if one of its vertices lies on a line that passes through the query point and the vertex, and the other two of its vertices lie strictly on one side of this line. Thus, the problem reduces to finding the halfspace counts.</p>
+</section>
+<section id="implementation-2-halfspace-counts" class="level3">
+<h3 class="anchored" data-anchor-id="implementation-2-halfspace-counts">Implementation 2: Halfspace Counts</h3>
+<p>To implement this, I referred to the algorithm by <span class="citation" data-cites="RR1996">(<a href="#ref-RR1996" role="doc-biblioref">Rousseeuw and Ruts 1996</a>)</span>. This transition was mentally challenging. While implementing Tukey depth, I had to strictly separate the “projection” view from the “halfspace” view for Tukey depth. Now, I had to adapt to the halfspace mindset and carefully ensure that I didn’t use the two interchangeably.</p>
+<p>Instead of explaining the dense step by step mechanics here, the basic intuition is that you sort the points by angle (which takes <span class="math inline">\(O(n \log n)\)</span> time) and then sweep a line around the query point, keeping a running tally of how many points enter and exit the halfspace at each step.</p>
+<ul>
+<li><strong>Note:</strong> The complete, executable R script for both the <span class="math inline">\(O(n^3)\)</span> baseline and the <span class="math inline">\(O(n \log n)\)</span> Rousseeuw &amp; Ruts implementation is available in the <a href="https://github.com/bytebard404/The-USRA-Logs-Data-Depth/blob/main/R/Simplicial-Week5">project repository</a>.</li>
+</ul>
+</section>
+<section id="investigating-alternative-sweep-logics" class="level3">
+<h3 class="anchored" data-anchor-id="investigating-alternative-sweep-logics">Investigating Alternative Sweep Logics</h3>
+<p>While I successfully implemented the Rousseeuw and Ruts algorithm, I found their specific method of tracking halfspace counts unintuitive, and the notation used slightly confusing. In their logic, sweeping the line can result in bulk additions or subtractions of points to the halfspace count.</p>
+<p>Recalling the elegance of my Tukey implementation, the sweep in that algorithm strictly gains or loses exactly one point at a time. Dr.&nbsp;Leblanc and I collaborated to explore and implement an alternative <span class="math inline">\(O(n \log n)\)</span> sweep logic for Simplicial depth. We are currently verifying whether this counting logic is an existing technique in computational geometry or a new approach. I look forward to detailing this alternative algorithm in a future update once we have thoroughly confirmed its novelty.</p>
+<hr>
+</section>
+<section id="future-work" class="level3">
+<h3 class="anchored" data-anchor-id="future-work">Future Work</h3>
+<ul>
+<li>Optimize the R syntax in the algorithm to eliminate computational bottlenecks.</li>
+<li>Check how the algorithm scales as <span class="math inline">\(n \rightarrow \infty\)</span>. Confirm runtime matches the theoretical expectation.</li>
+</ul>
 
 
 
+</section>
 
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="UnVudGltZQ==" data-listing-file-modified-sort="1788297475168" data-listing-reading-time-sort="57" data-listing-word-count-sort="11341">
-<a href="./posts/Runtime Analysis/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Runtime Analysis/tukeyplot.jpeg" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Empirical vs.&nbsp;Theoretical Verification Dashboard
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('UnVudGltZQ=='); return false;">Runtime</div>
-
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-D_F_L_M_S" class="csl-entry" role="listitem">
+Durocher, Stephane, Robert Fraser, Alexandre Leblanc, Jason Morrison, and Matthew Skala. 2018. <span>“On Combinatorial Depth Measures.”</span> <em>International Journal of Computational Geometry &amp; Applications</em> 28 (December): 381–98. <a href="https://doi.org/10.1142/S0218195918500127">https://doi.org/10.1142/S0218195918500127</a>.
 </div>
-<div class="card-text listing-description delink">
-With all the code optimized, my focus shifted to empirical vs.&nbsp;theoretical verification across the updated set of bivariate data depth algorithms. Having eliminated the…<span class="math inline"></span><span class="math inline"></span>
+<div id="ref-LiLiu2004" class="csl-entry" role="listitem">
+Li, Jun, and Regina Liu. 2004. <span>“New Nonparametric Tests of Multivariate Locations and Scales Using Data Depth.”</span> <em>Statistical Science</em> 19 (November). <a href="https://doi.org/10.1214/088342304000000594">https://doi.org/10.1214/088342304000000594</a>.
 </div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
+<div id="ref-RR1996" class="csl-entry" role="listitem">
+Rousseeuw, Peter, and Ida Ruts. 1996. <span>“Algorithm AS 307: Bivariate Location Depth.”</span> <em>Journal of the Royal Statistical Society Series C Applied Statistics</em> 45 (January): 516–26. <a href="https://doi.org/10.2307/2986073">https://doi.org/10.2307/2986073</a>.
 </div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="1" data-categories="UnVudGltZQ==" data-listing-file-modified-sort="1788297049587" data-listing-reading-time-sort="8" data-listing-word-count-sort="1409">
-<a href="./posts/Optimization/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Optimization/peaks.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Runtime Analysis and Algorithm Optimization
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('UnVudGltZQ=='); return false;">Runtime</div>
-
-</div>
-<div class="card-text listing-description delink">
-During this phase of the project, my focus shifted from implementation to runtime analysis and algorithm optimization for all previously implemented bivariate depth…<span class="math inline"></span><em></em><span class="citation" data-cites="burns2011r"></span>
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="2" data-categories="SW1wbGVtZW50YXRpb24lMkNS" data-listing-file-modified-sort="1788296605396" data-listing-reading-time-sort="8" data-listing-word-count-sort="1426">
-<a href="./posts/Simplicial Depth/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Simplicial Depth/ToyExample.jpeg" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Simplicial Depth and Combinatorial Optimizations
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('SW1wbGVtZW50YXRpb24='); return false;">Implementation</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Ug=='); return false;">R</div>
-
-</div>
-<div class="card-text listing-description delink">
-With IRW depth solidified, my focus shifted to understanding and implementing Simplicial depth in <span class="math inline">\(R^2\)</span>. I began by constructing a baseline <span class="math inline">\(O(n^3)\)</span> geometric algorithm…<span class="math inline"></span><span class="math inline"></span>
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="3" data-categories="SW1wbGVtZW50YXRpb24lMkNS" data-listing-file-modified-sort="1788294851500" data-listing-reading-time-sort="12" data-listing-word-count-sort="2225">
-<a href="./posts/IRW/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/IRW/convergenceplot.jpeg" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Integrated Rank-Weighted (IRW) Depth and Monte Carlo Approximations
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('SW1wbGVtZW50YXRpb24='); return false;">Implementation</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Ug=='); return false;">R</div>
-
-</div>
-<div class="card-text listing-description delink">
-With the geometrical foundation of the bivariate Tukey sweep algorithm solidified, my focus shifted toward Integrated Rank-Weighted (IRW) depth. While Tukey depth is a…
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="4" data-categories="SW1wbGVtZW50YXRpb24lMkNS" data-listing-file-modified-sort="1788287333622" data-listing-reading-time-sort="9" data-listing-word-count-sort="1715">
-<a href="./posts/Clarifying Tukey Depth/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Clarifying Tukey Depth/projectionView.jpeg" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Clarifying Tukey Depth &amp; Debugging Sweep Algorithm
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('SW1wbGVtZW50YXRpb24='); return false;">Implementation</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Ug=='); return false;">R</div>
-
-</div>
-<div class="card-text listing-description delink">
-Resolving calculation errors in the Tukey depth algorithm required a much deeper dive into the underlying geometry. I discovered that my bugs weren’t just syntactical. They…
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="5" data-categories="SW1wbGVtZW50YXRpb24lMkNS" data-listing-file-modified-sort="1788285594840" data-listing-reading-time-sort="8" data-listing-word-count-sort="1412">
-<a href="./posts/First Computations in R/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/First Computations in R/2-thumbnail.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-First Computations in R - Implementing Mahalanobis &amp; Tukey Depth
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('SW1wbGVtZW50YXRpb24='); return false;">Implementation</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Ug=='); return false;">R</div>
-
-</div>
-<div class="card-text listing-description delink">
-This phase of the project marked the transition from understanding mathematical theory to applying it through computational implementation. The primary goal was to have a…
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="6" data-categories="VGhlb3J5" data-listing-file-modified-sort="1788279890777" data-listing-reading-time-sort="3" data-listing-word-count-sort="429">
-<a href="./posts/Introduction/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./posts/Introduction/setup.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Defining the Depth Function &amp; Infrastructure Setup
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('VGhlb3J5'); return false;">Theory</div>
-
-</div>
-<div class="card-text listing-description delink">
-I kicked off my undergraduate research term under the supervision of Dr.&nbsp;Alexandre Leblanc by defining the core scope of our project: the statistical and computational…
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Ridhima Singla
-</div>
-</div>
-</div>
-</div></a>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
