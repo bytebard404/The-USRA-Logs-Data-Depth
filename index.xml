@@ -10,7 +10,7 @@
 <atom:link href="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/index.xml" rel="self" type="application/rss+xml"/>
 <description>*Note: Blog and repository updates are temporarily paused while I focus on wrapping up my USRA research.*</description>
 <generator>quarto-1.9.37</generator>
-<lastBuildDate>Thu, 27 Aug 2026 19:22:44 GMT</lastBuildDate>
+<lastBuildDate>Tue, 01 Sep 2026 16:36:09 GMT</lastBuildDate>
 <item>
   <title>Week 7: Empirical vs. Theoretical Verification Dashboard</title>
   <dc:creator>Ridhima Singla</dc:creator>
@@ -176,11 +176,11 @@ Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/C
 </div></section></div> ]]></description>
   <category>Runtime</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-7/</guid>
-  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
+  <pubDate>Tue, 01 Sep 2026 16:36:09 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-7/tukeyplot.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
-  <title>Week 6: Runtime Analysis and Algorithm Optimization</title>
+  <title>Runtime Analysis and Algorithm Optimization</title>
   <dc:creator>Ridhima Singla</dc:creator>
   <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-6/</link>
   <description><![CDATA[ 
@@ -268,7 +268,7 @@ Wickham, Hadley. 2019. <em>Advanced <span>R</span></em>. 2nd ed. Chapman; Hall/C
 </div></section></div> ]]></description>
   <category>Runtime</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-6/</guid>
-  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
+  <pubDate>Tue, 01 Sep 2026 16:36:09 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-6/peaks.png" medium="image" type="image/png" height="68" width="144"/>
 </item>
 <item>
@@ -365,7 +365,7 @@ Rousseeuw, Peter, and Ida Ruts. 1996. <span>“Algorithm AS 307: Bivariate Locat
   <category>Implementation</category>
   <category>R</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-5/</guid>
-  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
+  <pubDate>Tue, 01 Sep 2026 16:36:09 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-5/ToyExample.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
@@ -461,7 +461,7 @@ Ramsay, Kelly, Stéphane Durocher, and Alexandre Leblanc. 2019. <span>“Integra
   <category>Implementation</category>
   <category>R</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/</guid>
-  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
+  <pubDate>Tue, 01 Sep 2026 16:36:09 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-4/convergenceplot.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
@@ -681,7 +681,7 @@ Tukey, John W. 1975. <span>“Mathematics and the Picturing of Data.”</span> <
   <category>Implementation</category>
   <category>R</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-3/</guid>
-  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
+  <pubDate>Tue, 01 Sep 2026 16:36:09 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-3/projectionView.jpeg" medium="image" type="image/jpeg"/>
 </item>
 <item>
@@ -1016,13 +1016,13 @@ Mosler, Karl, and Pavlo Mozharovskyi. 2022. <span>“<span class="nocase">Choosi
   <category>Implementation</category>
   <category>R</category>
   <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-2/</guid>
-  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
+  <pubDate>Tue, 01 Sep 2026 16:36:09 GMT</pubDate>
   <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-2/Week2-thumbnail.png" medium="image" type="image/png" height="67" width="144"/>
 </item>
 <item>
-  <title>Week 1: Defining the Depth Function &amp; Infrastructure Setup</title>
+  <title>Defining the Depth Function &amp; Infrastructure Setup</title>
   <dc:creator>Ridhima Singla</dc:creator>
-  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-1/</link>
+  <link>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Introduction/</link>
   <description><![CDATA[ 
 
 
@@ -1031,7 +1031,7 @@ Mosler, Karl, and Pavlo Mozharovskyi. 2022. <span>“<span class="nocase">Choosi
 
 <section id="abstract" class="level3">
 <h3 class="anchored" data-anchor-id="abstract">Abstract <sup>1</sup></h3>
-<p>I kicked off my 16 week undergraduate research term this week under the supervision of Dr.&nbsp;Alexandre Leblanc by defining the core scope of our project: the statistical and computational challenges of Data Depth. While the week was heavily focused on literature review, foundational theory, and establishing the technical infrastructure to document the progress over the summer, it also allowed me to pinpoint the applications of this concept that I am most interested in exploring. Specifically, I want to investigate how data depth can be used for robust outlier detection under missing data. Is there a depth method that can isolate high quality data points from the noise? Can the approach be generalised to higher dimensions?</p>
+<p>I kicked off my undergraduate research term under the supervision of Dr.&nbsp;Alexandre Leblanc by defining the core scope of our project: the statistical and computational challenges of Data Depth. While the initial phase was heavily focused on literature review, foundational theory, and establishing the technical infrastructure to document the progress of the project, it also allowed me to pinpoint the applications of this concept that I am most interested in exploring. Specifically, I want to investigate how data depth can be used for robust outlier detection under missing data. Is there a depth method that can isolate high quality data points from the noise? Can the approach be generalised to higher dimensions?</p>
 <hr>
 </section>
 <section id="theoretical-foundations-what-is-data-depth" class="level3">
@@ -1052,7 +1052,7 @@ Mosler, Karl, and Pavlo Mozharovskyi. 2022. <span>“<span class="nocase">Choosi
 </section>
 <section id="methodological-pivots-insights" class="level3">
 <h3 class="anchored" data-anchor-id="methodological-pivots-insights">Methodological Pivots &amp; Insights</h3>
-<p>The first major roadblock I encountered was informational, not technical. While there is a substantial volume of literature on the subject, much of it assumes a high level of prior knowledge, and heavily leans toward advanced applications rather than foundational theory. As a beginner, the challenge was figuring out where to start, identifying foundational readings, and reserving advanced ones for later. To navigate this, Dr.&nbsp;Leblanc helped narrow down a reading list for the initial weeks, allowing me to select a single paper as my starting point.</p>
+<p>The first major roadblock I encountered was informational, not technical. While there is a substantial volume of literature on the subject, much of it assumes a high level of prior knowledge, and heavily leans toward advanced applications rather than foundational theory. As a beginner, the challenge was figuring out where to start, identifying foundational readings, and reserving advanced ones for later. To navigate this, Dr.&nbsp;Leblanc helped narrow down an introductory reading list, allowing me to select a single paper as my starting point.</p>
 <hr>
 </section>
 <section id="future-work" class="level3">
@@ -1079,9 +1079,9 @@ Mosler, Karl, and Pavlo Mozharovskyi. 2022. <span>“<span class="nocase">Choosi
 </ol>
 </section></div> ]]></description>
   <category>Theory</category>
-  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-1/</guid>
-  <pubDate>Thu, 27 Aug 2026 19:22:44 GMT</pubDate>
-  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Week-1/Week1.png" medium="image" type="image/png" height="119" width="144"/>
+  <guid>https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Introduction/</guid>
+  <pubDate>Tue, 01 Sep 2026 16:36:09 GMT</pubDate>
+  <media:content url="https://bytebard404.github.io/The-USRA-Logs-Data-Depth/posts/Introduction/setup.png" medium="image" type="image/png" height="119" width="144"/>
 </item>
 </channel>
 </rss>
